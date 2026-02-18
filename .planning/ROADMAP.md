@@ -149,7 +149,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Inference Spike | 0/5 | Planned | - |
-| 2. Model Distribution | 0/3 | Planned | - |
+| 2. Model Distribution | 1/3 | In Progress|  |
 | 3. App Foundation and Design System | 0/TBD | Not started | - |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
 | 5. Translation UI | 0/TBD | Not started | - |
