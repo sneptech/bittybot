@@ -119,6 +119,16 @@ None — no external service configuration required for this plan. Physical devi
 - The go/no-go gate is in place: if `ModelLoadResult.loaded == false`, the binding choice must change before any production code is written
 - Remaining blocker: Physical iOS/Android device with the `tiny-aya-global-q4_k_m.gguf` model file placed in app documents (or `/sdcard/Download/` on Android)
 
+## Self-Check: PASSED
+
+- `integration_test/spike_binding_load_test.dart` — FOUND (committed `19c09d4`)
+- `integration_test/spike_streaming_test.dart` — FOUND (committed `19c09d4`)
+- `integration_test/helpers/model_loader.dart` — FOUND (committed `e007048`)
+- `01-03-SUMMARY.md` — FOUND (this file, committed `60cdf4e`)
+- Task commit `19c09d4` — VERIFIED
+- Task commit `e007048` — VERIFIED
+- Metadata commit `60cdf4e` — VERIFIED
+
 ---
 *Phase: 01-inference-spike*
 *Completed: 2026-02-18*
