@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Model Infrastructure
 
-- [ ] **MODL-01**: App downloads Tiny Aya Global Q4_K_M GGUF (~2.14GB) on first launch with progress indicator
-- [ ] **MODL-02**: Download resumes automatically if interrupted or app is backgrounded
-- [ ] **MODL-03**: If user is not on Wi-Fi, app offers option to download on cellular with explicit file size warning (~2.14GB)
-- [ ] **MODL-04**: App verifies model integrity via SHA-256 hash on each launch before loading
+- [x] **MODL-01**: App downloads Tiny Aya Global Q4_K_M GGUF (~2.14GB) on first launch with progress indicator
+- [x] **MODL-02**: Download resumes automatically if interrupted or app is backgrounded
+- [x] **MODL-03**: If user is not on Wi-Fi, app offers option to download on cellular with explicit file size warning (~2.14GB)
+- [x] **MODL-04**: App verifies model integrity via SHA-256 hash on each launch before loading
 - [ ] **MODL-05**: Model loads in background with loading indicator; chat input disabled until ready
 - [x] **MODL-06**: All inference runs on-device via llama.cpp with zero network dependency after model download
 
@@ -85,10 +85,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MODL-01 | Phase 2 | Pending |
-| MODL-02 | Phase 2 | Pending |
-| MODL-03 | Phase 2 | Pending |
-| MODL-04 | Phase 2 | Pending |
+| MODL-01 | Phase 2 | Complete |
+| MODL-02 | Phase 2 | Complete |
+| MODL-03 | Phase 2 | Complete |
+| MODL-04 | Phase 2 | Complete |
 | MODL-05 | Phase 2 | Pending |
 | MODL-06 | Phase 1 | Complete |
 | TRNS-01 | Phase 5 | Pending |

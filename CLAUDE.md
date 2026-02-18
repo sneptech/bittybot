@@ -51,3 +51,11 @@ Parallel windows:
 - **Inference:** llama.cpp via Flutter binding (TBD in Phase 1)
 - **Testing:** TDD — write tests before implementation
 - **Commits:** Atomic, one logical change per commit
+
+## Learned Patterns (Phase 2)
+
+- **Do NOT use `ColorFiltered` with `BlendMode.saturation`** for greyscale effects — Flutter bug #179606 greyscales the entire screen. Use two separate image assets with `AnimatedCrossFade` instead.
+- **`background_downloader`**: Use `registerCallbacks()+enqueue()` not `download()` — `download()` only provides `void Function(double)` for progress, not full `TaskProgressUpdate` with speed/ETA.
+- **Riverpod dialog pattern**: Use `ConsumerStatefulWidget` with a `_dialogVisible` bool to prevent dialogs from double-showing on state rebuild.
+- **Chunked SHA-256**: Use `AccumulatorSink` from `package:convert` (not `dart:convert`) with 64KB `RandomAccessFile` chunks in a `compute()` isolate — never load the full file into RAM.
+- **Feature structure**: Model distribution code lives under `lib/features/model_distribution/` with `widgets/` subdirectory for UI components.
