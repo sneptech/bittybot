@@ -34,7 +34,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Tokens stream back to Dart one at a time during generation (not buffered until completion)
   4. The spike runs successfully on a physical iOS device (not Simulator) with static library linking confirmed
   5. Android build uses NDK r28+ and the resulting `.so` files pass 16 KB page-alignment check
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md -- Flutter project scaffold, platform toolchain (NDK r28+, iOS physical device), and 70+ language test corpus
+- [ ] 01-02-PLAN.md -- LLM-as-judge tooling (Claude Sonnet 4.6 quick check, Gemini Flash full suite, report generator)
+- [ ] 01-03-PLAN.md -- Model loading and token streaming integration tests (TDD)
+- [ ] 01-04-PLAN.md -- Multilingual translation integration tests for 70+ languages (TDD)
+- [ ] 01-05-PLAN.md -- On-device hardware verification (Android + iOS) and final spike report
 
 ### Phase 2: Model Distribution
 **Goal**: Users get through first launch with a clear, resumable download flow that installs the model and verifies its integrity, so the app is ready for offline use after one connected session
@@ -136,7 +143,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inference Spike | 0/TBD | Not started | - |
+| 1. Inference Spike | 0/5 | Planned | - |
 | 2. Model Distribution | 0/TBD | Not started | - |
 | 3. App Foundation and Design System | 0/TBD | Not started | - |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
