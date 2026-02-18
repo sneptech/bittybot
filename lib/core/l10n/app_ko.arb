@@ -1,0 +1,26 @@
+{
+  "@@locale": "ko",
+
+  "appName": "BittyBot",
+  "settings": "설정",
+  "language": "언어",
+  "errorToneLabel": "오류 메시지 스타일",
+  "errorToneFriendly": "친근하게",
+  "errorToneDirect": "간결하게",
+  "retry": "다시 시도",
+  "cancel": "취소",
+  "ok": "확인",
+  "useDeviceLanguage": "기기 언어 사용",
+  "loading": "로딩 중...",
+  "modelNotLoadedFriendly": "잠깐만요 — 모델이 아직 준비 중이에요. 이건 딱 한 번만 있는 일이에요!",
+  "modelNotLoadedDirect": "모델이 로드되지 않았습니다. 설정이 완료될 때까지 기다려 주세요.",
+  "inputTooLongFriendly": "앗 — 메시지가 조금 너무 길어요. 줄여서 다시 해보세요.",
+  "inputTooLongDirect": "입력이 최대 길이를 초과했습니다. 메시지를 줄이고 다시 시도하세요.",
+  "inferenceFailedFriendly": "음, 문제가 발생했어요. 탭해서 다시 시도해 보세요.",
+  "inferenceFailedDirect": "번역에 실패했습니다. 다시 시도해 주세요.",
+  "genericErrorFriendly": "예상치 못한 일이 생겼어요. 다시 한번 시도해 볼까요?",
+  "genericErrorDirect": "오류가 발생했습니다. 다시 시도해 주세요.",
+  "modelLoadingTitle": "준비 중...",
+  "modelLoadingMessage": "BittyBot을 처음으로 설정하고 있습니다. 한 번만 필요한 과정이에요.",
+  "modelLoadingError": "설정 실패"
+}

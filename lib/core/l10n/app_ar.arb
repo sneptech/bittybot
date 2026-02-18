@@ -1,0 +1,26 @@
+{
+  "@@locale": "ar",
+
+  "appName": "BittyBot",
+  "settings": "الإعدادات",
+  "language": "اللغة",
+  "errorToneLabel": "أسلوب رسائل الخطأ",
+  "errorToneFriendly": "ودّي",
+  "errorToneDirect": "مباشر",
+  "retry": "إعادة المحاولة",
+  "cancel": "إلغاء",
+  "ok": "موافق",
+  "useDeviceLanguage": "استخدام لغة الجهاز",
+  "loading": "جارٍ التحميل...",
+  "modelNotLoadedFriendly": "لحظة من فضلك — النموذج لا يزال يُعدّ نفسه. هذا يحدث مرة واحدة فقط!",
+  "modelNotLoadedDirect": "النموذج غير محمّل. يُرجى انتظار اكتمال الإعداد.",
+  "inputTooLongFriendly": "عذراً — هذه الرسالة طويلة بعض الشيء. حاول تقصيرها قليلاً.",
+  "inputTooLongDirect": "تجاوز الإدخال الحد الأقصى للطول. قصّر رسالتك وحاول مجدداً.",
+  "inferenceFailedFriendly": "حدث خطأ ما. انقر للمحاولة مجدداً.",
+  "inferenceFailedDirect": "فشلت الترجمة. يُرجى إعادة المحاولة.",
+  "genericErrorFriendly": "حدث شيء غير متوقع. هل تريد المحاولة مجدداً؟",
+  "genericErrorDirect": "حدث خطأ. يُرجى المحاولة مجدداً.",
+  "modelLoadingTitle": "جارٍ الإعداد...",
+  "modelLoadingMessage": "إعداد BittyBot لأول مرة. لا يحتاج هذا إلا أن يتم مرة واحدة.",
+  "modelLoadingError": "فشل الإعداد"
+}

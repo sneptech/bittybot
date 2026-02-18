@@ -1,0 +1,26 @@
+{
+  "@@locale": "zh",
+
+  "appName": "BittyBot",
+  "settings": "设置",
+  "language": "语言",
+  "errorToneLabel": "错误消息风格",
+  "errorToneFriendly": "亲切",
+  "errorToneDirect": "直接",
+  "retry": "重试",
+  "cancel": "取消",
+  "ok": "好的",
+  "useDeviceLanguage": "使用设备语言",
+  "loading": "加载中...",
+  "modelNotLoadedFriendly": "稍等一下——模型还在预热中，这只会发生一次！",
+  "modelNotLoadedDirect": "模型未加载，请等待初始化完成。",
+  "inputTooLongFriendly": "哎呀，这条消息有点太长了，试着缩短一下吧。",
+  "inputTooLongDirect": "输入内容超过最大长度，请缩短消息后重试。",
+  "inferenceFailedFriendly": "嗯，好像出了点问题，点击重试。",
+  "inferenceFailedDirect": "翻译失败，请重试。",
+  "genericErrorFriendly": "出现了意外情况，要再试一次吗？",
+  "genericErrorDirect": "发生错误，请重试。",
+  "modelLoadingTitle": "准备中...",
+  "modelLoadingMessage": "正在首次配置 BittyBot，只需要进行这一次。",
+  "modelLoadingError": "配置失败"
+}

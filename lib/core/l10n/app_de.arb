@@ -1,0 +1,26 @@
+{
+  "@@locale": "de",
+
+  "appName": "BittyBot",
+  "settings": "Einstellungen",
+  "language": "Sprache",
+  "errorToneLabel": "Stil der Fehlermeldungen",
+  "errorToneFriendly": "Freundlich",
+  "errorToneDirect": "Direkt",
+  "retry": "Erneut versuchen",
+  "cancel": "Abbrechen",
+  "ok": "OK",
+  "useDeviceLanguage": "Gerätesprache verwenden",
+  "loading": "Laden...",
+  "modelNotLoadedFriendly": "Einen Moment — das Modell startet noch. Das passiert nur einmal!",
+  "modelNotLoadedDirect": "Modell nicht geladen. Bitte warten Sie, bis die Einrichtung abgeschlossen ist.",
+  "inputTooLongFriendly": "Hoppla — diese Nachricht ist ein bisschen zu lang. Versuche sie etwas zu kürzen.",
+  "inputTooLongDirect": "Die Eingabe überschreitet die maximale Länge. Kürzen Sie Ihre Nachricht und versuchen Sie es erneut.",
+  "inferenceFailedFriendly": "Hmm, etwas ist schiefgelaufen. Tippe zum Wiederholen.",
+  "inferenceFailedDirect": "Übersetzung fehlgeschlagen. Bitte erneut versuchen.",
+  "genericErrorFriendly": "Etwas Unerwartetes ist passiert. Nochmal versuchen?",
+  "genericErrorDirect": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "modelLoadingTitle": "Vorbereitung...",
+  "modelLoadingMessage": "BittyBot wird zum ersten Mal eingerichtet. Das muss nur einmal geschehen.",
+  "modelLoadingError": "Einrichtung fehlgeschlagen"
+}
