@@ -12,7 +12,7 @@ BittyBot delivers a fully offline multilingual translation and chat app for trav
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code (completed 2026-02-18)
+- [ ] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code (plans 01-01 to 01-04 complete; 01-05 at hardware checkpoint)
 - [x] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check (completed 2026-02-19)
 - [x] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization (completed 2026-02-18)
 - [ ] **Phase 4: Core Inference Architecture** - Long-lived Inference Isolate, LLM Service, repository layer, Riverpod notifiers, Drift schema
@@ -68,11 +68,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Flutter project bootstrap, dependencies, Lato fonts, Drift DB stub
-- [ ] 03-02-PLAN.md -- Dark theme system (WCAG-validated palette, Lato typography, tap targets)
-- [ ] 03-03-PLAN.md -- Localization (10 language ARB files, codegen)
-- [ ] 03-04-PLAN.md -- Settings persistence (locale override, error tone) and error message resolver
-- [ ] 03-05-PLAN.md -- App shell wiring, startup widget, unit tests, visual verification
+- [x] 03-01-PLAN.md -- Flutter project bootstrap, dependencies, Lato fonts, Drift DB stub
+- [x] 03-02-PLAN.md -- Dark theme system (WCAG-validated palette, Lato typography, tap targets)
+- [x] 03-03-PLAN.md -- Localization (10 language ARB files, codegen)
+- [x] 03-04-PLAN.md -- Settings persistence (locale override, error tone) and error message resolver
+- [x] 03-05-PLAN.md -- App shell wiring, startup widget, unit tests, visual verification
 
 ### Phase 4: Core Inference Architecture
 **Goal**: The production inference layer is built — long-lived Dart Isolate owning the llama.cpp context, LLM Service managing isolate lifecycle, InferenceRepository interface, ChatNotifier and TranslationNotifier, PromptBuilder with Aya chat template, and Drift DB schema — so all UI phases can wire up to a stable, non-blocking inference pipeline

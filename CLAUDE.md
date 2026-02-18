@@ -74,3 +74,19 @@ Parallel windows:
 - **Riverpod dialog pattern**: Use `ConsumerStatefulWidget` with a `_dialogVisible` bool to prevent dialogs from double-showing on state rebuild.
 - **Chunked SHA-256**: Use `AccumulatorSink` from `package:convert` (not `dart:convert`) with 64KB `RandomAccessFile` chunks in a `compute()` isolate — never load the full file into RAM.
 - **Feature structure**: Model distribution code lives under `lib/features/model_distribution/` with `widgets/` subdirectory for UI components.
+
+## Learned Patterns (Phase 3)
+
+- **flutter_riverpod pinned to 3.1.0** (not 3.2.1): `riverpod_generator 4.0.1+` requires `analyzer ^9.0.0` which conflicts with `flutter_test`'s `test_api` pin in Flutter 3.38.5. Use `riverpod_generator: ^4.0.0` (resolves to 4.0.0+1).
+- **`AsyncValue.value` not `.valueOrNull`**: `.valueOrNull` does not exist on `AsyncValue` in Riverpod 3.1.0. Use `.value` which returns `T?`.
+- **`synthetic-package` removed from l10n.yaml**: Deprecated in Flutter 3.38.5; always generates to source now.
+- **`ColorScheme.fromSeed` NOT used**: `fromSeed` generates a tonal palette that overrides exact brand hex values. Use the manual `ColorScheme()` constructor to lock in specific colours.
+- **`GoogleFonts.config.allowRuntimeFetching = false`** in `main()`: Offline-first — fonts must be bundled in `assets/google_fonts/`, never fetched from network.
+- **`TestWidgetsFlutterBinding.ensureInitialized()`** required in `setUpAll` for non-widget tests that call `GoogleFonts` (touches `ServicesBinding`).
+- **`EdgeInsetsDirectional` everywhere** (not `EdgeInsets`): RTL-ready pattern for Arabic and other RTL locales. Established in all widget files.
+- **`appStartupProvider`** is a `@Riverpod(keepAlive: true) Future<void>` function-provider. Phase 4 extends it by adding `await ref.watch(modelReadyProvider.future)`.
+- **Error messages flow through `resolveErrorMessage()`**: Exhaustive Dart 3 record pattern switch on `(AppError, ErrorTone)` — compiler catches missing combinations.
+- **Locale persisted as `languageCode` string only** (e.g., `'ar'`): Sufficient for the 10 supported locales.
+- **Theme files:** `lib/core/theme/app_colors.dart` (palette), `app_text_theme.dart` (Lato 16sp), `app_theme.dart` (buildDarkTheme).
+- **Localization:** 10 ARB files in `lib/core/l10n/`, 22 keys each. `AppLocalizations.of(context).key` for all user-visible strings.
+- **Settings:** `lib/features/settings/application/settings_provider.dart` — `SharedPreferencesWithCache`, `keepAlive: true`.
