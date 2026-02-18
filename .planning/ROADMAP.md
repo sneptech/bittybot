@@ -152,7 +152,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 |-------|----------------|--------|-----------|
 | 1. Inference Spike | 0/5 | Planned | - |
 | 2. Model Distribution | 0/TBD | Not started | - |
-| 3. App Foundation and Design System | 0/5 | Planned | - |
+| 3. App Foundation and Design System | 2/5 | In Progress|  |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
 | 5. Translation UI | 0/TBD | Not started | - |
 | 6. Chat UI | 0/TBD | Not started | - |

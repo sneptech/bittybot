@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 3 of 9 (App Foundation and Design System)
-Plan: 1 of 5 completed in current phase
-Status: In progress — Plan 01 complete, Plans 02-05 pending
-Last activity: 2026-02-19 — Phase 3 Plan 01 complete (Flutter bootstrap, Lato fonts, Drift stub)
+Plan: 2 of 5 completed in current phase
+Status: In progress — Plans 01-02 complete, Plans 03-05 pending
+Last activity: 2026-02-18 — Phase 3 Plan 02 complete (dark theme, AppColors, TextTheme)
 
-Progress: [░░░░░░░░░░] ~5%
+Progress: [░░░░░░░░░░] ~10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 9 min
-- Total execution time: 0.15 hours
+- Total plans completed: 2
+- Average duration: 6 min
+- Total execution time: 0.20 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| Phase 03 | 1/5 | 9min | 9min |
+| Phase 03 | 2/5 | 12min | 6min |
 
 **Recent Trend:**
-- Last 5 plans: 9min
-- Trend: baseline
+- Last 5 plans: 9min, 3min
+- Trend: accelerating
 
 *Updated after each plan completion*
 
@@ -48,6 +48,8 @@ Recent decisions affecting current work:
 - [Pre-Phase 1]: iOS Simulator blocked (Metal GPU unavailable); Phase 1 must run on physical iOS device
 - [Phase 03]: flutter_riverpod pinned to 3.1.0 (not 3.2.1): riverpod_generator 4.0.1+ conflicts with flutter_test test_api pin in Flutter 3.38.5 SDK
 - [Phase 03]: synthetic-package removed from l10n.yaml: Flutter 3.38.5 deprecated this option; always generates to source now
+- [Phase 03]: ColorScheme.fromSeed deliberately NOT used in buildDarkTheme: fromSeed generates tonal palette overriding exact brand hex values; manual ColorScheme() constructor used instead
+- [Phase 03]: Error colour (#CF6679) passes WCAG AA only for large text (3.60:1) — acceptable for banners and icon-labels at 18sp+, not used in body copy
 
 ### Pending Todos
 
@@ -61,6 +63,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 03-01-PLAN.md (Flutter project bootstrap, Lato fonts, Drift stub)
-Resume file: .planning/phases/03-app-foundation-and-design-system/03-01-SUMMARY.md
+Last session: 2026-02-18
+Stopped at: Completed 03-02-PLAN.md (dark theme system, WCAG palette, Lato TextTheme)
+Resume file: .planning/phases/03-app-foundation-and-design-system/03-02-SUMMARY.md
