@@ -53,7 +53,12 @@ Plans:
   3. If the device is on cellular, the app presents an explicit warning with the file size before offering to proceed
   4. On every subsequent launch the app verifies the model file via SHA-256 before loading; a corrupted or missing file triggers re-download
   5. After download completes, the model loads in the background and the chat input is disabled with a visible loading indicator until inference is ready
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [x] 02-01-PLAN.md -- Dependencies, platform manifests, model constants, state machine, SHA-256 verifier, and preflight helpers
+- [x] 02-02-PLAN.md -- Download lifecycle notifier and download screen UI with all state renderings
+- [x] 02-03-PLAN.md -- App entry point, routing, model loading overlay with greyscale-to-color transition, and visual verification
 
 ### Phase 3: App Foundation and Design System
 **Goal**: The app shell exists with correct dark theme, Cohere-inspired green palette, localized UI strings, accessible tap targets, legible typography, and error message patterns that all subsequent screens will inherit
@@ -150,9 +155,9 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inference Spike | 5/5 | Complete   | 2026-02-18 |
-| 2. Model Distribution | 0/TBD | Not started | - |
-| 3. App Foundation and Design System | 5/5 | Complete   | 2026-02-18 |
+| 1. Inference Spike | 4/5 | Hardware checkpoint | - |
+| 2. Model Distribution | 3/3 | Complete | 2026-02-19 |
+| 3. App Foundation and Design System | 5/5 | Complete | 2026-02-19 |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
 | 5. Translation UI | 0/TBD | Not started | - |
 | 6. Chat UI | 0/TBD | Not started | - |
