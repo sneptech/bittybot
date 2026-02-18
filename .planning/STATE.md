@@ -34,6 +34,7 @@ Progress: [█░░░░░░░░░] 10%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-inference-spike P02 | 9 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -51,6 +52,9 @@ Recent decisions affecting current work:
 - [01-01]: iOS minimum deployment target set to 14.0 (upgraded from flutter create default of 13.0)
 - [01-01]: Cantonese has explicit Cantonese-forcing instruction and particle validation — separate from Mandarin
 - [01-01]: 70-language corpus: 4 mustHave with 18 prompts each, 66 standard with 3 reference sentences each
+- [Phase 01-inference-spike]: dart:io imported as 'io' prefix, googleai_dart as 'gai' prefix to avoid File class collision
+- [Phase 01-inference-spike]: Model.modelId() string form used for claude-sonnet-4-6 since anthropic_sdk_dart 0.3.1 enum only goes to claude-sonnet-4-5
+- [Phase 01-inference-spike]: Anthropic response content accessed via Dart pattern matching on sealed MessageContent, not .whereType<TextBlock>()
 
 ### Pending Todos
 
