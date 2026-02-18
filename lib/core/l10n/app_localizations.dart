@@ -5,7 +5,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_hi.dart';
+import 'app_localizations_ja.dart';
+import 'app_localizations_ko.dart';
+import 'app_localizations_pt.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,55 +101,150 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('de'),
+    Locale('en'),
+    Locale('es'),
+    Locale('fr'),
+    Locale('hi'),
+    Locale('ja'),
+    Locale('ko'),
+    Locale('pt'),
+    Locale('zh'),
+  ];
 
-  /// Application name
+  /// Application name displayed in app bar and about screen
   ///
   /// In en, this message translates to:
   /// **'BittyBot'**
   String get appName;
 
-  /// Model loading; friendly tone
+  /// Settings screen title and navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// Language selection label in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Label for the error tone preference setting
+  ///
+  /// In en, this message translates to:
+  /// **'Error message style'**
+  String get errorToneLabel;
+
+  /// Option label for friendly/warm error message tone
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly'**
+  String get errorToneFriendly;
+
+  /// Option label for direct/concise error message tone
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get errorToneDirect;
+
+  /// Button label to retry a failed action
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// Button label to cancel an action or dismiss a dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Button label to confirm or acknowledge
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// Toggle label to follow the device system locale
+  ///
+  /// In en, this message translates to:
+  /// **'Use device language'**
+  String get useDeviceLanguage;
+
+  /// Generic loading state indicator text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// Model not yet loaded error; friendly/warm tone
   ///
   /// In en, this message translates to:
   /// **'Hang on — the model is still warming up. This only happens once!'**
   String get modelNotLoadedFriendly;
 
-  /// Model loading; direct tone
+  /// Model not yet loaded error; direct/concise tone
   ///
   /// In en, this message translates to:
   /// **'Model not loaded. Please wait for setup to complete.'**
   String get modelNotLoadedDirect;
 
-  /// Input too long; friendly tone
+  /// Input exceeds max length error; friendly/warm tone
   ///
   /// In en, this message translates to:
   /// **'Oops — that message is a bit too long. Try shortening it a little.'**
   String get inputTooLongFriendly;
 
-  /// Input too long; direct tone
+  /// Input exceeds max length error; direct/concise tone
   ///
   /// In en, this message translates to:
   /// **'Input exceeds maximum length. Shorten your message and try again.'**
   String get inputTooLongDirect;
 
-  /// Inference failure; friendly tone
+  /// Inference or translation failure; friendly/warm tone
   ///
   /// In en, this message translates to:
   /// **'Hmm, something went wrong. Tap to retry.'**
   String get inferenceFailedFriendly;
 
-  /// Inference failure; direct tone
+  /// Inference or translation failure; direct/concise tone
   ///
   /// In en, this message translates to:
   /// **'Translation failed. Please retry.'**
   String get inferenceFailedDirect;
 
-  /// Generic fallback error
+  /// Generic fallback error; friendly/warm tone
   ///
   /// In en, this message translates to:
-  /// **'Something unexpected happened.'**
+  /// **'Something unexpected happened. Give it another try?'**
   String get genericErrorFriendly;
+
+  /// Generic fallback error; direct/concise tone
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred. Please try again.'**
+  String get genericErrorDirect;
+
+  /// Title shown on model loading/setup screen
+  ///
+  /// In en, this message translates to:
+  /// **'Getting ready...'**
+  String get modelLoadingTitle;
+
+  /// Body text shown during first-launch model setup
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up BittyBot for the first time. This only needs to happen once.'**
+  String get modelLoadingMessage;
+
+  /// Error state title on model loading screen
+  ///
+  /// In en, this message translates to:
+  /// **'Setup failed'**
+  String get modelLoadingError;
 }
 
 class _AppLocalizationsDelegate
@@ -153,8 +257,18 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ar',
+    'de',
+    'en',
+    'es',
+    'fr',
+    'hi',
+    'ja',
+    'ko',
+    'pt',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -163,8 +277,26 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'de':
+      return AppLocalizationsDe();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'hi':
+      return AppLocalizationsHi();
+    case 'ja':
+      return AppLocalizationsJa();
+    case 'ko':
+      return AppLocalizationsKo();
+    case 'pt':
+      return AppLocalizationsPt();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(
