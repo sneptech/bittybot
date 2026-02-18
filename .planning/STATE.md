@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 2 of 9 (Model Distribution)
-Plan: 1 of 3 in current phase
-Status: In progress — Plan 01 complete, Plans 02 and 03 remaining
-Last activity: 2026-02-19 — Phase 2 Plan 01 complete (dependencies, platform manifests, foundation types)
+Plan: 2 of 3 in current phase
+Status: In progress — Plans 01 and 02 complete, Plan 03 remaining
+Last activity: 2026-02-18 — Phase 2 Plan 02 complete (ModelDistributionNotifier, download screen UI)
 
-Progress: [█░░░░░░░░░] ~11%
+Progress: [██░░░░░░░░] ~22%
 
 ## Performance Metrics
 
@@ -35,6 +35,7 @@ Progress: [█░░░░░░░░░] ~11%
 
 *Updated after each plan completion*
 | Phase 02 P01 | 6 | 2 tasks | 9 files |
+| Phase 02 P02 | 6 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -50,6 +51,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Used package:convert AccumulatorSink (not dart:convert) for chunked SHA-256 — AccumulatorSink comes from the convert package
 - [Phase 02]: Used flutter/foundation.dart for @immutable on sealed class (avoids direct meta package dependency)
 - [Phase 02]: SHA-256 verification runs in compute() isolate using 64 KB RandomAccessFile chunks — never loads 2.14 GB into RAM
+- [Phase 02 P02]: Used registerCallbacks()+enqueue() instead of download() — download() only provides void Function(double) for progress, not full TaskProgressUpdate with speed/ETA
+- [Phase 02 P02]: Completer<TaskStatusUpdate> bridges registerCallbacks async API into await pattern
+- [Phase 02 P02]: ConsumerStatefulWidget for DownloadScreen tracks _dialogVisible bool to prevent double-showing dialogs on rebuild
 
 ### Pending Todos
 
@@ -63,6 +67,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed 02-01-PLAN.md (dependencies, platform manifests, foundation Dart types)
-Resume file: .planning/phases/02-model-distribution/02-02-PLAN.md
+Last session: 2026-02-18
+Stopped at: Completed 02-02-PLAN.md (ModelDistributionNotifier, download screen UI)
+Resume file: .planning/phases/02-model-distribution/02-03-PLAN.md
