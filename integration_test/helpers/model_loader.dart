@@ -71,17 +71,31 @@ class ModelLoader {
 
     if (!modelFile.existsSync()) {
       if (Platform.isAndroid) {
-        // Attempt to copy from Downloads (convenient for ADB-push workflow).
-        final downloadFile =
-            File('/sdcard/Download/$_modelFilename');
-        if (downloadFile.existsSync()) {
-          await downloadFile.copy(modelFile.path);
+        // Try multiple locations in order of preference.
+        // /data/local/tmp/ is readable by debug apps without storage permissions.
+        // /sdcard/Download/ requires external storage permission (blocked on Android 11+).
+        final searchPaths = [
+          '/data/local/tmp/$_modelFilename',
+          '/sdcard/Download/$_modelFilename',
+        ];
+
+        File? sourceFile;
+        for (final path in searchPaths) {
+          final candidate = File(path);
+          if (candidate.existsSync()) {
+            sourceFile = candidate;
+            break;
+          }
+        }
+
+        if (sourceFile != null) {
+          await sourceFile.copy(modelFile.path);
         } else {
           throw StateError(
             'Model file not found.\n'
             'Expected: ${modelFile.path}\n'
-            'Also checked: ${downloadFile.path}\n'
-            'Run: adb push $_modelFilename /sdcard/Download/',
+            'Also checked: ${searchPaths.join(", ")}\n'
+            'Run: adb push $_modelFilename /data/local/tmp/',
           );
         }
       } else {
