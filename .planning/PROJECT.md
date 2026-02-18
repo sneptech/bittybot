@@ -16,7 +16,7 @@ Translation and conversation must work with zero connectivity. A traveler in a r
 
 ### Active
 
-- [ ] On-device inference of Tiny Aya Global 3.35B with model bundled in app
+- [ ] On-device inference of Tiny Aya Global 3.35B with model downloaded on first launch
 - [ ] Chat interface with text entry and message history (ChatGPT/Claude-style)
 - [ ] Multilingual translation and summarization via the model
 - [ ] Slide-out drawer with previous chat sessions
@@ -47,8 +47,8 @@ Translation and conversation must work with zero connectivity. A traveler in a r
   - License: CC-BY-NC 4.0
   - Strengths: Open-ended generation, low-resource languages, cross-lingual tasks
   - Weaknesses: Chain-of-thought reasoning, factual knowledge gaps
-- **Inference:** Need on-device runtime for Flutter — user has ONNX experience but open to best option (llama.cpp/GGUF also viable)
-- **Model size:** ~1.5-2GB quantized to Q4, bundled with app binary
+- **Inference:** llama.cpp via GGUF format, using llama_cpp_dart or fllama Flutter bindings
+- **Model size:** ~2.14GB quantized to Q4_K_M, downloaded on first launch (not bundled — app store limits)
 - **Primary user:** The developer themselves, traveling internationally
 - **Design reference:** Tiny Aya demo screenshot — dark bg, green border, lime accents, leaf motif
 
@@ -58,17 +58,17 @@ Translation and conversation must work with zero connectivity. A traveler in a r
 - **Offline:** Core translation/chat must work with absolutely zero network connectivity
 - **Model size:** 3.35B params, need aggressive quantization for mobile RAM/storage budgets
 - **License:** CC-BY-NC 4.0 — no commercial use without Cohere agreement
-- **Storage:** Model bundled means large app size (~2GB+), acceptable tradeoff for offline-first
+- **Storage:** Model downloaded on first launch (~2.14GB), stored in app documents directory
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Bundle model with app (not download on first launch) | Guarantees offline from first use, critical for traveler use case | — Pending |
+| Download model on first launch (not bundled) | App store limits (200MB iOS cellular, 150MB Android AAB) make bundling infeasible; offline after first download | ⚠️ Revisit |
 | Flutter/Dart | Cross-platform iOS + Android from single codebase | — Pending |
 | Tiny Aya Global (not base or regional variants) | Best balanced multilingual performance across all 70+ languages | — Pending |
 | Dark theme with Cohere green palette | User preference, inspired by Tiny Aya demo aesthetic | — Pending |
 | Text-only v1, camera OCR in v2 | Reduce scope, nail the core translation chat experience first | — Pending |
 
 ---
-*Last updated: 2026-02-19 after initialization*
+*Last updated: 2026-02-19 after research — model delivery changed from bundle to first-launch download*
