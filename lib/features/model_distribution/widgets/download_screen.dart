@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../model_constants.dart';
 import '../model_distribution_state.dart';
 import '../providers.dart';
 import 'cellular_warning_dialog.dart';
@@ -80,10 +81,10 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
               children: [
                 _buildLogo(),
                 const SizedBox(height: 24),
-                const Text(
-                  'Downloading language model for offline use',
+                Text(
+                  'Downloading language model for offline use (${ModelConstants.fileSizeDisplayGB})',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: _kTextSecondary,
                     fontSize: 14, // 14sp per spec
                   ),
