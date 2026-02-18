@@ -48,9 +48,24 @@ Parallel windows:
 - **Language:** Dart / Flutter
 - **State management:** Riverpod
 - **Local DB:** Drift (SQLite)
-- **Inference:** llama.cpp via Flutter binding (TBD in Phase 1)
+- **Inference:** llama.cpp via llama_cpp_dart ^0.2.2
 - **Testing:** TDD — write tests before implementation
 - **Commits:** Atomic, one logical change per commit
+- **Flutter binary:** `/home/max/Android/flutter/bin/flutter` (not in PATH in Claude Code)
+
+## Dart Patterns
+
+- Import `dart:io` as `io` prefix when `googleai_dart` is also imported (File class collision)
+- Import `googleai_dart` as `gai` prefix to avoid type ambiguity
+- Use `Model.modelId('model-name')` string form when `anthropic_sdk_dart` enum doesn't include newer models
+- Anthropic `MessageContent` is a sealed class — use Dart pattern matching, not `.whereType<>()`
+- Aya chat template: `<|START_OF_TURN_TOKEN|><|USER_TOKEN|>...<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>`
+
+## Build Configuration
+
+- **Android NDK:** pinned to 29.0.14033849 (16KB page alignment, Play Store mandatory May 2026)
+- **iOS:** platform 14.0, Extended Virtual Addressing entitlement, Metal framework, no simulator builds
+- **Model params (spike):** nCtx=512, nBatch=256, nPredict=128 — production will need higher values
 
 ## Learned Patterns (Phase 2)
 
