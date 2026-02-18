@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appName": "BittyBot",
+  "@appName": { "description": "Application name" },
+  "modelNotLoadedFriendly": "Hang on — the model is still warming up. This only happens once!",
+  "@modelNotLoadedFriendly": { "description": "Model loading; friendly tone" },
+  "modelNotLoadedDirect": "Model not loaded. Please wait for setup to complete.",
+  "@modelNotLoadedDirect": { "description": "Model loading; direct tone" },
+  "inputTooLongFriendly": "Oops — that message is a bit too long. Try shortening it a little.",
+  "@inputTooLongFriendly": { "description": "Input too long; friendly tone" },
+  "inputTooLongDirect": "Input exceeds maximum length. Shorten your message and try again.",
+  "@inputTooLongDirect": { "description": "Input too long; direct tone" },
+  "inferenceFailedFriendly": "Hmm, something went wrong. Tap to retry.",
+  "@inferenceFailedFriendly": { "description": "Inference failure; friendly tone" },
+  "inferenceFailedDirect": "Translation failed. Please retry.",
+  "@inferenceFailedDirect": { "description": "Inference failure; direct tone" },
+  "genericErrorFriendly": "Something unexpected happened.",
+  "@genericErrorFriendly": { "description": "Generic fallback error" }
+}

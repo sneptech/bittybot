@@ -1,0 +1,35 @@
+name: bittybot
+description: Fully offline multilingual chat and translation app.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  flutter_riverpod: ^3.1.0
+  riverpod_annotation: ^4.0.0
+  google_fonts: ^8.0.2
+  shared_preferences: ^2.5.4
+  drift: ^2.31.0
+  drift_flutter: ^0.2.8
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  riverpod_generator: ^4.0.0
+  build_runner: ^2.10.5
+  drift_dev: ^2.31.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/google_fonts/
