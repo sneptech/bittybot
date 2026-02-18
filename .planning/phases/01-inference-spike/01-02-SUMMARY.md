@@ -150,3 +150,18 @@ export GOOGLE_GENAI_API_KEY=...
 ---
 *Phase: 01-inference-spike*
 *Completed: 2026-02-18*
+
+## Self-Check: PASSED
+
+All created files verified present:
+- tool/pubspec.yaml: FOUND
+- tool/lib/result_types.dart: FOUND
+- tool/lib/coherence_rubric.dart: FOUND
+- tool/judge_quick.dart: FOUND
+- tool/judge_full.dart: FOUND
+- tool/generate_report.dart: FOUND
+- .planning/phases/01-inference-spike/01-02-SUMMARY.md: FOUND
+
+Task commits verified:
+- da4d682: feat(01-02) judge package — FOUND
+- 7db74be: feat(01-02) report generator — FOUND
