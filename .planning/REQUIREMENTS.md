@@ -14,7 +14,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **MODL-03**: If user is not on Wi-Fi, app offers option to download on cellular with explicit file size warning (~2.14GB)
 - [ ] **MODL-04**: App verifies model integrity via SHA-256 hash on each launch before loading
 - [ ] **MODL-05**: Model loads in background with loading indicator; chat input disabled until ready
-- [ ] **MODL-06**: All inference runs on-device via llama.cpp with zero network dependency after model download
+- [x] **MODL-06**: All inference runs on-device via llama.cpp with zero network dependency after model download
 
 ### Translation
 
@@ -90,7 +90,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MODL-03 | Phase 2 | Pending |
 | MODL-04 | Phase 2 | Pending |
 | MODL-05 | Phase 2 | Pending |
-| MODL-06 | Phase 1 | Pending |
+| MODL-06 | Phase 1 | Complete |
 | TRNS-01 | Phase 5 | Pending |
 | TRNS-02 | Phase 5 | Pending |
 | TRNS-03 | Phase 5 | Pending |
