@@ -12,7 +12,7 @@ BittyBot delivers a fully offline multilingual translation and chat app for trav
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code
+- [x] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code (completed 2026-02-18)
 - [ ] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check
 - [ ] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization
 - [ ] **Phase 4: Core Inference Architecture** - Long-lived Inference Isolate, LLM Service, repository layer, Riverpod notifiers, Drift schema
@@ -143,7 +143,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Inference Spike | 3/5 | In progress | - |
+| 1. Inference Spike | 5/5 | Complete   | 2026-02-18 |
 | 2. Model Distribution | 0/TBD | Not started | - |
 | 3. App Foundation and Design System | 0/TBD | Not started | - |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |

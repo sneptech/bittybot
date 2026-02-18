@@ -60,6 +60,8 @@ Recent decisions affecting current work:
 - [01-03]: nCtx=512, nBatch=256, nPredict=128 for spike — minimal footprint, bounded generation
 - [01-03]: Model file in app documents directory matches Phase 2 download target path
 - [01-03]: Timestamp-bucket streaming verification: tokens spread across >3 distinct 100ms windows detects buffering
+- [Phase 01-inference-spike]: compileSdk=36 and ndkVersion=29.0.14033849 required (plugins need sdk 36; llama_cpp_dart uses NDK 29; NDK 29 maintains 16KB page alignment)
+- [Phase 01-inference-spike]: llama_cpp_dart is NOT a Flutter plugin — libmtmd.so must be pre-built as AAR from android/ directory and bundled manually; not auto-included in flutter build apk output
 
 ### Pending Todos
 
@@ -68,11 +70,22 @@ None yet.
 ### Blockers/Concerns
 
 - **CRITICAL**: Cohere2 architecture support in Flutter llama.cpp plugins is unverified. If neither `llama_cpp_dart` nor `fllama` includes llama.cpp PR #19611, the project approach must change before any production code is written. Phase 1 resolves this.
+- **BLOCKER (01-05)**: `libmtmd.so` (llama_cpp_dart native library for Android) is NOT auto-bundled in the APK. Must be pre-built as an AAR from `~/.pub-cache/hosted/pub.dev/llama_cpp_dart-0.2.2/android/` and added to the project before Android integration tests can run.
 - **RISK**: iOS memory pressure on 4 GB devices (iPhone 12/13 base) with a 2.14 GB model. Phase 1 spike on physical iPhone 12 will surface this.
 - **RISK**: Android Play Asset Delivery — whether Google Play will accept a first-launch download of 2 GB vs. requiring PAD integration. Phase 2 addresses this.
 
+## Verification
+
+- **2026-02-19:** Verification chain run on Phase 1 (plans 01-04)
+  - Scope check: PASS (no scope creep)
+  - Change summary: documented
+  - UAT: 8/8 tests pass
+  - CLAUDE.md: updated with Phase 1 learnings
+  - Report: `.planning/phases/01-inference-spike/VERIFICATION-CHAIN-P01.md`
+  - Verdict: Code work PASS — awaiting Plan 05 (on-device hardware)
+
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 01-03-PLAN.md (Plan 3 of 5, Phase 1)
-Resume file: .planning/phases/01-inference-spike/01-04-PLAN.md
+Last session: 2026-02-19
+Stopped at: Partial 01-05 execution — Android build config fixed, 16KB alignment verified for Flutter libs. Stopped at Task 2 checkpoint:human-verify (iOS physical device required). libmtmd.so AAR build required before Android testing.
+Resume file: .planning/phases/01-inference-spike/01-05-PLAN.md
