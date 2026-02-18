@@ -37,6 +37,7 @@ dependencies:
   llama_cpp_dart: ^0.2.2
   background_downloader: ^9.5.2
   connectivity_plus: ^7.0.0
+  convert: ^3.1.2
   crypto: ^3.0.7
   disk_space_plus: ^0.2.6
   flutter_riverpod: ^3.2.1
