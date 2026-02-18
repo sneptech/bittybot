@@ -45,7 +45,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **UIUX-03**: App UI language matches device locale
 - [x] **UIUX-04**: Tap targets are minimum 48x48dp (Android) / 44pt (iOS)
 - [x] **UIUX-05**: Body text is minimum 16sp for legibility in travel scenarios
-- [ ] **UIUX-06**: Clear error messages when model is not loaded, input is too long, or inference fails
+- [x] **UIUX-06**: Clear error messages when model is not loaded, input is too long, or inference fails
 
 ## v2 Requirements
 
@@ -109,7 +109,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UIUX-03 | Phase 3 | Complete |
 | UIUX-04 | Phase 3 | Complete |
 | UIUX-05 | Phase 3 | Complete |
-| UIUX-06 | Phase 3 | Pending |
+| UIUX-06 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 25 total
