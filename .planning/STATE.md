@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 3 of 9 (App Foundation and Design System)
-Plan: 2 of 5 completed in current phase
-Status: In progress — Plans 01-02 complete, Plans 03-05 pending
-Last activity: 2026-02-18 — Phase 3 Plan 02 complete (dark theme, AppColors, TextTheme)
+Plan: 3 of 5 completed in current phase
+Status: In progress — Plans 01-03 complete, Plans 04-05 pending
+Last activity: 2026-02-18 — Phase 3 Plan 03 complete (10-language ARB files, AppLocalizations)
 
 Progress: [░░░░░░░░░░] ~10%
 
@@ -34,6 +34,7 @@ Progress: [░░░░░░░░░░] ~10%
 - Trend: accelerating
 
 *Updated after each plan completion*
+| Phase 03 P03 | 24 | 2 tasks | 21 files |
 
 ## Accumulated Context
 
@@ -50,6 +51,8 @@ Recent decisions affecting current work:
 - [Phase 03]: synthetic-package removed from l10n.yaml: Flutter 3.38.5 deprecated this option; always generates to source now
 - [Phase 03]: ColorScheme.fromSeed deliberately NOT used in buildDarkTheme: fromSeed generates tonal palette overriding exact brand hex values; manual ColorScheme() constructor used instead
 - [Phase 03]: Error colour (#CF6679) passes WCAG AA only for large text (3.60:1) — acceptable for banners and icon-labels at 18sp+, not used in body copy
+- [Phase 03]: English ARB expanded from 8-key stub (Plan 01) to 22-key template with full @ metadata for all settings UI labels and model loading strings
+- [Phase 03]: Flutter installed at /home/max/Android/flutter/bin/flutter (not on PATH); use absolute path for all flutter commands in this worktree
 
 ### Pending Todos
 
@@ -64,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 03-02-PLAN.md (dark theme system, WCAG palette, Lato TextTheme)
-Resume file: .planning/phases/03-app-foundation-and-design-system/03-02-SUMMARY.md
+Stopped at: Completed 03-03-PLAN.md (10-language ARB files, AppLocalizations generated)
+Resume file: .planning/phases/03-app-foundation-and-design-system/03-03-SUMMARY.md

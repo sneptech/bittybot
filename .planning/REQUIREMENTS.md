@@ -40,11 +40,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### UI/UX
 
-- [ ] **UIUX-01**: Dark theme with Cohere-inspired green palette (forest green borders, lime/yellow-green accents on dark background)
+- [x] **UIUX-01**: Dark theme with Cohere-inspired green palette (forest green borders, lime/yellow-green accents on dark background)
 - [x] **UIUX-02**: Clean, minimal visual style inspired by Tiny Aya demo aesthetic
-- [ ] **UIUX-03**: App UI language matches device locale
-- [ ] **UIUX-04**: Tap targets are minimum 48x48dp (Android) / 44pt (iOS)
-- [ ] **UIUX-05**: Body text is minimum 16sp for legibility in travel scenarios
+- [x] **UIUX-03**: App UI language matches device locale
+- [x] **UIUX-04**: Tap targets are minimum 48x48dp (Android) / 44pt (iOS)
+- [x] **UIUX-05**: Body text is minimum 16sp for legibility in travel scenarios
 - [ ] **UIUX-06**: Clear error messages when model is not loaded, input is too long, or inference fails
 
 ## v2 Requirements
@@ -104,11 +104,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-06 | Phase 8 | Pending |
 | WEBS-01 | Phase 9 | Pending |
 | WEBS-02 | Phase 9 | Pending |
-| UIUX-01 | Phase 3 | Pending |
+| UIUX-01 | Phase 3 | Complete |
 | UIUX-02 | Phase 3 | Complete |
-| UIUX-03 | Phase 3 | Pending |
-| UIUX-04 | Phase 3 | Pending |
-| UIUX-05 | Phase 3 | Pending |
+| UIUX-03 | Phase 3 | Complete |
+| UIUX-04 | Phase 3 | Complete |
+| UIUX-05 | Phase 3 | Complete |
 | UIUX-06 | Phase 3 | Pending |
 
 **Coverage:**
