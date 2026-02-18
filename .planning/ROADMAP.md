@@ -13,7 +13,7 @@ BittyBot delivers a fully offline multilingual translation and chat app for trav
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code (completed 2026-02-18)
-- [ ] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check
+- [x] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check (completed 2026-02-19)
 - [x] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization (completed 2026-02-18)
 - [ ] **Phase 4: Core Inference Architecture** - Long-lived Inference Isolate, LLM Service, repository layer, Riverpod notifiers, Drift schema
 - [ ] **Phase 5: Translation UI** - Translation screen with language selector (70+ languages), swap, copy, streaming output, language persistence
