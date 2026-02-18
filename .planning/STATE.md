@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 1 of 9 (Inference Spike)
-Plan: 1 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: Executing plans
-Last activity: 2026-02-18 — Completed Plan 01: Flutter project bootstrap and 70-language corpus
+Last activity: 2026-02-18 — Completed Plan 03: TDD spike integration tests (model load + token streaming)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
@@ -30,11 +30,12 @@ Progress: [█░░░░░░░░░] 10%
 | Phase 1 | 1 | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8 min)
-- Trend: —
+- Last 5 plans: 01-01 (8 min), 01-02 (9 min), 01-03 (3 min)
+- Trend: Improving
 
 *Updated after each plan completion*
 | Phase 01-inference-spike P02 | 9 | 2 tasks | 7 files |
+| Phase 01-inference-spike P03 | 3 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,10 @@ Recent decisions affecting current work:
 - [Phase 01-inference-spike]: dart:io imported as 'io' prefix, googleai_dart as 'gai' prefix to avoid File class collision
 - [Phase 01-inference-spike]: Model.modelId() string form used for claude-sonnet-4-6 since anthropic_sdk_dart 0.3.1 enum only goes to claude-sonnet-4-5
 - [Phase 01-inference-spike]: Anthropic response content accessed via Dart pattern matching on sealed MessageContent, not .whereType<TextBlock>()
+- [01-03]: ModelLoader.loadModel() catches LlamaException broadly — any llama.cpp load failure treated as go/no-go architecture signal
+- [01-03]: nCtx=512, nBatch=256, nPredict=128 for spike — minimal footprint, bounded generation
+- [01-03]: Model file in app documents directory matches Phase 2 download target path
+- [01-03]: Timestamp-bucket streaming verification: tokens spread across >3 distinct 100ms windows detects buffering
 
 ### Pending Todos
 
@@ -69,5 +74,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed 01-01-PLAN.md (Plan 1 of 5, Phase 1)
-Resume file: .planning/phases/01-inference-spike/01-02-PLAN.md
+Stopped at: Completed 01-03-PLAN.md (Plan 3 of 5, Phase 1)
+Resume file: .planning/phases/01-inference-spike/01-04-PLAN.md
