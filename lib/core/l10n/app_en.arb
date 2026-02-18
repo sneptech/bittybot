@@ -1,0 +1,69 @@
+{
+  "@@locale": "en",
+
+  "appName": "BittyBot",
+  "@appName": { "description": "Application name displayed in app bar and about screen" },
+
+  "settings": "Settings",
+  "@settings": { "description": "Settings screen title and navigation label" },
+
+  "language": "Language",
+  "@language": { "description": "Language selection label in settings" },
+
+  "errorToneLabel": "Error message style",
+  "@errorToneLabel": { "description": "Label for the error tone preference setting" },
+
+  "errorToneFriendly": "Friendly",
+  "@errorToneFriendly": { "description": "Option label for friendly/warm error message tone" },
+
+  "errorToneDirect": "Direct",
+  "@errorToneDirect": { "description": "Option label for direct/concise error message tone" },
+
+  "retry": "Retry",
+  "@retry": { "description": "Button label to retry a failed action" },
+
+  "cancel": "Cancel",
+  "@cancel": { "description": "Button label to cancel an action or dismiss a dialog" },
+
+  "ok": "OK",
+  "@ok": { "description": "Button label to confirm or acknowledge" },
+
+  "useDeviceLanguage": "Use device language",
+  "@useDeviceLanguage": { "description": "Toggle label to follow the device system locale" },
+
+  "loading": "Loading...",
+  "@loading": { "description": "Generic loading state indicator text" },
+
+  "modelNotLoadedFriendly": "Hang on — the model is still warming up. This only happens once!",
+  "@modelNotLoadedFriendly": { "description": "Model not yet loaded error; friendly/warm tone" },
+
+  "modelNotLoadedDirect": "Model not loaded. Please wait for setup to complete.",
+  "@modelNotLoadedDirect": { "description": "Model not yet loaded error; direct/concise tone" },
+
+  "inputTooLongFriendly": "Oops — that message is a bit too long. Try shortening it a little.",
+  "@inputTooLongFriendly": { "description": "Input exceeds max length error; friendly/warm tone" },
+
+  "inputTooLongDirect": "Input exceeds maximum length. Shorten your message and try again.",
+  "@inputTooLongDirect": { "description": "Input exceeds max length error; direct/concise tone" },
+
+  "inferenceFailedFriendly": "Hmm, something went wrong. Tap to retry.",
+  "@inferenceFailedFriendly": { "description": "Inference or translation failure; friendly/warm tone" },
+
+  "inferenceFailedDirect": "Translation failed. Please retry.",
+  "@inferenceFailedDirect": { "description": "Inference or translation failure; direct/concise tone" },
+
+  "genericErrorFriendly": "Something unexpected happened. Give it another try?",
+  "@genericErrorFriendly": { "description": "Generic fallback error; friendly/warm tone" },
+
+  "genericErrorDirect": "An error occurred. Please try again.",
+  "@genericErrorDirect": { "description": "Generic fallback error; direct/concise tone" },
+
+  "modelLoadingTitle": "Getting ready...",
+  "@modelLoadingTitle": { "description": "Title shown on model loading/setup screen" },
+
+  "modelLoadingMessage": "Setting up BittyBot for the first time. This only needs to happen once.",
+  "@modelLoadingMessage": { "description": "Body text shown during first-launch model setup" },
+
+  "modelLoadingError": "Setup failed",
+  "@modelLoadingError": { "description": "Error state title on model loading screen" }
+}

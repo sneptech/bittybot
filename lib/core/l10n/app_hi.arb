@@ -1,0 +1,26 @@
+{
+  "@@locale": "hi",
+
+  "appName": "BittyBot",
+  "settings": "सेटिंग्स",
+  "language": "भाषा",
+  "errorToneLabel": "त्रुटि संदेश शैली",
+  "errorToneFriendly": "मित्रवत",
+  "errorToneDirect": "सीधा",
+  "retry": "पुनः प्रयास",
+  "cancel": "रद्द करें",
+  "ok": "ठीक है",
+  "useDeviceLanguage": "डिवाइस की भाषा उपयोग करें",
+  "loading": "लोड हो रहा है...",
+  "modelNotLoadedFriendly": "थोड़ा इंतज़ार करें — मॉडल अभी तैयार हो रहा है। ऐसा सिर्फ एक बार होता है!",
+  "modelNotLoadedDirect": "मॉडल लोड नहीं हुआ। कृपया सेटअप पूरा होने तक प्रतीक्षा करें।",
+  "inputTooLongFriendly": "अरे — वह संदेश थोड़ा बहुत लंबा है। ज़रा छोटा करके देखें।",
+  "inputTooLongDirect": "इनपुट अधिकतम लंबाई से अधिक है। संदेश छोटा करें और पुनः प्रयास करें।",
+  "inferenceFailedFriendly": "हम्म, कुछ गड़बड़ हो गई। पुनः प्रयास के लिए टैप करें।",
+  "inferenceFailedDirect": "अनुवाद विफल हुआ। कृपया पुनः प्रयास करें।",
+  "genericErrorFriendly": "कुछ अप्रत्याशित हो गया। फिर से कोशिश करें?",
+  "genericErrorDirect": "एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
+  "modelLoadingTitle": "तैयार हो रहा है...",
+  "modelLoadingMessage": "पहली बार BittyBot सेट हो रहा है। यह केवल एक बार करना होता है।",
+  "modelLoadingError": "सेटअप विफल हुआ"
+}

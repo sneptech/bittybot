@@ -1,146 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'features/model_distribution/model_distribution_state.dart';
-import 'features/model_distribution/providers.dart';
-import 'features/model_distribution/widgets/download_screen.dart';
-import 'features/model_distribution/widgets/model_loading_overlay.dart';
+import 'core/l10n/app_localizations.dart';
+import 'core/theme/app_theme.dart';
+import 'features/settings/application/settings_provider.dart';
+import 'widgets/app_startup_widget.dart';
+import 'widgets/main_shell.dart';
 
-// ─── Placeholder colours ──────────────────────────────────────────────────────
-
-/// Dark background matching the download screen.
-const _kBackground = Color(0xFF121212); // TODO(phase-3): Replace with design system color
-
-// ─── App root ─────────────────────────────────────────────────────────────────
-
-/// Root application widget.
+/// Root of the BittyBot widget tree.
 ///
-/// Wraps everything in [MaterialApp] and delegates routing to [_AppRouter].
-/// Phase 3 (App Foundation) will replace the theme and may add GoRouter.
+/// Responsibilities:
+/// - Provides the dark green [ThemeData] via [buildDarkTheme].
+/// - Forces [ThemeMode.dark] — no light theme variant.
+/// - Wires [AppLocalizations] delegates and supported locales.
+/// - Reads [settingsProvider] to apply the user's locale override (null = device default).
+/// - Hosts [AppStartupWidget] as the entry-point screen, which gates the UI
+///   behind the startup initialisation sequence.
 class BittyBotApp extends ConsumerWidget {
   const BittyBotApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Read settings without watching startup dependencies — we only want the
+    // locale override, and [settingsProvider] is keepAlive so it is always
+    // available after first load. Use .value (not .valueOrNull — see STATE.md)
+    // to access the current data nullable on AsyncValue in Riverpod 3.1.0.
+    final settingsAsync = ref.watch(settingsProvider);
+    final localeOverride = settingsAsync.value?.localeOverride;
+
     return MaterialApp(
-      title: 'BittyBot',
-      debugShowCheckedModeBanner: false,
-      // TODO(phase-3): Replace with design system theme
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: _kBackground,
-      ),
-      home: const _AppRouter(),
-    );
-  }
-}
+      // -----------------------------------------------------------------------
+      // Theme
+      // -----------------------------------------------------------------------
+      theme: buildDarkTheme(),
+      // Force dark mode — BittyBot is dark-only; no light theme variant.
+      themeMode: ThemeMode.dark,
 
-// ─── App router ───────────────────────────────────────────────────────────────
+      // -----------------------------------------------------------------------
+      // Localisation
+      // -----------------------------------------------------------------------
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
 
-/// Routes between [DownloadScreen] and the main app screen based on model state.
-///
-/// On app start, calls [ModelDistributionNotifier.initialize] via a
-/// post-frame callback so the first [build] sees [CheckingModelState].
-///
-/// Routing rules:
-/// - [LoadingModelState] or [ModelReadyState]: show main app screen
-/// - Any other state: show [DownloadScreen]
-class _AppRouter extends ConsumerStatefulWidget {
-  const _AppRouter();
+      // null = follow device locale; non-null overrides the device default.
+      locale: localeOverride,
 
-  @override
-  ConsumerState<_AppRouter> createState() => _AppRouterState();
-}
+      // Locale resolution: exact match → language-code match → English fallback.
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        if (deviceLocale == null) return const Locale('en');
 
-class _AppRouterState extends ConsumerState<_AppRouter> {
-  @override
-  void initState() {
-    super.initState();
-    // Initialize after first frame so the notifier's build() has already run
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(modelDistributionProvider.notifier).initialize();
-    });
-  }
+        // 1. Exact match (language + country)
+        for (final supported in supportedLocales) {
+          if (supported == deviceLocale) return supported;
+        }
 
-  @override
-  Widget build(BuildContext context) {
-    final modelState = ref.watch(modelDistributionProvider);
+        // 2. Language-code match (ignore country/script)
+        for (final supported in supportedLocales) {
+          if (supported.languageCode == deviceLocale.languageCode) {
+            return supported;
+          }
+        }
 
-    // Show the main app screen once model is verified and loading (or ready).
-    // Any download-related state shows the download screen instead.
-    final showMainScreen =
-        modelState is LoadingModelState || modelState is ModelReadyState;
+        // 3. English fallback
+        return const Locale('en');
+      },
 
-    if (showMainScreen) {
-      return const _MainAppScreen();
-    }
-    return const DownloadScreen();
-  }
-}
-
-// ─── Main app screen (placeholder) ───────────────────────────────────────────
-
-/// Placeholder main app screen for Phase 2.
-///
-/// Renders [ModelLoadingOverlay] on top of a minimal scaffold so the
-/// greyscale-to-color logo transition and disabled text field are visible.
-///
-/// Phase 3 (App Foundation) and Phase 6 (Chat UI) will replace this with the
-/// real app structure. For now the body exists only to give the overlay
-/// something to overlay.
-class _MainAppScreen extends ConsumerWidget {
-  const _MainAppScreen();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isReady = ref.watch(modelDistributionProvider) is ModelReadyState;
-
-    return ModelLoadingOverlay(
-      child: Scaffold(
-        backgroundColor: _kBackground,
-        appBar: AppBar(
-          backgroundColor: _kBackground,
-          title: const Text(
-            'BittyBot',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    // TODO(phase-6): Replace with real chat message list
-                    'Chat messages will appear here',
-                    style: TextStyle(color: Colors.white54),
-                  ),
-                ),
-              ),
-              // Text input — disabled until model is ready
-              TextField(
-                enabled: isReady,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  // TODO(phase-6): Refine placeholder text and styling
-                  hintText: isReady ? 'Type a message...' : 'Loading model...',
-                  hintStyle: const TextStyle(color: Colors.white38),
-                  filled: true,
-                  fillColor: const Color(0xFF1E1E1E),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
+      // -----------------------------------------------------------------------
+      // Home
+      // -----------------------------------------------------------------------
+      home: AppStartupWidget(
+        onLoaded: (_) => const MainShell(),
       ),
     );
   }

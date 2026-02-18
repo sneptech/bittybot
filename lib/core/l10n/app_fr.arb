@@ -1,0 +1,26 @@
+{
+  "@@locale": "fr",
+
+  "appName": "BittyBot",
+  "settings": "Paramètres",
+  "language": "Langue",
+  "errorToneLabel": "Style des messages d'erreur",
+  "errorToneFriendly": "Convivial",
+  "errorToneDirect": "Direct",
+  "retry": "Réessayer",
+  "cancel": "Annuler",
+  "ok": "OK",
+  "useDeviceLanguage": "Utiliser la langue du téléphone",
+  "loading": "Chargement...",
+  "modelNotLoadedFriendly": "Patience — le modèle est encore en train de démarrer. Ça n'arrive qu'une fois !",
+  "modelNotLoadedDirect": "Modèle non chargé. Veuillez attendre la fin de la configuration.",
+  "inputTooLongFriendly": "Oups — ce message est un peu trop long. Essaie de le raccourcir un peu.",
+  "inputTooLongDirect": "La saisie dépasse la longueur maximale. Raccourcissez votre message et réessayez.",
+  "inferenceFailedFriendly": "Hmm, quelque chose s'est mal passé. Appuie pour réessayer.",
+  "inferenceFailedDirect": "La traduction a échoué. Veuillez réessayer.",
+  "genericErrorFriendly": "Quelque chose d'inattendu s'est produit. Tu veux réessayer ?",
+  "genericErrorDirect": "Une erreur est survenue. Veuillez réessayer.",
+  "modelLoadingTitle": "Préparation en cours...",
+  "modelLoadingMessage": "Configuration de BittyBot pour la première fois. Cela n'a besoin de se faire qu'une seule fois.",
+  "modelLoadingError": "Échec de la configuration"
+}

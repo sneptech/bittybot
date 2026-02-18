@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code (completed 2026-02-18)
 - [ ] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check
-- [ ] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization
+- [x] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization (completed 2026-02-18)
 - [ ] **Phase 4: Core Inference Architecture** - Long-lived Inference Isolate, LLM Service, repository layer, Riverpod notifiers, Drift schema
 - [ ] **Phase 5: Translation UI** - Translation screen with language selector (70+ languages), swap, copy, streaming output, language persistence
 - [ ] **Phase 6: Chat UI** - Multi-turn chat screen with token streaming, optimistic display, stop button, typing indicator
@@ -65,7 +65,14 @@ Plans:
   3. Every interactive element (button, tap target) measures at least 48x48dp on Android and 44pt on iOS when inspected with the accessibility inspector
   4. Body text renders at minimum 16sp and remains legible on both a bright outdoor screen and a dark environment
   5. When the model is not loaded, the input is too long, or inference fails, a clear human-readable error message appears (not a stack trace or empty state)
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 03-01-PLAN.md -- Flutter project bootstrap, dependencies, Lato fonts, Drift DB stub
+- [ ] 03-02-PLAN.md -- Dark theme system (WCAG-validated palette, Lato typography, tap targets)
+- [ ] 03-03-PLAN.md -- Localization (10 language ARB files, codegen)
+- [ ] 03-04-PLAN.md -- Settings persistence (locale override, error tone) and error message resolver
+- [ ] 03-05-PLAN.md -- App shell wiring, startup widget, unit tests, visual verification
 
 ### Phase 4: Core Inference Architecture
 **Goal**: The production inference layer is built — long-lived Dart Isolate owning the llama.cpp context, LLM Service managing isolate lifecycle, InferenceRepository interface, ChatNotifier and TranslationNotifier, PromptBuilder with Aya chat template, and Drift DB schema — so all UI phases can wire up to a stable, non-blocking inference pipeline
@@ -145,7 +152,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 |-------|----------------|--------|-----------|
 | 1. Inference Spike | 5/5 | Complete   | 2026-02-18 |
 | 2. Model Distribution | 0/TBD | Not started | - |
-| 3. App Foundation and Design System | 0/TBD | Not started | - |
+| 3. App Foundation and Design System | 5/5 | Complete   | 2026-02-18 |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
 | 5. Translation UI | 0/TBD | Not started | - |
 | 6. Chat UI | 0/TBD | Not started | - |

@@ -1,0 +1,26 @@
+{
+  "@@locale": "ja",
+
+  "appName": "BittyBot",
+  "settings": "設定",
+  "language": "言語",
+  "errorToneLabel": "エラーメッセージのスタイル",
+  "errorToneFriendly": "やさしい",
+  "errorToneDirect": "シンプル",
+  "retry": "再試行",
+  "cancel": "キャンセル",
+  "ok": "OK",
+  "useDeviceLanguage": "端末の言語を使用",
+  "loading": "読み込み中...",
+  "modelNotLoadedFriendly": "少々お待ちください——モデルがまだ準備中です。これは一度だけ起こります！",
+  "modelNotLoadedDirect": "モデルが読み込まれていません。セットアップが完了するまでお待ちください。",
+  "inputTooLongFriendly": "おっと——そのメッセージは少し長すぎます。短くしてみてください。",
+  "inputTooLongDirect": "入力が最大文字数を超えています。メッセージを短くして再試行してください。",
+  "inferenceFailedFriendly": "うーん、何か問題が発生しました。タップして再試行してください。",
+  "inferenceFailedDirect": "翻訳に失敗しました。再試行してください。",
+  "genericErrorFriendly": "予期しないことが起きました。もう一度試してみますか？",
+  "genericErrorDirect": "エラーが発生しました。もう一度お試しください。",
+  "modelLoadingTitle": "準備中...",
+  "modelLoadingMessage": "BittyBotを初めてセットアップしています。これは一度だけ必要です。",
+  "modelLoadingError": "セットアップに失敗しました"
+}
