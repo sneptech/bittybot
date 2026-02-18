@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Inference Spike** - Validate Cohere2/llama.cpp on real hardware; confirm the stack before writing production code
 - [ ] **Phase 2: Model Distribution** - First-launch download flow with progress, resume, Wi-Fi gate, and SHA-256 integrity check
-- [ ] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization
+- [x] **Phase 3: App Foundation and Design System** - Flutter project scaffold, dark theme, Cohere green palette, accessibility baseline, localization (completed 2026-02-18)
 - [ ] **Phase 4: Core Inference Architecture** - Long-lived Inference Isolate, LLM Service, repository layer, Riverpod notifiers, Drift schema
 - [ ] **Phase 5: Translation UI** - Translation screen with language selector (70+ languages), swap, copy, streaming output, language persistence
 - [ ] **Phase 6: Chat UI** - Multi-turn chat screen with token streaming, optimistic display, stop button, typing indicator
@@ -152,7 +152,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 |-------|----------------|--------|-----------|
 | 1. Inference Spike | 0/5 | Planned | - |
 | 2. Model Distribution | 0/TBD | Not started | - |
-| 3. App Foundation and Design System | 4/5 | In Progress|  |
+| 3. App Foundation and Design System | 5/5 | Complete   | 2026-02-18 |
 | 4. Core Inference Architecture | 0/TBD | Not started | - |
 | 5. Translation UI | 0/TBD | Not started | - |
 | 6. Chat UI | 0/TBD | Not started | - |

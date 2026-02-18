@@ -10,32 +10,33 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 3 of 9 (App Foundation and Design System)
-Plan: 4 of 5 completed in current phase
-Status: In progress — Plans 01-04 complete, Plan 05 pending
-Last activity: 2026-02-18 — Phase 3 Plan 04 complete (SettingsProvider, ErrorTone, error message resolver)
+Plan: 5 of 5 completed in current phase
+Status: Phase 3 complete — all 5 plans executed
+Last activity: 2026-02-18 — Phase 3 Plan 05 complete (App wiring: main.dart, BittyBotApp, AppStartupWidget, loading/error screens, MainShell, unit tests)
 
 Progress: [░░░░░░░░░░] ~10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 6 min
-- Total execution time: 0.20 hours
+- Total plans completed: 5
+- Average duration: ~8 min
+- Total execution time: ~0.67 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| Phase 03 | 2/5 | 12min | 6min |
+| Phase 03 | 5/5 | ~40min | ~8min |
 
 **Recent Trend:**
-- Last 5 plans: 9min, 3min
-- Trend: accelerating
+- Last 5 plans: 9min, 3min, 24min, 4min, 6min
+- Trend: stable
 
 *Updated after each plan completion*
 | Phase 03 P03 | 24 | 2 tasks | 21 files |
 | Phase 03 P04 | 4 | 2 tasks | 4 files |
+| Phase 03 P05 | 6 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -57,6 +58,9 @@ Recent decisions affecting current work:
 - [Phase 03]: AsyncValue.value not .valueOrNull for Riverpod 3.1.0 — valueOrNull does not exist on AsyncValue in this version
 - [Phase 03]: resolveErrorMessage uses Dart 3 record pattern switch (AppError, ErrorTone) — compiler catches missing combinations at analysis time
 - [Phase 03]: Locale persisted as languageCode string only (e.g., 'ar') — sufficient for 10 supported locales
+- [Phase 03]: TestWidgetsFlutterBinding.ensureInitialized() required in setUpAll for non-widget tests using google_fonts (buildDarkTheme touches ServicesBinding)
+- [Phase 03]: appStartupProvider is a functional @Riverpod(keepAlive: true) Future<void> — Phase 4 extends by adding modelReadyProvider await
+- [Phase 03]: All widget padding uses EdgeInsetsDirectional (not EdgeInsets) — established as RTL-ready pattern for all new widgets
 
 ### Pending Todos
 
@@ -70,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Stopped at: Completed 03-04-PLAN.md (SettingsProvider with SharedPreferencesWithCache, error message resolver)
+Last session: 2026-02-19
+Stopped at: Completed 03-05-PLAN.md (app wiring: main.dart, BittyBotApp, AppStartupWidget, loading/error screens, 19 unit tests)
 Resume file: .planning/phases/03-app-foundation-and-design-system/03-04-SUMMARY.md
