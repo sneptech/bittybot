@@ -1,16 +1,38 @@
-# bittybot
+<p align="center">
+  <img src="assets/icon.png" width="128" height="128" alt="BittyBot icon">
+</p>
 
-A new Flutter project.
+<h1 align="center">BittyBot</h1>
 
-## Getting Started
+<p align="center">
+  Offline multilingual chat and translation for travelers
+</p>
 
-This project is a starting point for a Flutter application.
+> **Work in progress** — BittyBot is under active development and not yet ready for general use.
 
-A few resources to get you started if this is your first Flutter project:
+## What is BittyBot?
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+BittyBot is a mobile chat and translation app that runs entirely on your device with no internet required. It's built for travelers who need to communicate across languages in places with limited or no connectivity — reading signs, talking to locals, translating menus, or summarizing foreign-language content.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The app runs [Cohere's Tiny Aya Global 3.35B](https://huggingface.co/CohereLabs/tiny-aya-global) language model on-device via [llama.cpp](https://github.com/ggml-org/llama.cpp), supporting 70+ languages including low-resource ones that major translation apps often handle poorly.
+
+## Features (planned)
+
+- **Fully offline** — the model downloads once on first launch (~2 GB), then everything works without internet
+- **70+ languages** — broad multilingual support including Arabic, Hindi, Japanese, Korean, and many more
+- **Chat interface** — familiar ChatGPT-style conversation UI
+- **Translation and summarization** — paste foreign text and get useful responses
+- **Chat history** — persistent local storage with configurable auto-clear
+- **Web search mode** — paste a URL to translate/summarize a webpage (when online)
+- **Privacy-first** — no accounts, no cloud sync, no data leaves your device
+
+## Tech stack
+
+- **Flutter** (iOS and Android from a single codebase)
+- **llama.cpp** for on-device inference
+- **Riverpod** for state management
+- **Drift** (SQLite) for local storage
+
+## License
+
+The app code is open source. The Tiny Aya Global model is licensed under [CC-BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) by Cohere.
