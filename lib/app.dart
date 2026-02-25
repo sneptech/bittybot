@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
 import 'features/settings/application/settings_provider.dart';
-import 'widgets/app_startup_widget.dart';
-import 'widgets/main_shell.dart';
+import 'widgets/model_gate_widget.dart';
 
 /// Root of the BittyBot widget tree.
 ///
@@ -15,8 +14,9 @@ import 'widgets/main_shell.dart';
 /// - Forces [ThemeMode.dark] — no light theme variant.
 /// - Wires [AppLocalizations] delegates and supported locales.
 /// - Reads [settingsProvider] to apply the user's locale override (null = device default).
-/// - Hosts [AppStartupWidget] as the entry-point screen, which gates the UI
-///   behind the startup initialisation sequence.
+/// - Hosts [ModelGateWidget] as the entry-point screen, which gates on model
+///   availability (showing [DownloadScreen] on first launch) before handing
+///   off to [AppStartupWidget] and [MainShell].
 class BittyBotApp extends ConsumerWidget {
   const BittyBotApp({super.key});
 
@@ -72,9 +72,7 @@ class BittyBotApp extends ConsumerWidget {
       // -----------------------------------------------------------------------
       // Home
       // -----------------------------------------------------------------------
-      home: AppStartupWidget(
-        onLoaded: (_) => const MainShell(),
-      ),
+      home: const ModelGateWidget(),
     );
   }
 }
