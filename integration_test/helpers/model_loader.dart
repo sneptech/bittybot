@@ -61,54 +61,55 @@ class ModelLoader {
 
   /// Resolves the GGUF file path on the current platform.
   ///
-  /// Checks the app's documents directory first.  On Android it additionally
-  /// looks in /sdcard/Download and copies the file across on first run.
+  /// On Android, loads directly from the first found location without copying.
+  /// Copying 2+ GB wastes storage and time, and the copy to app documents can
+  /// fail silently on some devices.
   Future<String> _resolveModelPath() async {
     if (_modelPath != null) return _modelPath!;
 
-    final dir = await getApplicationDocumentsDirectory();
-    final modelFile = File('${dir.path}/$_modelFilename');
+    if (Platform.isAndroid) {
+      // Search paths in order of preference. Load directly — no copy.
+      // /data/local/tmp/ is readable by debug apps without storage permissions.
+      // /sdcard/Download/ requires external storage permission (blocked on Android 11+).
+      final searchPaths = [
+        '/data/local/tmp/$_modelFilename',
+        '/sdcard/Download/$_modelFilename',
+      ];
 
-    if (!modelFile.existsSync()) {
-      if (Platform.isAndroid) {
-        // Try multiple locations in order of preference.
-        // /data/local/tmp/ is readable by debug apps without storage permissions.
-        // /sdcard/Download/ requires external storage permission (blocked on Android 11+).
-        final searchPaths = [
-          '/data/local/tmp/$_modelFilename',
-          '/sdcard/Download/$_modelFilename',
-        ];
-
-        File? sourceFile;
-        for (final path in searchPaths) {
-          final candidate = File(path);
-          if (candidate.existsSync()) {
-            sourceFile = candidate;
-            break;
-          }
+      for (final path in searchPaths) {
+        if (File(path).existsSync()) {
+          _modelPath = path;
+          return _modelPath!;
         }
+      }
 
-        if (sourceFile != null) {
-          await sourceFile.copy(modelFile.path);
-        } else {
-          throw StateError(
-            'Model file not found.\n'
-            'Expected: ${modelFile.path}\n'
-            'Also checked: ${searchPaths.join(", ")}\n'
-            'Run: adb push $_modelFilename /data/local/tmp/',
-          );
-        }
-      } else {
+      // Also check app documents directory (in case model was placed there).
+      final dir = await getApplicationDocumentsDirectory();
+      final appDocPath = '${dir.path}/$_modelFilename';
+      if (File(appDocPath).existsSync()) {
+        _modelPath = appDocPath;
+        return _modelPath!;
+      }
+
+      throw StateError(
+        'Model file not found.\n'
+        'Checked: ${searchPaths.join(", ")}\n'
+        'Also checked: $appDocPath\n'
+        'Run: adb push $_modelFilename /data/local/tmp/',
+      );
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      final modelFile = File('${dir.path}/$_modelFilename');
+      if (!modelFile.existsSync()) {
         throw StateError(
           'Model file not found at ${modelFile.path}\n'
           'iOS: Use Xcode Device Manager to copy $_modelFilename '
           "to the app's Documents folder.",
         );
       }
+      _modelPath = modelFile.path;
+      return _modelPath!;
     }
-
-    _modelPath = modelFile.path;
-    return _modelPath!;
   }
 
   /// Loads the model and returns a [ModelLoadResult] describing the outcome.
