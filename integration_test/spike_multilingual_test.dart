@@ -154,6 +154,8 @@ void main() {
             progress.log('  [${lang.languageName}] prompt $promptIdx/${lang.prompts.length}: ${testPrompt.category}');
             progress.log('  PROMPT: ${testPrompt.sourceText}');
             await refreshOverlay(tester);
+            // Yield to the Android event loop between prompts to prevent ANR.
+            await Future<void>.delayed(const Duration(milliseconds: 100));
 
             final stopwatch = Stopwatch()..start();
             final tokens = <String>[];
@@ -250,6 +252,8 @@ void main() {
           for (final testPrompt in lang.prompts) {
             progress.log('  PROMPT: ${testPrompt.sourceText}');
             await refreshOverlay(tester);
+            // Yield to the Android event loop between prompts to prevent ANR.
+            await Future<void>.delayed(const Duration(milliseconds: 100));
 
             final stopwatch = Stopwatch()..start();
             final tokens = <String>[];
