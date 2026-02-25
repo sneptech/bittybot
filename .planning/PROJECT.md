@@ -69,6 +69,27 @@ Translation and conversation must work with zero connectivity. A traveler in a r
 | Tiny Aya Global (not base or regional variants) | Best balanced multilingual performance across all 70+ languages | — Pending |
 | Dark theme with Cohere green palette | User preference, inspired by Tiny Aya demo aesthetic | — Pending |
 | Text-only v1, camera OCR in v2 | Reduce scope, nail the core translation chat experience first | — Pending |
+| llama_cpp_dart ^0.2.2 as inference binding | Most recently updated, tracks llama.cpp master, FFI bindings match | Validated |
+| Native lib pre-built as AAR (not plugin auto-bundle) | llama_cpp_dart is not a Flutter plugin; must manually compile and deploy libmtmd.so | Validated |
+| 70-language evaluation corpus (4 mustHave + 66 standard) | Covers model card languages; mustHave languages get deeper evaluation | Validated |
+| 11-state sealed class for download flow | Exhaustive switch covers all download lifecycle states; compiler catches missing handlers | Validated |
+| Chunked SHA-256 in compute() isolate | 2.14 GB model cannot be loaded into RAM for hashing; 64KB RandomAccessFile chunks in background isolate | Validated |
+| background_downloader with registerCallbacks()+enqueue() | Full TaskProgressUpdate with speed/ETA (not download() which gives void Function(double) only) | Validated |
+| Completer<TaskStatusUpdate> bridge pattern | Bridges registerCallbacks async API into clean await pattern | Validated |
+| Dark theme only (no light variant) | User preference; Cohere-inspired green palette; ThemeMode.dark forced | Validated |
+| Offline fonts via GoogleFonts.config.allowRuntimeFetching = false | App must work with zero connectivity; fonts bundled in assets/google_fonts/ | Validated |
+| 10 supported UI locales (not all 66 model languages) | UI strings need manual translation; 10 covers primary user needs. Model handles 66 for inference. | Validated |
+| Manual ColorScheme() constructor (not fromSeed) | fromSeed generates tonal palette that overrides exact brand hex values | Validated |
+| Error tone feature (resolveErrorMessage with Dart 3 record pattern switch) | Exhaustive (AppError, ErrorTone) switch; compiler catches missing combinations | Validated |
+| Partial-access pattern: appStartupProvider awaits settings only | Users can browse history while model loads; only input disabled until model ready | Validated |
+| Dedicated inference isolate (never main thread) | Prevents ANR; FFI llama.cpp instance owned entirely by isolate | Validated |
+| DriftChatRepository with constructor injection (not DatabaseAccessor) | Simpler Riverpod integration; avoids tight coupling to Drift internals | Validated |
+| Model loaded with nPredict=-1, counted manually per request | ContextParams.nPredict is construction-time only; per-request counting allows chat=512, translation=128 | Validated |
+| Cooperative stop via closure-scope flag (not isolate kill) | Preserves KV cache and model state; avoids expensive reload | Validated |
+| TranslationNotifier keepAlive vs ChatNotifier auto-dispose | Translation language pair persists across navigation; chat reloads from DB each screen entry | Validated |
+| targetLanguage as englishName string (not language code) | Matches model prompt format; no mapping layer needed in notifier | Validated |
+| Word-level vs token-level streaming by script family | Space-delimited scripts get word-boundary batching; CJK/Thai/etc. use token-by-token (no word boundaries) | Validated |
+| 66 canonical languages with country-variant flag map | Matches model card exactly; kLanguageCountryVariants maps language to flag for display | Validated |
 
 ---
-*Last updated: 2026-02-19 after research — model delivery changed from bundle to first-launch download*
+*Last updated: 2026-02-25 after cross-phase context audit*

@@ -10,7 +10,7 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Phase: 5 of 9
-Status: Phase 5 in progress (1/4 plans complete)
+Status: Phase 5 in progress (3/4 plans complete, Plan 04 paused at human verification)
 Last activity: 2026-02-25 — Phase 5 Plan 03 executed (language picker sheet, grid item, wired to translation screen, long-press copy on bubbles)
 
 Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Plan 01)
@@ -61,7 +61,7 @@ Recent decisions affecting current work:
 
 **Phase 1 (Inference Spike):**
 - llama_cpp_dart ^0.2.2 selected as primary binding (most recently updated, tracks llama.cpp master)
-- Android NDK pinned to 28.0.12674087, compileSdk=36, ndkVersion=29.0.14033849
+- Android NDK pinned to 29.0.14033849, compileSdk=36
 - iOS minimum deployment target set to 14.0
 - 70-language corpus: 4 mustHave with 18 prompts each, 66 standard with 3 reference sentences each
 - ModelLoader.loadModel() catches LlamaException broadly — any llama.cpp load failure treated as go/no-go
