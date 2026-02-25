@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Translation
 
-- [ ] **TRNS-01**: User can type or paste text and get a translation to their selected target language
+- [x] **TRNS-01**: User can type or paste text and get a translation to their selected target language
 - [x] **TRNS-02**: User can select source and target languages from all 70+ supported languages
 - [x] **TRNS-03**: User can swap source and target languages with a single tap
 - [ ] **TRNS-04**: User can copy translated text to clipboard with a single tap
@@ -91,7 +91,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MODL-04 | Phase 2 | Complete |
 | MODL-05 | Phase 2 | Complete |
 | MODL-06 | Phase 1 | Complete |
-| TRNS-01 | Phase 5 | Pending |
+| TRNS-01 | Phase 5 | Complete |
 | TRNS-02 | Phase 5 | Complete |
 | TRNS-03 | Phase 5 | Complete |
 | TRNS-04 | Phase 5 | Pending |
