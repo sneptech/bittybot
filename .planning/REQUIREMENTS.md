@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MODL-02**: Download resumes automatically if interrupted or app is backgrounded
 - [x] **MODL-03**: If user is not on Wi-Fi, app offers option to download on cellular with explicit file size warning (~2.14GB)
 - [x] **MODL-04**: App verifies model integrity via SHA-256 hash on each launch before loading
-- [ ] **MODL-05**: Model loads in background with loading indicator; chat input disabled until ready
+- [x] **MODL-05**: Model loads in background with loading indicator; chat input disabled until ready
 - [x] **MODL-06**: All inference runs on-device via llama.cpp with zero network dependency after model download
 
 ### Translation
@@ -29,7 +29,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CHAT-01**: User can have multi-turn conversations with the model (ChatGPT/Claude-style interface)
 - [ ] **CHAT-02**: Model responses stream token-by-token as they are generated (not buffered)
 - [ ] **CHAT-03**: User can access previous chat sessions via slide-out drawer
-- [ ] **CHAT-04**: All chat sessions and messages persist locally on device
+- [x] **CHAT-04**: All chat sessions and messages persist locally on device
 - [ ] **CHAT-05**: User can toggle auto-clear chat history with configurable time period in settings
 - [ ] **CHAT-06**: User can clear all chat history via button with confirmation dialog ("Are you sure?")
 
@@ -89,7 +89,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MODL-02 | Phase 2 | Complete |
 | MODL-03 | Phase 2 | Complete |
 | MODL-04 | Phase 2 | Complete |
-| MODL-05 | Phase 2 | Pending |
+| MODL-05 | Phase 2 | Complete |
 | MODL-06 | Phase 1 | Complete |
 | TRNS-01 | Phase 5 | Pending |
 | TRNS-02 | Phase 5 | Pending |
@@ -99,7 +99,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHAT-01 | Phase 6 | Pending |
 | CHAT-02 | Phase 6 | Pending |
 | CHAT-03 | Phase 7 | Pending |
-| CHAT-04 | Phase 7 | Pending |
+| CHAT-04 | Phase 7 | Complete |
 | CHAT-05 | Phase 8 | Pending |
 | CHAT-06 | Phase 8 | Pending |
 | WEBS-01 | Phase 9 | Pending |

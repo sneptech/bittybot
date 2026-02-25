@@ -37,6 +37,7 @@ Progress: [███░░░░░░░] ~33% (3 phases complete or near-compl
 | Phase 1 | 4/5 | ~28min | ~7min |
 | Phase 2 | 3/3 | ~18min | ~6min |
 | Phase 3 | 5/5 | ~40min | ~8min |
+| Phase 04-core-inference-architecture P01 | 4 | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - Locale persisted as languageCode string only
 - All widget padding uses EdgeInsetsDirectional (not EdgeInsets) — RTL-ready
 - appStartupProvider is @Riverpod(keepAlive: true) Future<void> — Phase 4 extends with modelReadyProvider
+- [Phase 04-core-inference-architecture]: Drift row types are ChatSession/ChatMessage (not ChatSessionData/ChatMessageData) — corrected return type on watchMessagesForSession()
+- [Phase 04-core-inference-architecture]: Sealed base classes need const constructors for subclass const support — added const InferenceCommand() and const InferenceResponse()
+- [Phase 04-core-inference-architecture]: estimateTokenCount uses 2 chars/token (CJK worst-case over-estimate) rather than 4 chars/token (Latin) for earlier context-full detection
 
 ### Pending Todos
 
@@ -128,7 +132,7 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 04 | — | executing | 2026-02-25T04:40:07.115Z | unknown |
+| /home/max/git/bittybot | mowismtest | 04 | 04-01 | executing | 2026-02-25T04:40:07.115Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-19
