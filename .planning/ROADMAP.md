@@ -107,7 +107,13 @@ Plans:
   3. Tapping the swap button exchanges source and target languages and re-runs translation on the current input
   4. Tapping the copy icon on the translated output writes it to the clipboard; the icon gives visible feedback (brief check mark or color change)
   5. After the app is closed and reopened, the language pair from the previous session is pre-selected
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- Foundation: language data model (66 languages), target language persistence, TranslationNotifier extensions, session messages provider, l10n strings
+- [ ] 05-02-PLAN.md -- Navigation shell (NavigationBar) + Translation screen (bubble list, input bar, typing indicator, word batching, auto-scroll)
+- [ ] 05-03-PLAN.md -- Language picker bottom sheet (search, 3-column flag grid, popular/recent) + clipboard copy on bubbles
+- [ ] 05-04-PLAN.md -- Human verification of complete Translation UI
 
 ### Phase 6: Chat UI
 **Goal**: Users can have a fluid multi-turn conversation with the model in a chat interface that streams tokens as they are generated and lets them stop generation mid-response
@@ -166,7 +172,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 | 2. Model Distribution | 3/3 | Complete | 2026-02-19 |
 | 3. App Foundation and Design System | 5/5 | Complete | 2026-02-19 |
 | 4. Core Inference Architecture | 5/5 | Complete   | 2026-02-25 |
-| 5. Translation UI | 0/TBD | Not started | - |
+| 5. Translation UI | 0/4 | Planned | - |
 | 6. Chat UI | 0/TBD | Not started | - |
 | 7. Chat History and Sessions | 0/TBD | Not started | - |
 | 8. Chat Settings and Maintenance | 0/TBD | Not started | - |
