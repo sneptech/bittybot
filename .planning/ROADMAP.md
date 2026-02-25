@@ -88,7 +88,14 @@ Plans:
   2. The Inference Isolate starts once at app launch and persists for the session; it is not respawned per request
   3. Sending a multi-turn conversation through ChatNotifier preserves message history in the Aya chat template format and produces contextually coherent follow-up responses
   4. Chat sessions and messages are stored in Drift SQLite and survive app restart
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 04-01-PLAN.md -- Drift schema (ChatSessions + ChatMessages), inference message protocol, PromptBuilder
+- [ ] 04-02-PLAN.md -- Inference isolate entry point and LlmService lifecycle manager
+- [ ] 04-03-PLAN.md -- Chat domain models, repository interface, Drift-backed implementation
+- [ ] 04-04-PLAN.md -- Riverpod provider graph (modelReadyProvider, chatRepositoryProvider, startup wiring)
+- [ ] 04-05-PLAN.md -- ChatNotifier and TranslationNotifier state managers
 
 ### Phase 5: Translation UI
 **Goal**: Users can translate text into any of the 70+ supported languages using a clean, fast interface that remembers their language pair and lets them copy the result with a single tap
@@ -158,7 +165,7 @@ Note: Phases 2 and 3 can be parallelized (no dependency between them). Phase 4 r
 | 1. Inference Spike | 4/5 | Hardware checkpoint | - |
 | 2. Model Distribution | 3/3 | Complete | 2026-02-19 |
 | 3. App Foundation and Design System | 5/5 | Complete | 2026-02-19 |
-| 4. Core Inference Architecture | 0/TBD | Not started | - |
+| 4. Core Inference Architecture | 0/5 | Planned | - |
 | 5. Translation UI | 0/TBD | Not started | - |
 | 6. Chat UI | 0/TBD | Not started | - |
 | 7. Chat History and Sessions | 0/TBD | Not started | - |
