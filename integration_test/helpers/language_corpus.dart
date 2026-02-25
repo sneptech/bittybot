@@ -112,9 +112,17 @@ class LanguageTestData {
 // Aya chat template helper
 // ---------------------------------------------------------------------------
 
-/// Wraps [text] in the Aya chat template tokens.
+/// System prompt that steers the model toward translation-only output.
+///
+/// Kept short and direct for a 3.35B model — complex instructions get ignored.
+const String _systemPrompt =
+    'You are a translator. Translate the text the user gives you into the '
+    'requested language. Reply with only the translation, nothing else.';
+
+/// Wraps [text] in the Aya chat template tokens with a system prompt.
 String _ayaPrompt(String languageInstruction, String sourceText) {
-  return '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$languageInstruction: '
+  return '<|START_OF_TURN_TOKEN|><|SYSTEM_TOKEN|>$_systemPrompt<|END_OF_TURN_TOKEN|>'
+      '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$languageInstruction: '
       '"$sourceText"<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>';
 }
 

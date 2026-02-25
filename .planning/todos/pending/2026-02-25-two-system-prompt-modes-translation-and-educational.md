@@ -9,7 +9,7 @@ files:
 
 ## Problem
 
-Currently no system prompt is used with the Aya model at all. The chat template goes straight from `<|USER_TOKEN|>` to `<|CHATBOT_TOKEN|>` with no `<|SYSTEM_TOKEN|>` turn. This likely contributes to the model sometimes responding in English instead of the target language (e.g., Mandarin test failure).
+~~Currently no system prompt is used with the Aya model at all.~~ **Spike-level fix applied (2026-02-25):** A translation-focused system prompt was added to the test harness in `language_corpus.dart`. The model now gets a `<|SYSTEM_TOKEN|>` turn before every prompt. The remaining work below is for the **production app UI** (Phase 4+).
 
 ## Solution
 
