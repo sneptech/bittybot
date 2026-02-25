@@ -74,4 +74,43 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get modelLoadingError => '설정 실패';
+
+  @override
+  String get translate => '번역';
+
+  @override
+  String get chat => '채팅';
+
+  @override
+  String get translationInputHint => '번역할 내용을 입력하세요';
+
+  @override
+  String get translationEmptyState => '번역할 내용을 입력하세요';
+
+  @override
+  String get newSession => '새 세션';
+
+  @override
+  String get targetLanguage => '목표 언어';
+
+  @override
+  String get searchLanguages => '언어 검색';
+
+  @override
+  String get popularLanguages => '인기';
+
+  @override
+  String get recentLanguages => '최근';
+
+  @override
+  String get copied => '복사됨';
+
+  @override
+  String get copyTranslation => '번역 복사';
+
+  @override
+  String get contextFullBanner => '세션이 길어지고 있어요. 더 나은 결과를 위해 새 세션을 시작하세요.';
+
+  @override
+  String get characterLimitWarning => '글자 수 제한에 가까워지고 있어요';
 }

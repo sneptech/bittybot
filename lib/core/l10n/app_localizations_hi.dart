@@ -81,4 +81,44 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get modelLoadingError => 'सेटअप विफल हुआ';
+
+  @override
+  String get translate => 'अनुवाद करें';
+
+  @override
+  String get chat => 'चैट';
+
+  @override
+  String get translationInputHint => 'अनुवाद के लिए कुछ टाइप करें';
+
+  @override
+  String get translationEmptyState => 'अनुवाद के लिए कुछ टाइप करें';
+
+  @override
+  String get newSession => 'नया सत्र';
+
+  @override
+  String get targetLanguage => 'लक्ष्य भाषा';
+
+  @override
+  String get searchLanguages => 'भाषाएं खोजें';
+
+  @override
+  String get popularLanguages => 'लोकप्रिय';
+
+  @override
+  String get recentLanguages => 'हाल की';
+
+  @override
+  String get copied => 'कॉपी हो गया';
+
+  @override
+  String get copyTranslation => 'अनुवाद कॉपी करें';
+
+  @override
+  String get contextFullBanner =>
+      'सत्र लंबा हो रहा है। बेहतर परिणामों के लिए नया सत्र शुरू करें।';
+
+  @override
+  String get characterLimitWarning => 'वर्ण सीमा के करीब';
 }

@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TRNS-01**: User can type or paste text and get a translation to their selected target language
 - [x] **TRNS-02**: User can select source and target languages from all 70+ supported languages
 - [x] **TRNS-03**: User can swap source and target languages with a single tap
-- [ ] **TRNS-04**: User can copy translated text to clipboard with a single tap
+- [x] **TRNS-04**: User can copy translated text to clipboard with a single tap
 - [x] **TRNS-05**: App remembers last-used language pair across sessions
 
 ### Chat
@@ -94,7 +94,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRNS-01 | Phase 5 | Complete |
 | TRNS-02 | Phase 5 | Complete |
 | TRNS-03 | Phase 5 | Complete |
-| TRNS-04 | Phase 5 | Pending |
+| TRNS-04 | Phase 5 | Complete |
 | TRNS-05 | Phase 5 | Complete |
 | CHAT-01 | Phase 6 | Complete |
 | CHAT-02 | Phase 6 | Complete |

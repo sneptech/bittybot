@@ -79,4 +79,44 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get modelLoadingError => 'فشل الإعداد';
+
+  @override
+  String get translate => 'ترجمة';
+
+  @override
+  String get chat => 'محادثة';
+
+  @override
+  String get translationInputHint => 'اكتب شيئاً للترجمة';
+
+  @override
+  String get translationEmptyState => 'اكتب شيئاً للترجمة';
+
+  @override
+  String get newSession => 'جلسة جديدة';
+
+  @override
+  String get targetLanguage => 'لغة الهدف';
+
+  @override
+  String get searchLanguages => 'البحث عن لغات';
+
+  @override
+  String get popularLanguages => 'الأكثر شيوعاً';
+
+  @override
+  String get recentLanguages => 'الأخيرة';
+
+  @override
+  String get copied => 'تم النسخ';
+
+  @override
+  String get copyTranslation => 'نسخ الترجمة';
+
+  @override
+  String get contextFullBanner =>
+      'الجلسة تطول. ابدأ جلسة جديدة للحصول على أفضل النتائج.';
+
+  @override
+  String get characterLimitWarning => 'اقتراب من حد الأحرف';
 }

@@ -73,4 +73,43 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get modelLoadingError => 'セットアップに失敗しました';
+
+  @override
+  String get translate => '翻訳';
+
+  @override
+  String get chat => 'チャット';
+
+  @override
+  String get translationInputHint => '翻訳するテキストを入力';
+
+  @override
+  String get translationEmptyState => '翻訳するテキストを入力';
+
+  @override
+  String get newSession => '新しいセッション';
+
+  @override
+  String get targetLanguage => '翻訳先の言語';
+
+  @override
+  String get searchLanguages => '言語を検索';
+
+  @override
+  String get popularLanguages => '人気';
+
+  @override
+  String get recentLanguages => '最近';
+
+  @override
+  String get copied => 'コピーしました';
+
+  @override
+  String get copyTranslation => '翻訳をコピー';
+
+  @override
+  String get contextFullBanner => 'セッションが長くなっています。最良の結果のために新しいセッションを開始してください。';
+
+  @override
+  String get characterLimitWarning => '文字数制限に近づいています';
 }

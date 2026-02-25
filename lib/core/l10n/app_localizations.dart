@@ -245,6 +245,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Setup failed'**
   String get modelLoadingError;
+
+  /// Translation tab label in bottom navigation bar
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translate;
+
+  /// Chat tab label in bottom navigation bar
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// Placeholder text in the translation input field
+  ///
+  /// In en, this message translates to:
+  /// **'Type something to translate'**
+  String get translationInputHint;
+
+  /// Centered empty-state prompt shown when no messages exist
+  ///
+  /// In en, this message translates to:
+  /// **'Type something to translate'**
+  String get translationEmptyState;
+
+  /// Tooltip/label for the new session button in the translation screen top bar
+  ///
+  /// In en, this message translates to:
+  /// **'New session'**
+  String get newSession;
+
+  /// Label for the target language selector button in the top bar
+  ///
+  /// In en, this message translates to:
+  /// **'Target language'**
+  String get targetLanguage;
+
+  /// Placeholder text in the language search field of the language picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search languages'**
+  String get searchLanguages;
+
+  /// Section header for the popular languages group in the language picker
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get popularLanguages;
+
+  /// Section header for recently used languages in the language picker
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recentLanguages;
+
+  /// Brief confirmation shown after copying a translation to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// Label for the copy action in the long-press context menu on translation bubbles
+  ///
+  /// In en, this message translates to:
+  /// **'Copy translation'**
+  String get copyTranslation;
+
+  /// Banner shown when the translation context approaches the model's limit
+  ///
+  /// In en, this message translates to:
+  /// **'Session is getting long. Start a new session for best results.'**
+  String get contextFullBanner;
+
+  /// Warning shown in the input field when the user approaches the soft character limit
+  ///
+  /// In en, this message translates to:
+  /// **'Approaching character limit'**
+  String get characterLimitWarning;
 }
 
 class _AppLocalizationsDelegate

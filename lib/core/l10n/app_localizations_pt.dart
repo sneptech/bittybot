@@ -82,4 +82,44 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get modelLoadingError => 'Falha na configuração';
+
+  @override
+  String get translate => 'Traduzir';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get translationInputHint => 'Digite algo para traduzir';
+
+  @override
+  String get translationEmptyState => 'Digite algo para traduzir';
+
+  @override
+  String get newSession => 'Nova sessão';
+
+  @override
+  String get targetLanguage => 'Idioma de destino';
+
+  @override
+  String get searchLanguages => 'Pesquisar idiomas';
+
+  @override
+  String get popularLanguages => 'Populares';
+
+  @override
+  String get recentLanguages => 'Recentes';
+
+  @override
+  String get copied => 'Copiado';
+
+  @override
+  String get copyTranslation => 'Copiar tradução';
+
+  @override
+  String get contextFullBanner =>
+      'A sessão está ficando longa. Inicie uma nova sessão para melhores resultados.';
+
+  @override
+  String get characterLimitWarning => 'Aproximando-se do limite de caracteres';
 }

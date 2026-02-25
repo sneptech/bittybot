@@ -73,4 +73,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modelLoadingError => '配置失败';
+
+  @override
+  String get translate => '翻译';
+
+  @override
+  String get chat => '聊天';
+
+  @override
+  String get translationInputHint => '输入要翻译的内容';
+
+  @override
+  String get translationEmptyState => '输入要翻译的内容';
+
+  @override
+  String get newSession => '新会话';
+
+  @override
+  String get targetLanguage => '目标语言';
+
+  @override
+  String get searchLanguages => '搜索语言';
+
+  @override
+  String get popularLanguages => '热门';
+
+  @override
+  String get recentLanguages => '最近';
+
+  @override
+  String get copied => '已复制';
+
+  @override
+  String get copyTranslation => '复制翻译';
+
+  @override
+  String get contextFullBanner => '会话内容过长，建议开启新会话以获得最佳效果。';
+
+  @override
+  String get characterLimitWarning => '即将达到字符限制';
 }
