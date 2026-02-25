@@ -38,12 +38,18 @@ void main() {
       final timestamps = <DateTime>[];
 
       // Act — stream tokens and record arrival timestamps
+      const prompt = 'Write a short paragraph about the weather.';
+      progress.log('PROMPT: $prompt');
+      await refreshOverlay(tester);
       await for (final token in loader.generateStream(
-        '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Write a short paragraph about the weather.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
+        '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$prompt<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
       )) {
         tokens.add(token);
         timestamps.add(DateTime.now());
       }
+      final response = tokens.join();
+      progress.log('RESPONSE: $response');
+      await refreshOverlay(tester);
 
       // Assert — streaming verification
       expect(tokens.length, greaterThan(5),
@@ -78,7 +84,10 @@ void main() {
       progress.logTestStart(testName);
       final sw = Stopwatch()..start();
 
-      const prompt = '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello world" in Japanese.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>';
+      const userPrompt = 'Say "hello world" in Japanese.';
+      progress.log('PROMPT: $userPrompt');
+      await refreshOverlay(tester);
+      const prompt = '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$userPrompt<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>';
 
       // Act — collect streamed tokens
       final streamedTokens = <String>[];
@@ -86,6 +95,8 @@ void main() {
         streamedTokens.add(token);
       }
       final streamedOutput = streamedTokens.join();
+      progress.log('RESPONSE: $streamedOutput');
+      await refreshOverlay(tester);
 
       // Assert
       expect(streamedOutput, isNotEmpty);
@@ -107,27 +118,39 @@ void main() {
       var tokenCount = 0;
 
       // Act
-      await for (final _ in loader.generateStream(
-        '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Translate "Where is the bathroom?" into Thai.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
+      const prompt1 = 'Translate "Where is the bathroom?" into Thai.';
+      progress.log('PROMPT: $prompt1');
+      await refreshOverlay(tester);
+      final tokens1 = <String>[];
+      await for (final token in loader.generateStream(
+        '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$prompt1<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
       )) {
+        tokens1.add(token);
         tokenCount++;
       }
       stopwatch.stop();
+      final response1 = tokens1.join();
+      progress.log('RESPONSE: $response1');
+      await refreshOverlay(tester);
 
       // Record performance metrics (informational, not a pass/fail gate)
       final tokensPerSecond = tokenCount / (stopwatch.elapsedMilliseconds / 1000.0);
-      // ignore: avoid_print
-      print('Performance: $tokenCount tokens in ${stopwatch.elapsedMilliseconds}ms '
-            '($tokensPerSecond tokens/sec)');
 
       // Assert — at least some tokens were generated
       expect(tokenCount, greaterThan(0));
-      // Thai script should be present
-      expect(RegExp(r'[\u0E00-\u0E7F]').hasMatch(
-        (await loader.generateStream(
-          '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello" in Thai.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
-        ).toList()).join()
-      ), isTrue, reason: 'Thai translation should contain Thai script characters');
+
+      // Thai script check
+      const prompt2 = 'Say "hello" in Thai.';
+      progress.log('PROMPT: $prompt2');
+      await refreshOverlay(tester);
+      final thaiResponse = (await loader.generateStream(
+        '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>$prompt2<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
+      ).toList()).join();
+      progress.log('RESPONSE: $thaiResponse');
+      await refreshOverlay(tester);
+
+      expect(RegExp(r'[\u0E00-\u0E7F]').hasMatch(thaiResponse),
+        isTrue, reason: 'Thai translation should contain Thai script characters');
 
       sw.stop();
       progress.logTestResult(testName, passed: true, duration: sw.elapsed);

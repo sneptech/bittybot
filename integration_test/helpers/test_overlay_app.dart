@@ -112,6 +112,8 @@ class _TestOverlayScreenState extends State<_TestOverlayScreen> {
     if (line.contains('PASS ')) return const Color(0xFF00E676);
     if (line.contains('FAIL ')) return const Color(0xFFFF5252);
     if (line.contains('START ')) return const Color(0xFF64B5F6);
+    if (line.contains('PROMPT:')) return const Color(0xFFFFAB40);
+    if (line.contains('RESPONSE:')) return const Color(0xFFE0E0E0);
     if (line.contains('---')) return const Color(0xFFFFD54F);
     return const Color(0xFFB0BEC5);
   }
