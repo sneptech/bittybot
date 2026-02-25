@@ -41,6 +41,7 @@ Progress: [███░░░░░░░] ~33% (3 phases complete or near-compl
 | Phase 04-core-inference-architecture P02 | 3 | 2 tasks | 2 files |
 | Phase 04-core-inference-architecture P03 | 3 | 2 tasks | 5 files |
 | Phase 04-core-inference-architecture P04 | 3 | 2 tasks | 7 files |
+| Phase 04-core-inference-architecture P05 | 5min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -92,6 +93,10 @@ Recent decisions affecting current work:
 - [Phase 04-core-inference-architecture]: appStartupProvider remains settings-only: model loads independently via modelReadyProvider (partial-access pattern)
 - [Phase 04-core-inference-architecture]: ModelReady uses WidgetsBindingObserver mixin on AsyncNotifier for OS-kill recovery
 - [Phase 04-core-inference-architecture]: inferenceRepositoryProvider throws StateError if accessed before modelReadyProvider resolves
+- [Phase 04-core-inference-architecture]: ChatNotifier is auto-dispose: DB is source of truth; state reloads fresh per screen entry
+- [Phase 04-core-inference-architecture]: TranslationNotifier is keepAlive: language pair persists across navigation per TRNS-05
+- [Phase 04-core-inference-architecture]: Queue<String> for request pending: FIFO queue matches locked decision — messages queue behind active generation
+- [Phase 04-core-inference-architecture]: Language pair change resets session + clearContext: terminology consistency requires fresh KV cache per pair
 
 ### Pending Todos
 
@@ -144,7 +149,7 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 04 | 04-04 | executing | 2026-02-25T04:40:07.115Z | unknown |
+| /home/max/git/bittybot | mowismtest | 04 | 04-05 | executing | 2026-02-25T04:40:07.115Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-19

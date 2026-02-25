@@ -26,8 +26,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Chat
 
-- [ ] **CHAT-01**: User can have multi-turn conversations with the model (ChatGPT/Claude-style interface)
-- [ ] **CHAT-02**: Model responses stream token-by-token as they are generated (not buffered)
+- [x] **CHAT-01**: User can have multi-turn conversations with the model (ChatGPT/Claude-style interface)
+- [x] **CHAT-02**: Model responses stream token-by-token as they are generated (not buffered)
 - [ ] **CHAT-03**: User can access previous chat sessions via slide-out drawer
 - [x] **CHAT-04**: All chat sessions and messages persist locally on device
 - [ ] **CHAT-05**: User can toggle auto-clear chat history with configurable time period in settings
@@ -96,8 +96,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRNS-03 | Phase 5 | Pending |
 | TRNS-04 | Phase 5 | Pending |
 | TRNS-05 | Phase 5 | Pending |
-| CHAT-01 | Phase 6 | Pending |
-| CHAT-02 | Phase 6 | Pending |
+| CHAT-01 | Phase 6 | Complete |
+| CHAT-02 | Phase 6 | Complete |
 | CHAT-03 | Phase 7 | Pending |
 | CHAT-04 | Phase 7 | Complete |
 | CHAT-05 | Phase 8 | Pending |
