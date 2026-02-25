@@ -109,24 +109,32 @@ class ReportWriter {
   /// Accumulated per-language results.
   final List<LanguageResultData> results = [];
 
-  /// Appends [result] to the accumulated results list.
-  void addLanguageResult(LanguageResultData result) {
+  /// Cached documents directory path (resolved once on first flush).
+  String? _dirPath;
+
+  /// Appends [result] to the accumulated results list and flushes to disk.
+  Future<void> addLanguageResult(LanguageResultData result,
+      {String filename = 'spike_results.json'}) async {
     results.add(result);
+    await _flush(filename);
   }
 
-  /// Serialises all accumulated results to a JSON file on the device filesystem.
-  ///
-  /// Returns the absolute path of the written file.
-  /// Prints the path and an adb pull command for convenience.
-  Future<String> writeResults({String filename = 'spike_results.json'}) async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/$filename');
+  /// Writes current results to disk. Safe to call after every language.
+  Future<String> _flush(String filename) async {
+    _dirPath ??= (await getApplicationDocumentsDirectory()).path;
+    final file = File('$_dirPath/$filename');
     final json = jsonEncode(results.map((r) => r.toJson()).toList());
     await file.writeAsString(json);
-    // ignore: avoid_print
-    print('Results written to: ${file.path}');
-    // ignore: avoid_print
-    print('Retrieve with: adb pull ${file.path} ./spike_results.json');
     return file.path;
+  }
+
+  /// Final write — prints retrieval instructions.
+  Future<String> writeResults({String filename = 'spike_results.json'}) async {
+    final path = await _flush(filename);
+    // ignore: avoid_print
+    print('Results written to: $path');
+    // ignore: avoid_print
+    print('Retrieve with: adb pull $path ./spike_results.json');
+    return path;
   }
 }

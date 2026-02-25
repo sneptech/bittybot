@@ -151,7 +151,7 @@ void main() {
           progress.logTestResult(testName, passed: true, duration: sw.elapsed);
           await refreshOverlay(tester);
 
-          reportWriter.addLanguageResult(LanguageResultData(
+          await reportWriter.addLanguageResult(LanguageResultData(
             languageName: lang.languageName,
             languageCode: lang.languageCode,
             scriptFamily: lang.scriptFamily.name,
@@ -232,7 +232,7 @@ void main() {
           progress.logTestResult(testName, passed: true, duration: sw.elapsed);
           await refreshOverlay(tester);
 
-          reportWriter.addLanguageResult(LanguageResultData(
+          await reportWriter.addLanguageResult(LanguageResultData(
             languageName: lang.languageName,
             languageCode: lang.languageCode,
             scriptFamily: lang.scriptFamily.name,
