@@ -123,9 +123,18 @@ Recent decisions affecting current work:
   - flutter_riverpod pinned to ^3.1.0 in merged pubspec.yaml (Phase 3's pin takes priority over Phase 2's ^3.2.1)
   - app.dart: Phase 3's version used as canonical shell; Phase 2's model distribution routing deferred to Phase 4 wiring
 
+
+## Worktree Assignments
+
+| Worktree | Branch | Phase | Plan | Status | Started | Agent |
+|----------|--------|-------|------|--------|---------|-------|
+| /home/max/git/bittybot | mowismtest | 04 | — | executing | 2026-02-25T04:40:07.115Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-19
 Stopped at: Repo published to GitHub, housekeeping done.
 Resume file: .planning/PARALLEL-RESUME.md
 Next action: Finish Phase 1 hardware testing (static-linked libmtmd.so rebuild) or start Phase 4 planning
+
+### Context Window Handoff (2026-02-25)
+Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
