@@ -130,9 +130,13 @@ class ModelLoader {
         ..nPredict = _nPredict;
 
       // Llama constructor is synchronous and throws on failure.
+      final modelParams = ModelParams()
+        ..nGpuLayers = 0 // no GPU backend compiled (GGML_OPENCL=OFF)
+        ..useMemorymap = false; // mmap may fail with SELinux on /data/local/tmp
+
       _llama = Llama(
         path,
-        modelParams: ModelParams(),
+        modelParams: modelParams,
         contextParams: contextParams,
         verbose: true, // log llama.cpp internals for spike debugging
       );
@@ -146,12 +150,12 @@ class ModelLoader {
       );
     } catch (e) {
       final errorStr = e.toString();
+      print('MODEL LOAD ERROR: $errorStr');
 
-      // Detect architecture-specific failures.
+      // Detect architecture-specific failures (not wrapped LlamaException).
       final isArchitectureError = errorStr.contains('architecture') ||
           errorStr.contains('unknown model') ||
-          errorStr.contains('not supported') ||
-          errorStr.contains('LlamaException');
+          errorStr.contains('not supported');
 
       if (isArchitectureError) {
         return ModelLoadResult(
