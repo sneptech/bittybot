@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Translation and conversation must work with zero connectivity
-**Current focus:** Phase 4 complete — Phase 5 (Translation UI) and Phase 6 (Chat UI) next
+**Current focus:** Phase 5 (Translation UI) executing — Plan 01 complete
 
 ## Current Position
 
-Phase: 4 of 9
-Status: Phase 4 complete, human verification deferred to Phase 6 (needs chat UI)
-Last activity: 2026-02-25 — Phase 4 executed (5 plans, 4 waves)
+Phase: 5 of 9
+Status: Phase 5 in progress (1/4 plans complete)
+Last activity: 2026-02-25 — Phase 5 Plan 01 executed (language data, settings persistence, l10n)
 
-Progress: [████░░░░░░] ~44% (4 phases complete or near-complete)
+Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Plan 01)
 
 ### Phase Status
 
@@ -23,6 +23,7 @@ Progress: [████░░░░░░] ~44% (4 phases complete or near-compl
 | 2: Model Distribution | Complete | 3/3 | Verification chain passed, all success criteria met |
 | 3: App Foundation | Complete | 5/5 | Verification chain passed |
 | 4: Core Inference Arch | Complete | 5/5 | Automated verification passed; human verification deferred to Phase 6 |
+| 5: Translation UI | In progress | 1/4 | Plan 01 complete: language data, settings, l10n |
 
 ## Performance Metrics
 
@@ -97,6 +98,11 @@ Recent decisions affecting current work:
 - [Phase 04-core-inference-architecture]: TranslationNotifier is keepAlive: language pair persists across navigation per TRNS-05
 - [Phase 04-core-inference-architecture]: Queue<String> for request pending: FIFO queue matches locked decision — messages queue behind active generation
 - [Phase 04-core-inference-architecture]: Language pair change resets session + clearContext: terminology consistency requires fresh KV cache per pair
+- [Phase 05-translation-ui P01]: targetLanguage stored as englishName string ('Spanish') — matches existing TranslationState.targetLanguage field; no code-to-name mapping needed at notifier level
+- [Phase 05-translation-ui P01]: recentTargetLanguages uses prepend + toSet() + sublist(0, 3) — simple dedup; avoids duplicates after re-selecting same language
+- [Phase 05-translation-ui P01]: startNewSession() is a new public method on TranslationNotifier (not alias for setTargetLanguage) — calling setTargetLanguage with same language was a no-op
+- [Phase 05-translation-ui P01]: sessionMessagesProvider is auto-dispose StreamProvider.family — TranslationNotifier is keepAlive but stream should recreate per sessionId change
+- [Phase 05-translation-ui P01]: 66 languages as canonical kSupportedLanguages count — model card names exactly 66; country variants handled via kLanguageCountryVariants flag map
 
 ### Pending Todos
 
@@ -159,12 +165,12 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 05 | — | executing | 2026-02-25T06:05:18.335Z | unknown |
+| /home/max/git/bittybot | mowismtest | 05 | 05-01 | executing | 2026-02-25T06:05:18.335Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Phase 4 complete, human verification deferred
-Next action: Plan and execute Phase 5 (Translation UI) or Phase 6 (Chat UI) — both can run in parallel
+Stopped at: Completed 05-01-PLAN.md (Phase 5 Plan 01 — language data, settings persistence, l10n)
+Next action: Execute Phase 5 Plan 02 (language picker bottom sheet) or continue Phase 5 in sequence
 
 ### Context Window Handoff (2026-02-25)
 Session approaching context limit (~8% remaining). Work committed. Run /clear and resume.
