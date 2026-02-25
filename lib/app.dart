@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/l10n/app_localizations.dart';
@@ -39,7 +40,10 @@ class BittyBotApp extends ConsumerWidget {
       // -----------------------------------------------------------------------
       // Localisation
       // -----------------------------------------------------------------------
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: [
+        ...AppLocalizations.localizationsDelegates,
+        LocaleNamesLocalizationsDelegate(),
+      ],
       supportedLocales: AppLocalizations.supportedLocales,
 
       // null = follow device locale; non-null overrides the device default.
