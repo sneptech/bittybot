@@ -30,9 +30,10 @@ void main() {
 
     test('primary is forest green', () {
       // Primary should be in the green range (green channel dominant)
+      // Uses .g/.r/.b (double 0.0-1.0) — the non-deprecated Color API.
       final color = theme.colorScheme.primary;
-      expect(color.green, greaterThan(color.red));
-      expect(color.green, greaterThan(color.blue));
+      expect(color.g, greaterThan(color.r));
+      expect(color.g, greaterThan(color.b));
     });
 
     test('onSurface is white', () {

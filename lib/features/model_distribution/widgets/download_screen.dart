@@ -1,26 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../model_constants.dart';
 import '../model_distribution_state.dart';
 import '../providers.dart';
 import 'cellular_warning_dialog.dart';
 import 'resume_prompt_dialog.dart';
-
-// ─── Placeholder colours ──────────────────────────────────────────────────────
-// All colours below are placeholders. Phase 3 defines the design system.
-
-/// Dark background for the download screen.
-const _kBackground = Color(0xFF121212); // TODO(phase-3): Replace with design system color
-
-/// Forest green used for the progress bar and action buttons.
-const _kForestGreen = Color(0xFF2D6A4F); // TODO(phase-3): Replace with design system color
-
-/// Primary text colour on the dark background.
-const _kTextPrimary = Colors.white; // TODO(phase-3): Replace with design system color
-
-/// Secondary/explanatory text colour.
-const _kTextSecondary = Color(0xFFB0B0B0); // TODO(phase-3): Replace with design system color
 
 // ─── Download screen ─────────────────────────────────────────────────────────
 
@@ -71,7 +57,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
     }
 
     return Scaffold(
-      backgroundColor: _kBackground,
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -85,7 +71,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
                   'Downloading language model for offline use (${ModelConstants.fileSizeDisplayGB})',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: _kTextSecondary,
+                    color: AppColors.onSurfaceVariant,
                     fontSize: 14, // 14sp per spec
                   ),
                 ),
@@ -102,12 +88,12 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
   // ─── Logo ──────────────────────────────────────────────────────────────────
 
   Widget _buildLogo() {
-    // TODO(phase-3): Replace placeholder with Image.asset('assets/logo_greyscale.png', width: 120)
-    // when the user supplies the logo asset.
-    return const Icon(
+    // TODO: Replace placeholder with Image.asset() when a logo asset is added.
+    // No logo asset currently exists in the project (only assets/icon.png).
+    return Icon(
       Icons.smart_toy,
       size: 80,
-      color: Colors.grey, // Greyscale placeholder; Phase 3 provides real asset
+      color: AppColors.onSurfaceVariant,
     );
   }
 
@@ -160,14 +146,14 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           height: 40,
           child: CircularProgressIndicator(
             strokeWidth: 3,
-            valueColor: AlwaysStoppedAnimation<Color>(_kForestGreen),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
         const SizedBox(height: 16),
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: _kTextSecondary, fontSize: 14),
+          style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
         ),
       ],
     );
@@ -195,7 +181,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
             minHeight: 8,
             backgroundColor: const Color(0xFF3A3A3A),
             valueColor:
-                const AlwaysStoppedAnimation<Color>(_kForestGreen),
+                const AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
         if (!isBackground) ...[
@@ -203,7 +189,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           Text(
             '${_formatBytes(downloadedBytes)} / ${_formatBytes(totalBytes)}',
             style: const TextStyle(
-              color: _kTextSecondary,
+              color: AppColors.onSurfaceVariant,
               fontSize: 12, // 12sp per spec
             ),
           ),
@@ -211,7 +197,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           Text(
             '${_formatSpeed(networkSpeedMBps)} - ${_formatDuration(timeRemaining)} remaining',
             style: const TextStyle(
-              color: _kTextSecondary,
+              color: AppColors.onSurfaceVariant,
               fontSize: 12, // 12sp per spec
             ),
           ),
@@ -289,7 +275,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           title,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: _kTextPrimary,
+            color: AppColors.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -299,14 +285,14 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           message,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            color: _kTextSecondary,
+            color: AppColors.onSurfaceVariant,
             fontSize: 14, // 14sp per spec
           ),
         ),
         const SizedBox(height: 24),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: _kForestGreen,
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             padding:
                 const EdgeInsets.symmetric(horizontal: 32, vertical: 14),

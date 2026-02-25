@@ -297,8 +297,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     switch (update.status) {
       case TaskStatus.paused:
         // background_downloader manages resume internally — no state change
-        // ignore: avoid_print
-        print('[ModelDistributionNotifier] Download paused by OS/user.');
+        break;
       case TaskStatus.complete:
       case TaskStatus.failed:
       case TaskStatus.notFound:
