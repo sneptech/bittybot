@@ -16,29 +16,37 @@ import 'package:integration_test/integration_test.dart';
 
 import 'helpers/language_corpus.dart';
 import 'helpers/model_loader.dart';
+import 'helpers/pump_test_overlay.dart';
 import 'helpers/report_writer.dart';
+import 'helpers/test_progress_controller.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   // Disable the global timeout — inference on-device is slow and unbounded.
   binding.defaultTestTimeout = Timeout.none;
 
+  final progress = TestProgressController.instance;
   late ModelLoader loader;
   final reportWriter = ReportWriter();
 
   setUpAll(() async {
     // Load the model once for the entire test suite to avoid re-loading 2+ GB
     // on each test. The Llama instance is shared across all test groups.
+    progress.log('Loading model...');
     loader = ModelLoader();
     final result = await loader.loadModel();
 
     if (!result.loaded) {
+      progress.log('FATAL: Model failed to load');
       fail(
         'Model failed to load — architecture error detected.\n'
         'This is the go/no-go gate for llama_cpp_dart Cohere2 support.\n'
         'Error: ${result.architectureError}',
       );
     }
+
+    progress.log('Model loaded: ${result.modelInfo?.modelPath}');
+    progress.log('Context size: ${result.modelInfo?.contextSize}');
 
     // ignore: avoid_print
     print('Model loaded: ${result.modelInfo?.modelPath}');
@@ -49,6 +57,7 @@ void main() {
   tearDownAll(() async {
     // Write all accumulated results to JSON for the judge scripts.
     final path = await reportWriter.writeResults();
+    progress.log('Results saved to: $path');
     // ignore: avoid_print
     print('All results saved to: $path');
     loader.dispose();
@@ -60,13 +69,25 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Priority Languages — Travel Phrases', () {
+    progress.logSection('Priority Languages — Travel Phrases');
+
     for (final lang in mustHaveLanguages) {
       testWidgets(
         '${lang.languageName} — travel phrases produce correct script output',
         (tester) async {
+          await pumpTestOverlay(tester);
+          final testName = '${lang.languageName} (${lang.prompts.length} prompts)';
+          progress.logTestStart(testName);
+          final sw = Stopwatch()..start();
+
           final promptResults = <PromptResultData>[];
+          var promptIdx = 0;
 
           for (final testPrompt in lang.prompts) {
+            promptIdx++;
+            progress.log('  [${lang.languageName}] prompt $promptIdx/${lang.prompts.length}: ${testPrompt.category}');
+            await refreshOverlay(tester);
+
             final stopwatch = Stopwatch()..start();
             final tokens = <String>[];
 
@@ -126,6 +147,10 @@ void main() {
             );
           }
 
+          sw.stop();
+          progress.logTestResult(testName, passed: true, duration: sw.elapsed);
+          await refreshOverlay(tester);
+
           reportWriter.addLanguageResult(LanguageResultData(
             languageName: lang.languageName,
             languageCode: lang.languageCode,
@@ -148,10 +173,18 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('Standard Languages — Reference Sentences', () {
-    for (final lang in standardLanguages) {
+    progress.logSection('Standard Languages — Reference Sentences');
+
+    for (var langIdx = 0; langIdx < standardLanguages.length; langIdx++) {
+      final lang = standardLanguages[langIdx];
       testWidgets(
         '${lang.languageName} — reference sentences produce correct script output',
         (tester) async {
+          await pumpTestOverlay(tester);
+          final testName = '${lang.languageName} [${langIdx + 1}/${standardLanguages.length}]';
+          progress.logTestStart(testName);
+          final sw = Stopwatch()..start();
+
           final promptResults = <PromptResultData>[];
 
           for (final testPrompt in lang.prompts) {
@@ -194,6 +227,10 @@ void main() {
               );
             }
           }
+
+          sw.stop();
+          progress.logTestResult(testName, passed: true, duration: sw.elapsed);
+          await refreshOverlay(tester);
 
           reportWriter.addLanguageResult(LanguageResultData(
             languageName: lang.languageName,

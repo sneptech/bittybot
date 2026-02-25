@@ -1,19 +1,25 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'helpers/model_loader.dart';
+import 'helpers/pump_test_overlay.dart';
+import 'helpers/test_progress_controller.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.defaultTestTimeout = Timeout.none;
 
+  final progress = TestProgressController.instance;
   late ModelLoader loader;
 
   setUpAll(() async {
+    progress.log('Loading model...');
     loader = ModelLoader();
     final result = await loader.loadModel();
     if (!result.loaded) {
+      progress.log('FATAL: Model failed to load');
       fail('Model failed to load: ${result.architectureError}');
     }
+    progress.log('Model loaded successfully');
   });
 
   tearDownAll(() {
@@ -23,6 +29,11 @@ void main() {
   group('Phase 1 Spike: Token Streaming', () {
 
     testWidgets('tokens arrive one-at-a-time during generation (not buffered)', (tester) async {
+      await pumpTestOverlay(tester);
+      const testName = 'tokens arrive one-at-a-time';
+      progress.logTestStart(testName);
+      final sw = Stopwatch()..start();
+
       final tokens = <String>[];
       final timestamps = <DateTime>[];
 
@@ -54,9 +65,19 @@ void main() {
       expect(buckets.length, greaterThan(3),
         reason: 'Tokens should arrive across multiple time windows, '
                 'not in a single burst');
+
+      sw.stop();
+      progress.logTestResult(testName, passed: true, duration: sw.elapsed);
+      progress.log('  ${tokens.length} tokens, ${totalDuration.inMilliseconds}ms span');
+      await refreshOverlay(tester);
     }, timeout: Timeout.none);
 
     testWidgets('streaming produces same output as complete generation', (tester) async {
+      await pumpTestOverlay(tester);
+      const testName = 'streaming matches complete generation';
+      progress.logTestStart(testName);
+      final sw = Stopwatch()..start();
+
       const prompt = '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello world" in Japanese.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>';
 
       // Act — collect streamed tokens
@@ -70,9 +91,18 @@ void main() {
       expect(streamedOutput, isNotEmpty);
       expect(streamedTokens.length, greaterThan(1),
         reason: 'Streaming should produce multiple tokens');
+
+      sw.stop();
+      progress.logTestResult(testName, passed: true, duration: sw.elapsed);
+      await refreshOverlay(tester);
     }, timeout: Timeout.none);
 
     testWidgets('token generation speed is measured', (tester) async {
+      await pumpTestOverlay(tester);
+      const testName = 'token generation speed';
+      progress.logTestStart(testName);
+      final sw = Stopwatch()..start();
+
       final stopwatch = Stopwatch()..start();
       var tokenCount = 0;
 
@@ -98,6 +128,11 @@ void main() {
           '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello" in Thai.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
         ).toList()).join()
       ), isTrue, reason: 'Thai translation should contain Thai script characters');
+
+      sw.stop();
+      progress.logTestResult(testName, passed: true, duration: sw.elapsed);
+      progress.log('  ${tokensPerSecond.toStringAsFixed(1)} tok/s');
+      await refreshOverlay(tester);
     }, timeout: Timeout.none);
   });
 }
