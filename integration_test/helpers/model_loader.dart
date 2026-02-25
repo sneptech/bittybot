@@ -131,8 +131,11 @@ class ModelLoader {
         ..nPredict = _nPredict;
 
       // Llama constructor is synchronous and throws on failure.
+      // mainGpu = -1 signals CPU-only when split_mode is NONE (no GPU devices
+      // available). Without this, main_gpu=0 fails validation against 0 devices.
       final modelParams = ModelParams()
         ..nGpuLayers = 0 // no GPU backend compiled (GGML_OPENCL=OFF)
+        ..mainGpu = -1 // no GPU devices available on this build
         ..useMemorymap = false; // mmap may fail with SELinux on /data/local/tmp
 
       _llama = Llama(
