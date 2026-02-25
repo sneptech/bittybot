@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Translation and conversation must work with zero connectivity
-**Current focus:** Phases 1-3 merged — Phase 1 hardware checkpoint pending, then Phase 4
+**Current focus:** Phase 4 complete — Phase 5 (Translation UI) and Phase 6 (Chat UI) next
 
 ## Current Position
 
-Phase: 1-3 of 9 (parallel execution complete, merging done)
-Status: Phase 2 complete, Phase 3 complete, Phase 1 at plan 5/5 checkpoint (hardware testing)
-Last activity: 2026-02-19 — Published to GitHub, cleaned .so from history, rewrote README
+Phase: 4 of 9
+Status: Phase 4 complete, human verification deferred to Phase 6 (needs chat UI)
+Last activity: 2026-02-25 — Phase 4 executed (5 plans, 4 waves)
 
-Progress: [███░░░░░░░] ~33% (3 phases complete or near-complete)
+Progress: [████░░░░░░] ~44% (4 phases complete or near-complete)
 
 ### Phase Status
 
@@ -21,8 +21,8 @@ Progress: [███░░░░░░░] ~33% (3 phases complete or near-compl
 |-------|--------|-------|-------|
 | 1: Inference Spike | 4/5 complete, 01-05 at hardware checkpoint | 5 | libmtmd.so AAR build needed before Android integration tests |
 | 2: Model Distribution | Complete | 3/3 | Verification chain passed, all success criteria met |
-| 3: App Foundation | Complete | 5/5 | Verification chain in progress (scope-check + change-summary done) |
-| 4: Core Inference Arch | Not started | TBD | Depends on Phase 2 + Phase 3 (both now complete) |
+| 3: App Foundation | Complete | 5/5 | Verification chain passed |
+| 4: Core Inference Arch | Complete | 5/5 | Automated verification passed; human verification deferred to Phase 6 |
 
 ## Performance Metrics
 
@@ -104,6 +104,11 @@ Recent decisions affecting current work:
 - Minor (Phase 2): Single `print()` debug statement in notifier line 301 — remove before production
 - Minor (Phase 3): Deprecated Color API in test/core/theme/app_theme_test.dart (.red/.green/.blue → new API)
 - Enhancement (Testing): Add live test output overlay to integration test runner — show progress on-device
+- **Deferred (Phase 4):** Human verification of 4 success criteria — test when Chat UI (Phase 6) is built:
+  1. Main thread non-blocking (no ANR during inference)
+  2. Isolate persists for session (no per-request respawn)
+  3. Multi-turn context coherence ("My name is Alex" → "What is my name?")
+  4. Drift persistence across app restart
 
 ### Quick Tasks Completed
 
@@ -135,6 +140,11 @@ Recent decisions affecting current work:
   - Report: `.planning/phases/VERIFICATION-CHAIN-P03.md`
   - Verdict: Code work PASS — visual verification on device pending
 
+- **2026-02-25:** Verification — Phase 4 (structural pass, human deferred)
+  - Automated: 4/4 must-haves structurally verified, all 20 source files substantive, all 15 key links wired
+  - Report: `.planning/phases/04-core-inference-architecture/04-VERIFICATION.md`
+  - Verdict: Code PASS — human verification deferred to Phase 6 (needs chat UI to exercise pipeline)
+
 ## Merge Log
 
 - **2026-02-19:** Merged `phase/02-model-distribution` into master (fa168f2)
@@ -149,16 +159,9 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 04 | 04-05 | executing | 2026-02-25T04:40:07.115Z | unknown |
+
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Repo published to GitHub, housekeeping done.
-Resume file: .planning/PARALLEL-RESUME.md
-Next action: Finish Phase 1 hardware testing (static-linked libmtmd.so rebuild) or start Phase 4 planning
-
-### Context Window Handoff (2026-02-25)
-Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
-
-### Context Window Handoff (2026-02-25)
-Session approaching context limit (~15% remaining). Work committed. Run /clear and resume.
+Last session: 2026-02-25
+Stopped at: Phase 4 complete, human verification deferred
+Next action: Plan and execute Phase 5 (Translation UI) or Phase 6 (Chat UI) — both can run in parallel
