@@ -85,6 +85,9 @@ Recent decisions affecting current work:
 - [Phase 04-core-inference-architecture]: Separate _errorPort for addErrorListener: Isolate crash sends List not InferenceResponse — dedicated port keeps listener clean
 - [Phase 04-core-inference-architecture]: Manual nPredict counting in await-for loop: ContextParams.nPredict is construction-time only, model loaded once with nPredict=-1
 - [Phase 04-core-inference-architecture]: Cooperative stop via closure-scope _stopped flag: accessible from both GenerateCommand async handler and StopCommand handler on same isolate event loop
+- [Phase 04-core-inference-architecture]: Domain ChatSession/ChatMessage use same names as Drift row types — resolved via import alias 'as db' in DriftChatRepository
+- [Phase 04-core-inference-architecture]: DriftChatRepository uses constructor injection (not DatabaseAccessor subclass) for simpler Riverpod integration
+- [Phase 04-core-inference-architecture]: insertMessage touches parent session updatedAt to bubble session to top of drawer list without explicit caller coordination
 
 ### Pending Todos
 
