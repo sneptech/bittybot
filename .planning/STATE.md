@@ -172,12 +172,31 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 05 | 05-03 | executing | 2026-02-25T06:05:18.335Z | unknown |
+| /home/max/git/bittybot | mowismtest | 05 | 05-04 | executing | 2026-02-25T06:05:18.335Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 05-03-PLAN.md (Phase 5 Plan 03 — language picker sheet, grid item, wired to translation screen, long-press copy on bubbles)
-Next action: Execute Phase 5 Plan 04
+Stopped at: Phase 5 execution paused at Plan 04 checkpoint (human verification). Plans 01-03 complete, code compiles, APK builds.
+Next action: **INVESTIGATE BEFORE CONTINUING Phase 5 verification**
+
+### Next Session: Required Investigation
+
+**Problem observed during Phase 5 human verification:**
+1. **App logo reset to default Flutter icon** — the custom bittybot-logo.png set in quick task #1 (commit 8eaec61) appears to have been overwritten or lost
+2. **App shows wrong screen** — instead of the Translation UI (Phase 5), the app displays a blank white window with "BittyBot - Phase 1 Inference Spike" text in a bluish header bar. The `AppStartupWidget` → `ModelLoadingScreen` gate may be blocking access to `MainShell`/`TranslationScreen`
+3. **Phase routing/wiring may be broken** — the app entry point (`AppStartupWidget`) gates on `appStartupProvider` (settings only) then shows `MainShell`. But what the user sees suggests the model loading screen or an older phase's UI is showing instead
+
+**Suspected root cause:** The GSD → Mowism migration may have introduced a bug where completed phase context is not properly propagated into central/overarching planning documentation. The executor agents may be writing code that doesn't properly integrate with earlier phases' code because the planning context is incomplete or stale.
+
+**Investigation steps:**
+1. Explore `.planning/phases/` directory — read SUMMARY.md files from each completed phase to understand what was actually built vs what STATE.md/ROADMAP.md says
+2. Compare the actual `lib/` source tree against what each phase claims to have produced — check for overwrites, missing files, or broken imports
+3. Check `lib/widgets/model_loading_screen.dart` — what does it show? Is it the "Phase 1 Inference Spike" text the user saw?
+4. Check Android launcher icon resources (`android/app/src/main/res/mipmap-*/`) — verify bittybot logo is still there
+5. Trace the app startup path: `main.dart` → `app.dart` → `AppStartupWidget` → `ModelLoadingScreen` (loading) vs `MainShell` (loaded) — what state is `appStartupProvider` in?
+6. Verify that Phase 4's `modelReadyProvider` and Phase 2's download flow are properly integrated — the app may be stuck at a gate that was never wired correctly after the parallel phase merges
+
+**Broader concern:** Mowism executor agents may not be getting sufficient context about what earlier phases built. Each agent gets fresh 200k context but only reads specific @-referenced files. If the planning docs don't accurately reflect what's in the codebase (e.g., after merge conflicts, file overwrites, or migration gaps), agents may produce code that doesn't integrate correctly.
 
 ### Context Window Handoff (2026-02-25)
 Session approaching context limit (~8% remaining). Work committed. Run /clear and resume.
