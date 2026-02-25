@@ -5,13 +5,13 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Translation and conversation must work with zero connectivity
-**Current focus:** Phase 5 (Translation UI) executing — Plan 02 complete
+**Current focus:** Phase 5 (Translation UI) executing — Plan 03 complete
 
 ## Current Position
 
 Phase: 5 of 9
 Status: Phase 5 in progress (1/4 plans complete)
-Last activity: 2026-02-25 — Phase 5 Plan 02 executed (navigation shell, translation screen, bubble list, input bar, typing indicator)
+Last activity: 2026-02-25 — Phase 5 Plan 03 executed (language picker sheet, grid item, wired to translation screen, long-press copy on bubbles)
 
 Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Plan 01)
 
@@ -23,7 +23,7 @@ Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Pla
 | 2: Model Distribution | Complete | 3/3 | Verification chain passed, all success criteria met |
 | 3: App Foundation | Complete | 5/5 | Verification chain passed |
 | 4: Core Inference Arch | Complete | 5/5 | Automated verification passed; human verification deferred to Phase 6 |
-| 5: Translation UI | In progress | 2/4 | Plan 02 complete: navigation shell, translation screen, bubble list, input bar, typing indicator |
+| 5: Translation UI | In progress | 3/4 | Plan 03 complete: language picker sheet, grid item, wired to translation screen, long-press copy |
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Pla
 | Phase 04-core-inference-architecture P04 | 3 | 2 tasks | 7 files |
 | Phase 04-core-inference-architecture P05 | 5min | 2 tasks | 4 files |
 | Phase 05-translation-ui P02 | 4 | 2 tasks | 6 files |
+| Phase 05-translation-ui P03 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,9 @@ Recent decisions affecting current work:
 - [Phase 05-translation-ui P01]: 66 languages as canonical kSupportedLanguages count — model card names exactly 66; country variants handled via kLanguageCountryVariants flag map
 - [Phase 05-translation-ui]: Generated provider name is 'translationProvider' (not 'translationNotifierProvider') — riverpod_generator strips 'Notifier' suffix from class name
 - [Phase 05-translation-ui]: Word-level batching: space-delimited scripts show last complete word boundary during streaming; CJK/Thai/Lao/Khmer/Burmese use token-by-token display
+- [Phase 05-translation-ui]: CountryFlag v4.1.2: ImageTheme wrapper required for width/height/shape params in fromCountryCode()
+- [Phase 05-translation-ui]: LocaleNames cache in didChangeDependencies: avoids per-build recompute; triggers on locale change
+- [Phase 05-translation-ui]: allowCopy: false on streaming bubble: copy disabled during active streaming to avoid partial text
 
 ### Pending Todos
 
@@ -168,12 +172,12 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 05 | 05-02 | executing | 2026-02-25T06:05:18.335Z | unknown |
+| /home/max/git/bittybot | mowismtest | 05 | 05-03 | executing | 2026-02-25T06:05:18.335Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed 05-02-PLAN.md (Phase 5 Plan 02 — navigation shell, translation screen, bubble list, input bar, typing indicator)
-Next action: Execute Phase 5 Plan 03 (language picker bottom sheet)
+Stopped at: Completed 05-03-PLAN.md (Phase 5 Plan 03 — language picker sheet, grid item, wired to translation screen, long-press copy on bubbles)
+Next action: Execute Phase 5 Plan 04
 
 ### Context Window Handoff (2026-02-25)
 Session approaching context limit (~8% remaining). Work committed. Run /clear and resume.
