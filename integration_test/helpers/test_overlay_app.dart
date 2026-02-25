@@ -10,6 +10,13 @@ import 'test_progress_controller.dart';
 /// its result, rather than staring at a blank "Test starting..." screen.
 ///
 /// This is test-mode-only infrastructure -- never imported by production code.
+///
+/// Brand colours pulled from lib/core/theme/app_colors.dart:
+///   surface          #0A1A0A  — near-black green scaffold background
+///   surfaceContainer #0F2B0F  — slightly lighter dark green (header)
+///   primary          #1B5E20  — forest green
+///   secondary        #8BC34A  — lime / yellow-green accent
+///   onSurfaceVariant #B0D0B0  — muted green-tinted text
 class TestOverlayApp extends StatelessWidget {
   const TestOverlayApp({super.key});
 
@@ -18,7 +25,8 @@ class TestOverlayApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF1A1A2E),
+        // Near-black green — matches AppColors.surface.
+        scaffoldBackgroundColor: const Color(0xFF0A1A0A),
       ),
       home: const _TestOverlayScreen(),
     );
@@ -33,23 +41,7 @@ class _TestOverlayScreen extends StatefulWidget {
 }
 
 class _TestOverlayScreenState extends State<_TestOverlayScreen> {
-  final ScrollController _scrollController = ScrollController();
   final _progress = TestProgressController.instance;
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollToBottom() {
-    // Schedule the scroll for after the frame is laid out.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,35 +50,43 @@ class _TestOverlayScreenState extends State<_TestOverlayScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Header
+            // Header — forest-green brand colour (AppColors.surfaceContainer).
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              color: const Color(0xFF16213E),
+              color: const Color(0xFF0F2B0F),
               child: const Text(
                 'BittyBot Integration Tests',
                 style: TextStyle(
                   fontFamily: 'monospace',
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF00D4AA),
+                  // Lime accent (AppColors.secondary).
+                  color: Color(0xFF8BC34A),
                 ),
               ),
             ),
-            const Divider(height: 1, color: Color(0xFF00D4AA)),
-            // Scrolling log output
+            // Border line — lime accent (AppColors.secondary).
+            const Divider(height: 1, color: Color(0xFF8BC34A)),
+            // Scrolling log output.
+            // reverse: true makes new lines appear at the bottom automatically
+            // without any ScrollController.jumpTo() logic. The GPU is busy
+            // running the model so we avoid animated scrolling entirely.
             Expanded(
               child: StreamBuilder<List<String>>(
                 stream: _progress.lines,
                 initialData: _progress.currentLines,
                 builder: (context, snapshot) {
                   final lines = snapshot.data ?? [];
-                  _scrollToBottom();
                   return ListView.builder(
-                    controller: _scrollController,
+                    // Newest item is at index 0 of a reversed list, which
+                    // renders at the bottom of the viewport.
+                    reverse: true,
                     padding: const EdgeInsets.all(8),
                     itemCount: lines.length,
                     itemBuilder: (context, index) {
-                      final line = lines[index];
+                      // Reverse the index so the last log line is shown first
+                      // (i.e. at the bottom with reverse: true).
+                      final line = lines[lines.length - 1 - index];
                       return Text(
                         line,
                         style: TextStyle(
@@ -108,13 +108,23 @@ class _TestOverlayScreenState extends State<_TestOverlayScreen> {
   }
 
   /// Pick a colour based on the content of the log line.
+  ///
+  /// Palette keeps terminal semantics (green=pass, red=fail) while using
+  /// brand-adjacent tones that complement the forest-green / lime theme.
   Color _colorForLine(String line) {
-    if (line.contains('PASS ')) return const Color(0xFF00E676);
-    if (line.contains('FAIL ')) return const Color(0xFFFF5252);
-    if (line.contains('START ')) return const Color(0xFF64B5F6);
+    // PASS — bright lime green (on-brand, clearly positive).
+    if (line.contains('PASS ')) return const Color(0xFF8BC34A);
+    // FAIL — brand error pink-red (AppColors.error).
+    if (line.contains('FAIL ')) return const Color(0xFFCF6679);
+    // START — soft forest green highlight.
+    if (line.contains('START ')) return const Color(0xFF66BB6A);
+    // PROMPT — warm amber, stands out from green palette.
     if (line.contains('PROMPT:')) return const Color(0xFFFFAB40);
-    if (line.contains('RESPONSE:')) return const Color(0xFFE0E0E0);
-    if (line.contains('---')) return const Color(0xFFFFD54F);
-    return const Color(0xFFB0BEC5);
+    // RESPONSE — muted green-white (AppColors.onSurfaceVariant).
+    if (line.contains('RESPONSE:')) return const Color(0xFFB0D0B0);
+    // Section dividers — lime accent (AppColors.secondary).
+    if (line.contains('---')) return const Color(0xFF8BC34A);
+    // Default — muted green-tinted text (AppColors.onSurfaceVariant).
+    return const Color(0xFFB0D0B0);
   }
 }
