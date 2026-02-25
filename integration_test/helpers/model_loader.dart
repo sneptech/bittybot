@@ -177,6 +177,7 @@ class ModelLoader {
   /// Calls [loadModel] must precede this method.
   Future<String> generateComplete(String prompt) async {
     _ensureLoaded();
+    _llama!.clear(); // reset context so each prompt gets full 512-token window
     _llama!.setPrompt(prompt);
     final tokens = <String>[];
     await for (final text in _llama!.generateText()) {
@@ -190,6 +191,7 @@ class ModelLoader {
   /// Calls [loadModel] must precede this method.
   Stream<String> generateStream(String prompt) async* {
     _ensureLoaded();
+    _llama!.clear(); // reset context so each prompt gets full 512-token window
     _llama!.setPrompt(prompt);
     await for (final text in _llama!.generateText()) {
       yield text;
