@@ -159,3 +159,6 @@ Next action: Finish Phase 1 hardware testing (static-linked libmtmd.so rebuild) 
 
 ### Context Window Handoff (2026-02-25)
 Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
+
+### Context Window Handoff (2026-02-25)
+Session approaching context limit (~15% remaining). Work committed. Run /clear and resume.
