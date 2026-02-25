@@ -10,16 +10,20 @@ part 'app_startup_widget.g.dart';
 
 /// Eagerly initialises all async startup dependencies.
 ///
-/// Currently awaits [settingsProvider] (locale and error tone).
-/// Phase 4 will extend this to also await model readiness:
-///   await ref.watch(modelReadyProvider.future);
+/// Awaits [settingsProvider] (locale and error tone) only.
+///
+/// **Design decision — model loads independently:**
+/// The model ([modelReadyProvider]) is NOT awaited here. On subsequent
+/// launches, users can browse chat history and settings while the model
+/// loads in the background. Only the input field is disabled until
+/// [modelReadyProvider] resolves (partial-access pattern). On first
+/// launch, the DownloadScreen gates everything before this widget is shown.
 ///
 /// [keepAlive: true] prevents disposal when no widget is watching —
 /// the startup future should run exactly once per app session.
 @Riverpod(keepAlive: true)
 Future<void> appStartup(Ref ref) async {
   await ref.watch(settingsProvider.future);
-  // Phase 4 will add: await ref.watch(modelReadyProvider.future);
 }
 
 /// Async gate that shows loading / error / main UI based on startup state.
