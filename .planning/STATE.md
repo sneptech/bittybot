@@ -159,7 +159,7 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-
+| /home/max/git/bittybot | mowismtest | 05 | — | executing | 2026-02-25T06:05:18.335Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-25
@@ -171,3 +171,6 @@ Session approaching context limit (~8% remaining). Work committed. Run /clear an
 
 ### Context Window Handoff (2026-02-25)
 Session approaching context limit (~7% remaining). Work committed. Run /clear and resume.
+
+### Context Window Handoff (2026-02-25)
+Session approaching context limit (~2% remaining). Work committed. Run /clear and resume.
