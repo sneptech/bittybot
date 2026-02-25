@@ -6,13 +6,23 @@ void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.defaultTestTimeout = Timeout.none;
 
+  late ModelLoader loader;
+
+  setUpAll(() async {
+    loader = ModelLoader();
+    final result = await loader.loadModel();
+    if (!result.loaded) {
+      fail('Model failed to load: ${result.architectureError}');
+    }
+  });
+
+  tearDownAll(() {
+    loader.dispose();
+  });
+
   group('Phase 1 Spike: Token Streaming', () {
 
     testWidgets('tokens arrive one-at-a-time during generation (not buffered)', (tester) async {
-      // Arrange
-      final loader = ModelLoader();
-      await loader.loadModel();
-
       final tokens = <String>[];
       final timestamps = <DateTime>[];
 
@@ -44,15 +54,9 @@ void main() {
       expect(buckets.length, greaterThan(3),
         reason: 'Tokens should arrive across multiple time windows, '
                 'not in a single burst');
-
-      loader.dispose();
     }, timeout: Timeout.none);
 
     testWidgets('streaming produces same output as complete generation', (tester) async {
-      // Arrange
-      final loader = ModelLoader();
-      await loader.loadModel();
-
       const prompt = '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello world" in Japanese.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>';
 
       // Act — collect streamed tokens
@@ -66,15 +70,9 @@ void main() {
       expect(streamedOutput, isNotEmpty);
       expect(streamedTokens.length, greaterThan(1),
         reason: 'Streaming should produce multiple tokens');
-
-      loader.dispose();
     }, timeout: Timeout.none);
 
     testWidgets('token generation speed is measured', (tester) async {
-      // Arrange
-      final loader = ModelLoader();
-      await loader.loadModel();
-
       final stopwatch = Stopwatch()..start();
       var tokenCount = 0;
 
@@ -100,8 +98,6 @@ void main() {
           '<|START_OF_TURN_TOKEN|><|USER_TOKEN|>Say "hello" in Thai.<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>',
         ).toList()).join()
       ), isTrue, reason: 'Thai translation should contain Thai script characters');
-
-      loader.dispose();
     }, timeout: Timeout.none);
   });
 }
