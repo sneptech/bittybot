@@ -40,6 +40,7 @@ Progress: [███░░░░░░░] ~33% (3 phases complete or near-compl
 | Phase 04-core-inference-architecture P01 | 4 | 3 tasks | 4 files |
 | Phase 04-core-inference-architecture P02 | 3 | 2 tasks | 2 files |
 | Phase 04-core-inference-architecture P03 | 3 | 2 tasks | 5 files |
+| Phase 04-core-inference-architecture P04 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,9 @@ Recent decisions affecting current work:
 - [Phase 04-core-inference-architecture]: Domain ChatSession/ChatMessage use same names as Drift row types — resolved via import alias 'as db' in DriftChatRepository
 - [Phase 04-core-inference-architecture]: DriftChatRepository uses constructor injection (not DatabaseAccessor subclass) for simpler Riverpod integration
 - [Phase 04-core-inference-architecture]: insertMessage touches parent session updatedAt to bubble session to top of drawer list without explicit caller coordination
+- [Phase 04-core-inference-architecture]: appStartupProvider remains settings-only: model loads independently via modelReadyProvider (partial-access pattern)
+- [Phase 04-core-inference-architecture]: ModelReady uses WidgetsBindingObserver mixin on AsyncNotifier for OS-kill recovery
+- [Phase 04-core-inference-architecture]: inferenceRepositoryProvider throws StateError if accessed before modelReadyProvider resolves
 
 ### Pending Todos
 
@@ -140,7 +144,7 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 04 | 04-02 | executing | 2026-02-25T04:40:07.115Z | unknown |
+| /home/max/git/bittybot | mowismtest | 04 | 04-04 | executing | 2026-02-25T04:40:07.115Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-19
