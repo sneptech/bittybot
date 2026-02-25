@@ -1,7 +1,7 @@
 # Verification Chain Report — Phase 2: Model Distribution
 
 **Date:** 2026-02-19
-**Checks run:** scope-check, change-summary, verify-work (gsd-verifier), update-claude-md
+**Checks run:** scope-check, change-summary, verify-work (mow-verifier), update-claude-md
 **Tier:** Always (standard — not algorithmic or high-risk)
 **Overall verdict:** PASS (1 gap found and fixed)
 

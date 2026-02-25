@@ -143,4 +143,4 @@ All other truths are fully verified with strong evidence. The codebase is well-s
 ---
 
 _Verified: 2026-02-19T22:30:00Z_
-_Verifier: Claude (gsd-verifier)_
+_Verifier: Claude (mow-verifier)_

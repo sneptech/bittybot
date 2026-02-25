@@ -19,7 +19,7 @@ Run the post-phase verification workflow from `~/git/ai-agent-tools-and-tips/REC
 ```
 /scope-check
 /change-summary
-/gsd:verify-work
+/mow:verify-work
 /update-claude-md
 ```
 
@@ -31,21 +31,21 @@ Run each phase's chain in its own worktree terminal. All three can run in parall
 ```fish
 cd ~/git/bittybot
 claude
-# Then run: /scope-check, /change-summary, /gsd:verify-work, /update-claude-md
+# Then run: /scope-check, /change-summary, /mow:verify-work, /update-claude-md
 ```
 
 **Phase 2:**
 ```fish
 cd ~/git/bittybot-phase-02
 claude
-# Then run: /scope-check, /change-summary, /gsd:verify-work, /update-claude-md
+# Then run: /scope-check, /change-summary, /mow:verify-work, /update-claude-md
 ```
 
 **Phase 3:**
 ```fish
 cd ~/git/bittybot-phase-03
 claude
-# Then run: /scope-check, /change-summary, /gsd:verify-work, /update-claude-md
+# Then run: /scope-check, /change-summary, /mow:verify-work, /update-claude-md
 ```
 
 Each chain writes findings to `.planning/phases/VERIFICATION-CHAIN-P{N}.md` in its worktree.

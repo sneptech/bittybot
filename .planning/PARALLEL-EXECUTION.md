@@ -2,7 +2,7 @@
 
 ## How It Works
 
-This project uses git worktrees to run independent GSD phases simultaneously. Each worktree gets its own branch, its own directory, and its own Claude Code session. GSD doesn't know about worktrees — it just commits to whatever branch is checked out.
+This project uses git worktrees to run independent MOW phases simultaneously. Each worktree gets its own branch, its own directory, and its own Claude Code session. MOW doesn't know about worktrees — it just commits to whatever branch is checked out.
 
 **Key constraint:** `discuss` and `plan` require user interaction. `execute` is autonomous. Parallelize at the execute boundary.
 
@@ -22,19 +22,19 @@ The optimal pattern is **three terminals**: the predecessor phase executes auton
 ```fish
 # Terminal 1: kick off the predecessor phase on master
 cd ~/git/bittybot && claude
-  → /gsd:execute-phase 1    # autonomous — runs unattended
+  → /mow:execute-phase 1    # autonomous — runs unattended
 
 # Terminal 2: while Phase 1 runs, discuss + plan Phase 2
 fish scripts/wt-phase.fish 02 model-distribution
 cd ../bittybot-phase-02 && claude
-  → /gsd:discuss-phase 2    # interactive — you answer questions
-  → /gsd:plan-phase 2       # interactive — you approve the plan
+  → /mow:discuss-phase 2    # interactive — you answer questions
+  → /mow:plan-phase 2       # interactive — you approve the plan
 
 # Terminal 3: while Phase 1 runs, discuss + plan Phase 3
 fish scripts/wt-phase.fish 03 app-foundation
 cd ../bittybot-phase-03 && claude
-  → /gsd:discuss-phase 3    # interactive — you answer questions
-  → /gsd:plan-phase 3       # interactive — you approve the plan
+  → /mow:discuss-phase 3    # interactive — you answer questions
+  → /mow:plan-phase 3       # interactive — you approve the plan
 ```
 
 By the time you finish planning both sibling phases, Phase 1 may already be done or close to it.
@@ -56,10 +56,10 @@ Kick off execution in each worktree's Claude session. With `mode: "yolo"` in con
 
 ```fish
 # Terminal 2 (already in bittybot-phase-02 claude session):
-  → /gsd:execute-phase 2
+  → /mow:execute-phase 2
 
 # Terminal 3 (already in bittybot-phase-03 claude session):
-  → /gsd:execute-phase 3
+  → /mow:execute-phase 3
 ```
 
 Both agents now work independently. You can walk away.
@@ -118,5 +118,5 @@ Only phases with no dependency between them can run in parallel:
 ## Notes
 
 - Both worktrees share the same git object store. Heavy builds in parallel will compete for disk I/O and CPU.
-- GSD's `branching_strategy` stays `"none"` — the worktree creates the branch, GSD is oblivious.
-- If a phase execution fails mid-way, use `/gsd:resume-work` in that worktree's Claude session.
+- MOW's `branching_strategy` stays `"none"` — the worktree creates the branch, MOW is oblivious.
+- If a phase execution fails mid-way, use `/mow:resume-work` in that worktree's Claude session.

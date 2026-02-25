@@ -116,7 +116,7 @@ Based on the component dependency graph from ARCHITECTURE.md and the phase warni
 - Quantization quality for key language families: Arabic, Thai, Amharic (Pitfall 7)
 - Prompt template format confirmed from model card
 
-**Research flag:** Needs `/gsd:research-phase` — llama.cpp plugin version lag for Cohere2 is unverified; specific linking approach on iOS depends on chosen plugin.
+**Research flag:** Needs `/mow:research-phase` — llama.cpp plugin version lag for Cohere2 is unverified; specific linking approach on iOS depends on chosen plugin.
 
 ### Phase 2: Model Distribution and Platform Foundation
 
@@ -191,7 +191,7 @@ Based on the component dependency graph from ARCHITECTURE.md and the phase warni
 
 ### Research Flags
 
-Phases needing `/gsd:research-phase` during planning:
+Phases needing `/mow:research-phase` during planning:
 - **Phase 1:** llama.cpp plugin Cohere2 compatibility — specific version of llama.cpp vendored by each candidate plugin is unverified; must inspect package source or run CLI test
 - **Phase 2:** Android Play Asset Delivery integration — Flutter has no native PAD support; may require writing custom native plugin code; complexity unknown
 - **Phase 4:** Impeller RTL rendering — Flutter issue #119805 status for Arabic text in the current Impeller version needs verification before committing to the rendering path

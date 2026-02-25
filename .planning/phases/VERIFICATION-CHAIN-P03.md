@@ -2,7 +2,7 @@
 
 **Date:** 2026-02-19
 **Branch:** `phase/03-app-foundation` (worktree at `~/git/bittybot-phase-03`)
-**Checks run:** scope-check, change-summary, gsd:verify-work, update-claude-md
+**Checks run:** scope-check, change-summary, mow:verify-work, update-claude-md
 
 ---
 
@@ -102,9 +102,9 @@
 
 ---
 
-## Stage 4: /gsd:verify-work — PENDING
+## Stage 4: /mow:verify-work — PENDING
 
-*(To be filled after running /gsd:verify-work)*
+*(To be filled after running /mow:verify-work)*
 
 ---
 

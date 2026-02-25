@@ -52,7 +52,7 @@ Output: All platform launcher icons replaced, app name corrected.
 </objective>
 
 <execution_context>
-@/home/max/.claude/get-shit-done/workflows/execute-plan.md
+@/home/max/.claude/mowism/workflows/execute-plan.md
 </execution_context>
 
 <context>
