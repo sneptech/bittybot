@@ -38,6 +38,8 @@ Progress: [███░░░░░░░] ~33% (3 phases complete or near-compl
 | Phase 2 | 3/3 | ~18min | ~6min |
 | Phase 3 | 5/5 | ~40min | ~8min |
 | Phase 04-core-inference-architecture P01 | 4 | 3 tasks | 4 files |
+| Phase 04-core-inference-architecture P02 | 3 | 2 tasks | 2 files |
+| Phase 04-core-inference-architecture P03 | 3 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -80,6 +82,9 @@ Recent decisions affecting current work:
 - [Phase 04-core-inference-architecture]: Drift row types are ChatSession/ChatMessage (not ChatSessionData/ChatMessageData) — corrected return type on watchMessagesForSession()
 - [Phase 04-core-inference-architecture]: Sealed base classes need const constructors for subclass const support — added const InferenceCommand() and const InferenceResponse()
 - [Phase 04-core-inference-architecture]: estimateTokenCount uses 2 chars/token (CJK worst-case over-estimate) rather than 4 chars/token (Latin) for earlier context-full detection
+- [Phase 04-core-inference-architecture]: Separate _errorPort for addErrorListener: Isolate crash sends List not InferenceResponse — dedicated port keeps listener clean
+- [Phase 04-core-inference-architecture]: Manual nPredict counting in await-for loop: ContextParams.nPredict is construction-time only, model loaded once with nPredict=-1
+- [Phase 04-core-inference-architecture]: Cooperative stop via closure-scope _stopped flag: accessible from both GenerateCommand async handler and StopCommand handler on same isolate event loop
 
 ### Pending Todos
 
@@ -132,7 +137,7 @@ Recent decisions affecting current work:
 
 | Worktree | Branch | Phase | Plan | Status | Started | Agent |
 |----------|--------|-------|------|--------|---------|-------|
-| /home/max/git/bittybot | mowismtest | 04 | 04-01 | executing | 2026-02-25T04:40:07.115Z | unknown |
+| /home/max/git/bittybot | mowismtest | 04 | 04-02 | executing | 2026-02-25T04:40:07.115Z | unknown |
 ## Session Continuity
 
 Last session: 2026-02-19
