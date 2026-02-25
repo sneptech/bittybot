@@ -86,6 +86,7 @@ void main() {
           for (final testPrompt in lang.prompts) {
             promptIdx++;
             progress.log('  [${lang.languageName}] prompt $promptIdx/${lang.prompts.length}: ${testPrompt.category}');
+            progress.log('  PROMPT: ${testPrompt.sourceText}');
             await refreshOverlay(tester);
 
             final stopwatch = Stopwatch()..start();
@@ -98,6 +99,8 @@ void main() {
             stopwatch.stop();
 
             final output = tokens.join();
+            progress.log('  RESPONSE: $output');
+            await refreshOverlay(tester);
             final scriptOk = lang.scriptValidator.hasMatch(output);
 
             promptResults.add(PromptResultData(
@@ -188,6 +191,9 @@ void main() {
           final promptResults = <PromptResultData>[];
 
           for (final testPrompt in lang.prompts) {
+            progress.log('  PROMPT: ${testPrompt.sourceText}');
+            await refreshOverlay(tester);
+
             final stopwatch = Stopwatch()..start();
             final tokens = <String>[];
 
@@ -198,6 +204,8 @@ void main() {
             stopwatch.stop();
 
             final output = tokens.join();
+            progress.log('  RESPONSE: $output');
+            await refreshOverlay(tester);
             final scriptOk = lang.scriptValidator.hasMatch(output);
 
             promptResults.add(PromptResultData(
