@@ -109,8 +109,74 @@ class ReportWriter {
   /// Accumulated per-language results.
   final List<LanguageResultData> results = [];
 
-  /// Cached documents directory path (resolved once on first flush).
+  /// Cached documents directory path (resolved once on first use).
   String? _dirPath;
+
+  /// Reads an existing results file, pre-populates [results] with previously
+  /// completed entries, and returns the set of already-completed language codes.
+  ///
+  /// Returns an empty set if the file does not exist or cannot be parsed, so
+  /// the caller can treat both cases uniformly (start fresh).
+  ///
+  /// Pre-populating [results] ensures that [writeResults] / [addLanguageResult]
+  /// emit a file that contains *all* results — both the ones loaded here and
+  /// any new ones added during this run.
+  Future<Set<String>> loadExisting(
+      {String filename = 'spike_results.json'}) async {
+    _dirPath ??= (await getApplicationDocumentsDirectory()).path;
+    final file = File('$_dirPath/$filename');
+
+    if (!file.existsSync()) return {};
+
+    try {
+      final raw = await file.readAsString();
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return {};
+
+      final completed = <String>{};
+      for (final entry in decoded) {
+        if (entry is! Map<String, dynamic>) continue;
+        final langCode = entry['languageCode'] as String?;
+        if (langCode == null) continue;
+
+        // Re-hydrate prompts.
+        final rawPrompts = entry['prompts'];
+        final prompts = <PromptResultData>[];
+        if (rawPrompts is List) {
+          for (final p in rawPrompts) {
+            if (p is! Map<String, dynamic>) continue;
+            prompts.add(PromptResultData(
+              category: (p['category'] as String?) ?? '',
+              sourceText: (p['sourceText'] as String?) ?? '',
+              prompt: (p['prompt'] as String?) ?? '',
+              generatedOutput: (p['generatedOutput'] as String?) ?? '',
+              tokenCount: (p['tokenCount'] as num?)?.toInt() ?? 0,
+              tokensPerSecond:
+                  (p['tokensPerSecond'] as num?)?.toDouble() ?? 0.0,
+              scriptValidationPassed:
+                  (p['scriptValidationPassed'] as bool?) ?? false,
+              durationMs: (p['durationMs'] as num?)?.toInt() ?? 0,
+            ));
+          }
+        }
+
+        results.add(LanguageResultData(
+          languageName: (entry['languageName'] as String?) ?? langCode,
+          languageCode: langCode,
+          scriptFamily: (entry['scriptFamily'] as String?) ?? '',
+          priority: (entry['priority'] as String?) ?? '',
+          prompts: prompts,
+        ));
+        completed.add(langCode);
+      }
+
+      return completed;
+    } catch (_) {
+      // Corrupt or unreadable file — treat as no prior results.
+      results.clear();
+      return {};
+    }
+  }
 
   /// Appends [result] to the accumulated results list and flushes to disk.
   Future<void> addLanguageResult(LanguageResultData result,

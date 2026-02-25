@@ -11,14 +11,31 @@
 /// Prerequisites:
 /// - Android: `adb push tiny-aya-global-q4_k_m.gguf /sdcard/Download/`
 /// - iOS: Use Xcode Device Manager to copy the GGUF to the app Documents folder.
+///
+/// Resume behaviour:
+/// The test reads `spike_results.json` at startup. Any language code already
+/// present in that file is skipped so interrupted runs continue from where they
+/// left off. To force a completely fresh run, create a flag file on the device:
+///   adb shell touch /data/local/tmp/bittybot_fresh_start
+/// The flag file is deleted automatically after being read so subsequent runs
+/// resume normally.
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'helpers/language_corpus.dart';
 import 'helpers/model_loader.dart';
 import 'helpers/pump_test_overlay.dart';
 import 'helpers/report_writer.dart';
 import 'helpers/test_progress_controller.dart';
+
+/// Path of the flag file that forces a full re-run when present on the device.
+const _freshStartFlagPath = '/data/local/tmp/bittybot_fresh_start';
+
+/// Filename used by [ReportWriter] for incremental + final flushes.
+const _resultsFilename = 'spike_results.json';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +46,48 @@ void main() {
   late ModelLoader loader;
   final reportWriter = ReportWriter();
 
+  // Language codes that were already present in spike_results.json at startup.
+  // Populated in setUpAll; read (not mutated) by individual tests.
+  var completedLanguageCodes = <String>{};
+
   setUpAll(() async {
+    // --- Resume / fresh-start logic ----------------------------------------
+    final flagFile = File(_freshStartFlagPath);
+    if (flagFile.existsSync()) {
+      // Fresh-start requested: delete the flag and any existing results file.
+      progress.log('FRESH START: ignoring previous results');
+      // ignore: avoid_print
+      print('FRESH START: deleting flag file $_freshStartFlagPath');
+      try {
+        flagFile.deleteSync();
+      } catch (_) {
+        // Non-fatal — missing write permission just means the flag stays,
+        // but we still proceed as a fresh run this session.
+      }
+      // Delete existing results file so this run starts clean.
+      try {
+        final docsDir = await getApplicationDocumentsDirectory();
+        final resultsFile = File('${docsDir.path}/$_resultsFilename');
+        if (resultsFile.existsSync()) resultsFile.deleteSync();
+      } catch (_) {}
+      completedLanguageCodes = {};
+    } else {
+      // Normal start: load any previously completed languages.
+      completedLanguageCodes = await reportWriter.loadExisting(
+        filename: _resultsFilename,
+      );
+      if (completedLanguageCodes.isNotEmpty) {
+        progress.log(
+          'RESUMING: ${completedLanguageCodes.length} language(s) already completed — will skip them',
+        );
+        // ignore: avoid_print
+        print('Resuming — skipping: $completedLanguageCodes');
+      } else {
+        progress.log('Starting fresh (no previous results found)');
+      }
+    }
+    // -----------------------------------------------------------------------
+
     // Load the model once for the entire test suite to avoid re-loading 2+ GB
     // on each test. The Llama instance is shared across all test groups.
     progress.log('Loading model...');
@@ -76,6 +134,14 @@ void main() {
         '${lang.languageName} — travel phrases produce correct script output',
         (tester) async {
           await pumpTestOverlay(tester);
+
+          // Resume: skip languages already present in spike_results.json.
+          if (completedLanguageCodes.contains(lang.languageCode)) {
+            progress.log('SKIPPED (already in results): ${lang.languageName}');
+            await refreshOverlay(tester);
+            return;
+          }
+
           final testName = '${lang.languageName} (${lang.prompts.length} prompts)';
           progress.logTestStart(testName);
           final sw = Stopwatch()..start();
@@ -167,6 +233,14 @@ void main() {
         '${lang.languageName} — reference sentences produce correct script output',
         (tester) async {
           await pumpTestOverlay(tester);
+
+          // Resume: skip languages already present in spike_results.json.
+          if (completedLanguageCodes.contains(lang.languageCode)) {
+            progress.log('SKIPPED (already in results): ${lang.languageName}');
+            await refreshOverlay(tester);
+            return;
+          }
+
           final testName = '${lang.languageName} [${langIdx + 1}/${standardLanguages.length}]';
           progress.logTestStart(testName);
           final sw = Stopwatch()..start();
