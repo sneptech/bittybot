@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/l10n/app_localizations.dart';
 import '../application/translation_notifier.dart';
+import '../domain/supported_language.dart';
+import 'widgets/language_picker_sheet.dart';
 import 'widgets/translation_bubble_list.dart';
 import 'widgets/translation_input_bar.dart';
 
 /// Translation screen — the primary user-facing screen where translation happens.
 ///
 /// Scaffold layout:
-/// - [AppBar]: target language button (placeholder for Plan 03 picker) + new
+/// - [AppBar]: target language button (opens language picker sheet) + new
 ///   session [IconButton].
 /// - Context-full banner: shown when [TranslationState.isContextFull] is true.
 /// - [TranslationBubbleList]: expanded, fills available space.
@@ -23,6 +25,34 @@ import 'widgets/translation_input_bar.dart';
 class TranslationScreen extends ConsumerWidget {
   const TranslationScreen({super.key});
 
+  /// Opens the [LanguagePickerSheet] as a [DraggableScrollableSheet].
+  ///
+  /// On language selection: closes the picker and calls
+  /// [TranslationNotifier.setTargetLanguage] with the English language name.
+  void _showLanguagePicker(BuildContext context, WidgetRef ref, String currentLanguage) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) => LanguagePickerSheet(
+          scrollController: scrollController,
+          currentLanguage: currentLanguage,
+          onLanguageSelected: (SupportedLanguage lang) {
+            Navigator.pop(context);
+            ref
+                .read(translationProvider.notifier)
+                .setTargetLanguage(lang.englishName);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -31,18 +61,20 @@ class TranslationScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // Target language button — placeholder for Plan 03 language picker.
+        // Target language button — opens language picker sheet.
         title: TextButton.icon(
-          onPressed: null, // Plan 03 will wire this to open the language picker.
-          icon: const Icon(
-            Icons.keyboard_arrow_down,
-            color: AppColors.onSurfaceVariant,
-          ),
-          label: Text(
+          onPressed: () =>
+              _showLanguagePicker(context, ref, state.targetLanguage),
+          icon: Text(
             state.targetLanguage,
             style: textTheme.titleMedium?.copyWith(
               color: AppColors.onSurface,
             ),
+          ),
+          label: const Icon(
+            Icons.arrow_drop_down,
+            size: 20,
+            color: AppColors.onSurfaceVariant,
           ),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,

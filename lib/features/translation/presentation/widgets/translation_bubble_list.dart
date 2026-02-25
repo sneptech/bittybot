@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -89,37 +90,80 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
     return text.substring(0, lastSpace + 1);
   }
 
-  Widget _buildUserBubble(String content) {
-    return Align(
-      alignment: AlignmentDirectional.centerEnd,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.80,
-        ),
-        margin: const EdgeInsetsDirectional.fromSTEB(48, 4, 12, 4),
-        padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 10),
-        decoration: const BoxDecoration(
-          color: AppColors.primaryContainer,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(4),
-          ),
-        ),
-        child: Text(
-          content,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.onSurface,
+  /// Shows a bottom sheet context menu for [content] with a copy action.
+  ///
+  /// Writes [content] to the clipboard via [Clipboard.setData] and shows a
+  /// brief "Copied" [SnackBar] on success.
+  void _showBubbleMenu(BuildContext context, String content) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.copy, color: AppColors.onSurface),
+              title: Text(
+                l10n.copyTranslation,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.onSurface,
+                    ),
               ),
+              onTap: () async {
+                await Clipboard.setData(ClipboardData(text: content));
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.copied),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildAssistantBubble(String content, String targetLanguage) {
+  Widget _buildUserBubble(String content) {
+    return GestureDetector(
+      onLongPress: () => _showBubbleMenu(context, content),
+      child: Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.80,
+          ),
+          margin: const EdgeInsetsDirectional.fromSTEB(48, 4, 12, 4),
+          padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 10),
+          decoration: const BoxDecoration(
+            color: AppColors.primaryContainer,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(4),
+            ),
+          ),
+          child: Text(
+            content,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurface,
+                ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAssistantBubble(String content, String targetLanguage,
+      {bool allowCopy = true}) {
     final textTheme = Theme.of(context).textTheme;
-    return Align(
+    final bubble = Align(
       alignment: AlignmentDirectional.centerStart,
       child: Container(
         constraints: BoxConstraints(
@@ -156,6 +200,13 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
           ],
         ),
       ),
+    );
+
+    if (!allowCopy) return bubble;
+
+    return GestureDetector(
+      onLongPress: () => _showBubbleMenu(context, content),
+      child: bubble,
     );
   }
 
@@ -229,11 +280,12 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
           return TypingIndicator(isVisible: showTypingIndicator);
         }
 
-        // Streaming assistant bubble.
+        // Streaming assistant bubble — copy disabled during active streaming.
         if (index == streamingIndex && showStreamingBubble) {
           return _buildAssistantBubble(
             displayStreamingText,
             state.targetLanguage,
+            allowCopy: false,
           );
         }
 
