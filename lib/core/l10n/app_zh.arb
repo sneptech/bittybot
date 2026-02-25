@@ -22,5 +22,19 @@
   "genericErrorDirect": "发生错误，请重试。",
   "modelLoadingTitle": "准备中...",
   "modelLoadingMessage": "正在首次配置 BittyBot，只需要进行这一次。",
-  "modelLoadingError": "配置失败"
+  "modelLoadingError": "配置失败",
+
+  "translate": "翻译",
+  "chat": "聊天",
+  "translationInputHint": "输入要翻译的内容",
+  "translationEmptyState": "输入要翻译的内容",
+  "newSession": "新会话",
+  "targetLanguage": "目标语言",
+  "searchLanguages": "搜索语言",
+  "popularLanguages": "热门",
+  "recentLanguages": "最近",
+  "copied": "已复制",
+  "copyTranslation": "复制翻译",
+  "contextFullBanner": "会话内容过长，建议开启新会话以获得最佳效果。",
+  "characterLimitWarning": "即将达到字符限制"
 }

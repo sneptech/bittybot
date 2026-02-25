@@ -22,5 +22,19 @@
   "genericErrorDirect": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
   "modelLoadingTitle": "Vorbereitung...",
   "modelLoadingMessage": "BittyBot wird zum ersten Mal eingerichtet. Das muss nur einmal geschehen.",
-  "modelLoadingError": "Einrichtung fehlgeschlagen"
+  "modelLoadingError": "Einrichtung fehlgeschlagen",
+
+  "translate": "Übersetzen",
+  "chat": "Chat",
+  "translationInputHint": "Etwas zum Übersetzen eingeben",
+  "translationEmptyState": "Etwas zum Übersetzen eingeben",
+  "newSession": "Neue Sitzung",
+  "targetLanguage": "Zielsprache",
+  "searchLanguages": "Sprachen suchen",
+  "popularLanguages": "Beliebt",
+  "recentLanguages": "Zuletzt",
+  "copied": "Kopiert",
+  "copyTranslation": "Übersetzung kopieren",
+  "contextFullBanner": "Die Sitzung wird lang. Starte eine neue Sitzung für beste Ergebnisse.",
+  "characterLimitWarning": "Zeichenlimit wird erreicht"
 }

@@ -65,5 +65,44 @@
   "@modelLoadingMessage": { "description": "Body text shown during first-launch model setup" },
 
   "modelLoadingError": "Setup failed",
-  "@modelLoadingError": { "description": "Error state title on model loading screen" }
+  "@modelLoadingError": { "description": "Error state title on model loading screen" },
+
+  "translate": "Translate",
+  "@translate": { "description": "Translation tab label in bottom navigation bar" },
+
+  "chat": "Chat",
+  "@chat": { "description": "Chat tab label in bottom navigation bar" },
+
+  "translationInputHint": "Type something to translate",
+  "@translationInputHint": { "description": "Placeholder text in the translation input field" },
+
+  "translationEmptyState": "Type something to translate",
+  "@translationEmptyState": { "description": "Centered empty-state prompt shown when no messages exist" },
+
+  "newSession": "New session",
+  "@newSession": { "description": "Tooltip/label for the new session button in the translation screen top bar" },
+
+  "targetLanguage": "Target language",
+  "@targetLanguage": { "description": "Label for the target language selector button in the top bar" },
+
+  "searchLanguages": "Search languages",
+  "@searchLanguages": { "description": "Placeholder text in the language search field of the language picker" },
+
+  "popularLanguages": "Popular",
+  "@popularLanguages": { "description": "Section header for the popular languages group in the language picker" },
+
+  "recentLanguages": "Recent",
+  "@recentLanguages": { "description": "Section header for recently used languages in the language picker" },
+
+  "copied": "Copied",
+  "@copied": { "description": "Brief confirmation shown after copying a translation to clipboard" },
+
+  "copyTranslation": "Copy translation",
+  "@copyTranslation": { "description": "Label for the copy action in the long-press context menu on translation bubbles" },
+
+  "contextFullBanner": "Session is getting long. Start a new session for best results.",
+  "@contextFullBanner": { "description": "Banner shown when the translation context approaches the model's limit" },
+
+  "characterLimitWarning": "Approaching character limit",
+  "@characterLimitWarning": { "description": "Warning shown in the input field when the user approaches the soft character limit" }
 }

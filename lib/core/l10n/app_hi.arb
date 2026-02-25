@@ -22,5 +22,19 @@
   "genericErrorDirect": "एक त्रुटि हुई। कृपया पुनः प्रयास करें।",
   "modelLoadingTitle": "तैयार हो रहा है...",
   "modelLoadingMessage": "पहली बार BittyBot सेट हो रहा है। यह केवल एक बार करना होता है।",
-  "modelLoadingError": "सेटअप विफल हुआ"
+  "modelLoadingError": "सेटअप विफल हुआ",
+
+  "translate": "अनुवाद करें",
+  "chat": "चैट",
+  "translationInputHint": "अनुवाद के लिए कुछ टाइप करें",
+  "translationEmptyState": "अनुवाद के लिए कुछ टाइप करें",
+  "newSession": "नया सत्र",
+  "targetLanguage": "लक्ष्य भाषा",
+  "searchLanguages": "भाषाएं खोजें",
+  "popularLanguages": "लोकप्रिय",
+  "recentLanguages": "हाल की",
+  "copied": "कॉपी हो गया",
+  "copyTranslation": "अनुवाद कॉपी करें",
+  "contextFullBanner": "सत्र लंबा हो रहा है। बेहतर परिणामों के लिए नया सत्र शुरू करें।",
+  "characterLimitWarning": "वर्ण सीमा के करीब"
 }

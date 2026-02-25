@@ -22,5 +22,19 @@
   "genericErrorDirect": "حدث خطأ. يُرجى المحاولة مجدداً.",
   "modelLoadingTitle": "جارٍ الإعداد...",
   "modelLoadingMessage": "إعداد BittyBot لأول مرة. لا يحتاج هذا إلا أن يتم مرة واحدة.",
-  "modelLoadingError": "فشل الإعداد"
+  "modelLoadingError": "فشل الإعداد",
+
+  "translate": "ترجمة",
+  "chat": "محادثة",
+  "translationInputHint": "اكتب شيئاً للترجمة",
+  "translationEmptyState": "اكتب شيئاً للترجمة",
+  "newSession": "جلسة جديدة",
+  "targetLanguage": "لغة الهدف",
+  "searchLanguages": "البحث عن لغات",
+  "popularLanguages": "الأكثر شيوعاً",
+  "recentLanguages": "الأخيرة",
+  "copied": "تم النسخ",
+  "copyTranslation": "نسخ الترجمة",
+  "contextFullBanner": "الجلسة تطول. ابدأ جلسة جديدة للحصول على أفضل النتائج.",
+  "characterLimitWarning": "اقتراب من حد الأحرف"
 }

@@ -22,5 +22,19 @@
   "genericErrorDirect": "Se produjo un error. Por favor, inténtalo de nuevo.",
   "modelLoadingTitle": "Preparándose...",
   "modelLoadingMessage": "Configurando BittyBot por primera vez. Solo necesita hacerse una vez.",
-  "modelLoadingError": "Error de configuración"
+  "modelLoadingError": "Error de configuración",
+
+  "translate": "Traducir",
+  "chat": "Chat",
+  "translationInputHint": "Escribe algo para traducir",
+  "translationEmptyState": "Escribe algo para traducir",
+  "newSession": "Nueva sesión",
+  "targetLanguage": "Idioma destino",
+  "searchLanguages": "Buscar idiomas",
+  "popularLanguages": "Populares",
+  "recentLanguages": "Recientes",
+  "copied": "Copiado",
+  "copyTranslation": "Copiar traducción",
+  "contextFullBanner": "La sesión se está alargando. Inicia una nueva para mejores resultados.",
+  "characterLimitWarning": "Acercándose al límite de caracteres"
 }

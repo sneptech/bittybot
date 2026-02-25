@@ -22,5 +22,19 @@
   "genericErrorDirect": "오류가 발생했습니다. 다시 시도해 주세요.",
   "modelLoadingTitle": "준비 중...",
   "modelLoadingMessage": "BittyBot을 처음으로 설정하고 있습니다. 한 번만 필요한 과정이에요.",
-  "modelLoadingError": "설정 실패"
+  "modelLoadingError": "설정 실패",
+
+  "translate": "번역",
+  "chat": "채팅",
+  "translationInputHint": "번역할 내용을 입력하세요",
+  "translationEmptyState": "번역할 내용을 입력하세요",
+  "newSession": "새 세션",
+  "targetLanguage": "목표 언어",
+  "searchLanguages": "언어 검색",
+  "popularLanguages": "인기",
+  "recentLanguages": "최근",
+  "copied": "복사됨",
+  "copyTranslation": "번역 복사",
+  "contextFullBanner": "세션이 길어지고 있어요. 더 나은 결과를 위해 새 세션을 시작하세요.",
+  "characterLimitWarning": "글자 수 제한에 가까워지고 있어요"
 }

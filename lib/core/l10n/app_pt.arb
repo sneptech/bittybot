@@ -22,5 +22,19 @@
   "genericErrorDirect": "Ocorreu um erro. Por favor, tente novamente.",
   "modelLoadingTitle": "Preparando...",
   "modelLoadingMessage": "Configurando o BittyBot pela primeira vez. Isso só precisa acontecer uma vez.",
-  "modelLoadingError": "Falha na configuração"
+  "modelLoadingError": "Falha na configuração",
+
+  "translate": "Traduzir",
+  "chat": "Chat",
+  "translationInputHint": "Digite algo para traduzir",
+  "translationEmptyState": "Digite algo para traduzir",
+  "newSession": "Nova sessão",
+  "targetLanguage": "Idioma de destino",
+  "searchLanguages": "Pesquisar idiomas",
+  "popularLanguages": "Populares",
+  "recentLanguages": "Recentes",
+  "copied": "Copiado",
+  "copyTranslation": "Copiar tradução",
+  "contextFullBanner": "A sessão está ficando longa. Inicie uma nova sessão para melhores resultados.",
+  "characterLimitWarning": "Aproximando-se do limite de caracteres"
 }

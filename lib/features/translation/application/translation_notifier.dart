@@ -8,6 +8,7 @@ import '../../chat/application/chat_repository_provider.dart';
 import '../../chat/data/chat_repository.dart';
 import '../../chat/domain/chat_session.dart';
 import '../../inference/application/llm_service_provider.dart';
+import '../../settings/application/settings_provider.dart';
 import '../../inference/data/inference_repository_impl.dart';
 import '../../inference/domain/inference_message.dart';
 import '../../inference/domain/inference_repository.dart';
@@ -143,11 +144,18 @@ class TranslationNotifier extends _$TranslationNotifier {
     final modelAsync = ref.watch(modelReadyProvider);
     final isModelReady = modelAsync.hasValue;
 
+    // Read persisted target language from settings (TRNS-05).
+    final settingsAsync = ref.watch(settingsProvider);
+    final targetLanguage = settingsAsync.value?.targetLanguage ?? 'Spanish';
+
     ref.onDispose(() {
       _responseSubscription?.cancel();
     });
 
-    return TranslationState(isModelReady: isModelReady);
+    return TranslationState(
+      isModelReady: isModelReady,
+      targetLanguage: targetLanguage,
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -167,11 +175,34 @@ class TranslationNotifier extends _$TranslationNotifier {
   /// Sets the target language.
   ///
   /// Same session reset as [setSourceLanguage] — different target means
-  /// different terminology expectations.
+  /// different terminology expectations. Also persists to settings for
+  /// app restart persistence (TRNS-05).
   Future<void> setTargetLanguage(String language) async {
     if (language == state.targetLanguage) return;
     state = state.copyWith(targetLanguage: language);
+    // Persist to settings for TRNS-05 (app restart persistence).
+    ref.read(settingsProvider.notifier).setTargetLanguage(language);
     await _resetSession();
+  }
+
+  /// Starts a fresh translation session.
+  ///
+  /// Saves the current session (already persisted in DB), clears the KV
+  /// cache and in-memory state. The next [translate] call creates a new DB
+  /// session. Called by the "new session" (+) button in the translation
+  /// screen top bar.
+  Future<void> startNewSession() async {
+    _pendingQueue.clear();
+    final inferenceRepo = ref.read(inferenceRepositoryProvider);
+    inferenceRepo.clearContext();
+    state = state.copyWith(
+      sourceText: '',
+      translatedText: '',
+      isContextFull: false,
+      turnCount: 0,
+      clearActiveSession: true,
+      clearActiveRequestId: true,
+    );
   }
 
   /// Swaps source and target languages.

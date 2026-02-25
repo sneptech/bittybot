@@ -22,5 +22,19 @@
   "genericErrorDirect": "エラーが発生しました。もう一度お試しください。",
   "modelLoadingTitle": "準備中...",
   "modelLoadingMessage": "BittyBotを初めてセットアップしています。これは一度だけ必要です。",
-  "modelLoadingError": "セットアップに失敗しました"
+  "modelLoadingError": "セットアップに失敗しました",
+
+  "translate": "翻訳",
+  "chat": "チャット",
+  "translationInputHint": "翻訳するテキストを入力",
+  "translationEmptyState": "翻訳するテキストを入力",
+  "newSession": "新しいセッション",
+  "targetLanguage": "翻訳先の言語",
+  "searchLanguages": "言語を検索",
+  "popularLanguages": "人気",
+  "recentLanguages": "最近",
+  "copied": "コピーしました",
+  "copyTranslation": "翻訳をコピー",
+  "contextFullBanner": "セッションが長くなっています。最良の結果のために新しいセッションを開始してください。",
+  "characterLimitWarning": "文字数制限に近づいています"
 }

@@ -78,7 +78,7 @@ final class SettingsProvider
   Settings create() => Settings();
 }
 
-String _$settingsHash() => r'ff889ac14765a7e94614558b7a69e455c0f01d65';
+String _$settingsHash() => r'018aa458963cb6d204ef5fadd023236284ab4b16';
 
 /// Riverpod AsyncNotifier that persists locale override and error tone
 /// via [SharedPreferencesWithCache].

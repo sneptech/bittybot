@@ -90,7 +90,7 @@ final class TranslationNotifierProvider
 }
 
 String _$translationNotifierHash() =>
-    r'a67ee7476f6eea742ec3df78cf6f0881570f9695';
+    r'b83677a28a773ff31cc03cca5f60516520544dcd';
 
 /// Manages translation request state.
 ///

@@ -13,13 +13,24 @@ part 'settings_provider.g.dart';
 ///
 /// [errorTone] — controls the tone of all user-facing error messages.
 /// Defaults to [ErrorTone.friendly].
+///
+/// [targetLanguage] — the last-used translation target language name (e.g.,
+/// 'Spanish'). Persisted across app restarts per TRNS-05.
+///
+/// [recentTargetLanguages] — rolling list of up to 3 recently used target
+/// language names (most-recent first). Used for quick-access in the language
+/// picker.
 class AppSettings {
   final Locale? localeOverride;
   final ErrorTone errorTone;
+  final String targetLanguage;
+  final List<String> recentTargetLanguages;
 
   const AppSettings({
     this.localeOverride,
     this.errorTone = ErrorTone.friendly,
+    this.targetLanguage = 'Spanish',
+    this.recentTargetLanguages = const [],
   });
 
   /// Returns a new [AppSettings] with the given fields replaced.
@@ -29,11 +40,16 @@ class AppSettings {
   AppSettings copyWith({
     Locale? Function()? localeOverride,
     ErrorTone? errorTone,
+    String? targetLanguage,
+    List<String>? recentTargetLanguages,
   }) {
     return AppSettings(
       localeOverride:
           localeOverride != null ? localeOverride() : this.localeOverride,
       errorTone: errorTone ?? this.errorTone,
+      targetLanguage: targetLanguage ?? this.targetLanguage,
+      recentTargetLanguages:
+          recentTargetLanguages ?? this.recentTargetLanguages,
     );
   }
 }
@@ -59,6 +75,8 @@ class Settings extends _$Settings {
 
   static const _kLocaleKey = 'locale';
   static const _kErrorToneKey = 'error_tone';
+  static const _kTargetLanguageKey = 'target_language';
+  static const _kRecentTargetLanguagesKey = 'recent_target_languages';
 
   @override
   Future<AppSettings> build() async {
@@ -68,11 +86,16 @@ class Settings extends _$Settings {
 
     final localeCode = _prefs.getString(_kLocaleKey);
     final toneStr = _prefs.getString(_kErrorToneKey);
+    final targetLang = _prefs.getString(_kTargetLanguageKey);
+    final recentLangs =
+        _prefs.getStringList(_kRecentTargetLanguagesKey) ?? [];
 
     return AppSettings(
       localeOverride: localeCode != null ? Locale(localeCode) : null,
       errorTone:
           toneStr == 'direct' ? ErrorTone.direct : ErrorTone.friendly,
+      targetLanguage: targetLang ?? 'Spanish',
+      recentTargetLanguages: recentLangs,
     );
   }
 
@@ -99,5 +122,30 @@ class Settings extends _$Settings {
 
     final current = state.value ?? const AppSettings();
     state = AsyncValue.data(current.copyWith(errorTone: tone));
+  }
+
+  /// Sets the target translation language and persists it to SharedPreferences.
+  ///
+  /// Also updates the rolling [AppSettings.recentTargetLanguages] list
+  /// (max 3, most-recent first, de-duplicated).
+  Future<void> setTargetLanguage(String language) async {
+    await _prefs.setString(_kTargetLanguageKey, language);
+
+    // Update rolling recent list: prepend, remove duplicates, cap at 3.
+    final current = state.value ?? const AppSettings();
+    final updated = [language, ...current.recentTargetLanguages]
+        .where((l) => l.isNotEmpty)
+        .toSet()
+        .toList()
+      ..take(3);
+    final recent = updated.length > 3 ? updated.sublist(0, 3) : updated;
+    await _prefs.setStringList(_kRecentTargetLanguagesKey, recent);
+
+    state = AsyncValue.data(
+      current.copyWith(
+        targetLanguage: language,
+        recentTargetLanguages: recent,
+      ),
+    );
   }
 }

@@ -22,5 +22,19 @@
   "genericErrorDirect": "Une erreur est survenue. Veuillez réessayer.",
   "modelLoadingTitle": "Préparation en cours...",
   "modelLoadingMessage": "Configuration de BittyBot pour la première fois. Cela n'a besoin de se faire qu'une seule fois.",
-  "modelLoadingError": "Échec de la configuration"
+  "modelLoadingError": "Échec de la configuration",
+
+  "translate": "Traduire",
+  "chat": "Chat",
+  "translationInputHint": "Écrivez quelque chose à traduire",
+  "translationEmptyState": "Écrivez quelque chose à traduire",
+  "newSession": "Nouvelle session",
+  "targetLanguage": "Langue cible",
+  "searchLanguages": "Rechercher des langues",
+  "popularLanguages": "Populaires",
+  "recentLanguages": "Récentes",
+  "copied": "Copié",
+  "copyTranslation": "Copier la traduction",
+  "contextFullBanner": "La session devient longue. Démarrez une nouvelle session pour de meilleurs résultats.",
+  "characterLimitWarning": "Limite de caractères presque atteinte"
 }
