@@ -61,6 +61,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           ..nCtx = message.nCtx
           ..nBatch = message.nBatch
           ..nUbatch = message.nBatch
+          ..nThreads = message.nThreads
           ..nPredict =
               -1; // We control token count manually per GenerateCommand
 
@@ -88,6 +89,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
 
       stopped = false;
       int tokenCount = 0;
+      final stopwatch = Stopwatch()..start();
 
       try {
         llama!.setPrompt(message.prompt);
@@ -106,10 +108,13 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           if (tokenCount >= message.nPredict) break;
         }
 
+        stopwatch.stop();
         mainSendPort.send(
           DoneResponse(
             requestId: message.requestId,
             stopped: stopped,
+            generationTimeMs: stopwatch.elapsedMilliseconds,
+            tokenCount: tokenCount,
           ),
         );
       } catch (e) {

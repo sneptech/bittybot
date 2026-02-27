@@ -23,10 +23,14 @@ final class LoadModelCommand extends InferenceCommand {
   /// Batch size for prompt processing. Default 256.
   final int nBatch;
 
+  /// Number of inference threads. Default 4 for mid-range phones.
+  final int nThreads;
+
   const LoadModelCommand({
     required this.modelPath,
     this.nCtx = 2048,
     this.nBatch = 256,
+    this.nThreads = 4,
   });
 }
 
@@ -114,7 +118,18 @@ final class DoneResponse extends InferenceResponse {
   /// True if stopped by a [StopCommand]; false if naturally completed.
   final bool stopped;
 
-  const DoneResponse({required this.requestId, required this.stopped});
+  /// Total generation wall-clock time in milliseconds (measured on isolate).
+  final int generationTimeMs;
+
+  /// Number of loop iterations emitted by the isolate generation loop.
+  final int tokenCount;
+
+  const DoneResponse({
+    required this.requestId,
+    required this.stopped,
+    this.generationTimeMs = 0,
+    this.tokenCount = 0,
+  });
 }
 
 /// An error occurred in the worker isolate.

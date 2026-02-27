@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:isolate';
 
+import '../../../core/diagnostics/inference_profiler.dart';
+import '../../../core/diagnostics/performance_monitor.dart';
 import '../domain/inference_message.dart';
 import 'inference_isolate.dart';
 
@@ -37,6 +39,7 @@ class LlmService {
   int _nextRequestId = 0;
   int _consecutiveCrashCount = 0;
   bool _isGenerating = false;
+  final Map<int, ProfileSpan> _requestSpans = {};
 
   static const int _maxAutoRetries = 3;
 
@@ -73,65 +76,82 @@ class LlmService {
   /// Resets the crash counter on successful model load. Throws if the worker
   /// sends [ErrorResponse] during model loading.
   Future<void> start() async {
-    // Ensure a fresh controller is available for this start cycle.
-    if (_responseController == null || _responseController!.isClosed) {
-      _responseController =
-          StreamController<InferenceResponse>.broadcast();
+    final monitor = PerformanceMonitor.instance;
+    monitor.markModelLoadStart();
+    final loadSpan = InferenceProfiler.startSpan('model_load');
+    try {
+      // Ensure a fresh controller is available for this start cycle.
+      if (_responseController == null || _responseController!.isClosed) {
+        _responseController =
+            StreamController<InferenceResponse>.broadcast();
+      }
+
+      _responsePort = ReceivePort();
+      _errorPort = ReceivePort();
+
+      // Spawn worker and establish the command channel using a Completer so we
+      // can use a single .listen() for both the initial SendPort handshake and
+      // all subsequent InferenceResponse messages.
+      final sendPortCompleter = Completer<SendPort>();
+
+      _responsePort!.listen((message) {
+        if (message is SendPort) {
+          if (!sendPortCompleter.isCompleted) {
+            sendPortCompleter.complete(message);
+          }
+        } else if (message is InferenceResponse) {
+          if (message is TokenResponse) {
+            monitor.markFirstToken(message.requestId);
+            monitor.markToken(message.requestId);
+          }
+
+          // Track generation state locally before forwarding.
+          if (message is DoneResponse) {
+            _isGenerating = false;
+            _consecutiveCrashCount = 0;
+            monitor.markRequestEnd(message.requestId);
+            _finishRequestSpan(message.requestId);
+          } else if (message is ErrorResponse) {
+            _isGenerating = false;
+            monitor.markRequestEnd(message.requestId);
+            _finishRequestSpan(message.requestId);
+          }
+
+          if (!(_responseController?.isClosed ?? true)) {
+            _responseController!.add(message);
+          }
+        }
+      });
+
+      // Error port receives [errorMessage, stackTrace] List from the isolate
+      // when an unhandled exception or OOM occurs.
+      _errorPort!.listen((_) => _handleCrash());
+
+      _isolate = await Isolate.spawn(
+        inferenceIsolateMain,
+        _responsePort!.sendPort,
+      );
+
+      // Wire isolate-level errors to the dedicated error port.
+      _isolate!.addErrorListener(_errorPort!.sendPort);
+
+      _commandPort = await sendPortCompleter.future;
+
+      // Send LoadModelCommand and wait for ModelReadyResponse (or error).
+      _commandPort!.send(LoadModelCommand(modelPath: _modelPath));
+
+      await responseStream.firstWhere(
+        (msg) => msg is ModelReadyResponse || msg is ErrorResponse,
+      ).then((msg) {
+        if (msg is ErrorResponse) {
+          throw Exception('Model load failed: ${msg.message}');
+        }
+        monitor.markModelLoadEnd();
+        _consecutiveCrashCount = 0;
+      });
+    } finally {
+      loadSpan.finish();
     }
-
-    _responsePort = ReceivePort();
-    _errorPort = ReceivePort();
-
-    // Spawn worker and establish the command channel using a Completer so we
-    // can use a single .listen() for both the initial SendPort handshake and
-    // all subsequent InferenceResponse messages.
-    final sendPortCompleter = Completer<SendPort>();
-
-    _responsePort!.listen((message) {
-      if (message is SendPort) {
-        if (!sendPortCompleter.isCompleted) {
-          sendPortCompleter.complete(message);
-        }
-      } else if (message is InferenceResponse) {
-        // Track generation state locally before forwarding.
-        if (message is DoneResponse) {
-          _isGenerating = false;
-          _consecutiveCrashCount = 0;
-        } else if (message is ErrorResponse) {
-          _isGenerating = false;
-        }
-
-        if (!(_responseController?.isClosed ?? true)) {
-          _responseController!.add(message);
-        }
-      }
-    });
-
-    // Error port receives [errorMessage, stackTrace] List from the isolate
-    // when an unhandled exception or OOM occurs.
-    _errorPort!.listen((_) => _handleCrash());
-
-    _isolate = await Isolate.spawn(
-      inferenceIsolateMain,
-      _responsePort!.sendPort,
-    );
-
-    // Wire isolate-level errors to the dedicated error port.
-    _isolate!.addErrorListener(_errorPort!.sendPort);
-
-    _commandPort = await sendPortCompleter.future;
-
-    // Send LoadModelCommand and wait for ModelReadyResponse (or error).
-    _commandPort!.send(LoadModelCommand(modelPath: _modelPath));
-
-    await responseStream.firstWhere(
-      (msg) => msg is ModelReadyResponse || msg is ErrorResponse,
-    ).then((msg) {
-      if (msg is ErrorResponse) {
-        throw Exception('Model load failed: ${msg.message}');
-      }
-      _consecutiveCrashCount = 0;
-    });
   }
 
   // ---------------------------------------------------------------------------
@@ -144,6 +164,10 @@ class LlmService {
   int generate({required String prompt, required int nPredict}) {
     final requestId = _nextRequestId++;
     _isGenerating = true;
+    PerformanceMonitor.instance.markRequestStart(requestId);
+    _requestSpans[requestId] = InferenceProfiler.startSpan(
+      'inference_request:$requestId',
+    );
     _commandPort!.send(GenerateCommand(
       requestId: requestId,
       prompt: prompt,
@@ -176,6 +200,9 @@ class LlmService {
   /// Shuts down the worker isolate and releases all resources.
   Future<void> dispose() async {
     _isGenerating = false;
+    for (final requestId in _requestSpans.keys.toList(growable: false)) {
+      _finishRequestSpan(requestId);
+    }
 
     // Ask the worker to dispose FFI resources cleanly before we kill it.
     _commandPort?.send(const ShutdownCommand());
@@ -206,6 +233,9 @@ class LlmService {
   /// and stops retrying to avoid infinite crash loops.
   Future<void> _handleCrash() async {
     _isGenerating = false;
+    for (final requestId in _requestSpans.keys.toList(growable: false)) {
+      _finishRequestSpan(requestId);
+    }
     _consecutiveCrashCount++;
 
     if (_consecutiveCrashCount <= _maxAutoRetries) {
@@ -240,5 +270,9 @@ class LlmService {
         ));
       }
     }
+  }
+
+  void _finishRequestSpan(int requestId) {
+    _requestSpans.remove(requestId)?.finish();
   }
 }
