@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:llama_cpp_dart/llama_cpp_dart.dart';
 
@@ -16,6 +18,27 @@ String filterInferenceToken(String token) {
 /// Returns false when filtering removed all visible text from a token.
 bool shouldSendFilteredToken(String filteredToken) {
   return filteredToken.isNotEmpty;
+}
+
+/// Pre-fault mmap'd model pages into RAM by reading the file sequentially.
+///
+/// With mmap enabled, the OS lazily loads model pages on first access.
+/// Reading through the entire file forces all pages into RAM upfront,
+/// trading ~10-20s of load time for consistent TTFT on the first inference.
+void _warmupModelPages(String modelPath) {
+  try {
+    final raf = File(modelPath).openSync(mode: FileMode.read);
+    final buffer = Uint8List(65536); // 64 KB read buffer
+    try {
+      while (raf.readIntoSync(buffer) > 0) {
+        // Reading triggers page faults — no processing needed
+      }
+    } finally {
+      raf.closeSync();
+    }
+  } catch (_) {
+    // Non-fatal — model is still usable, just may page-fault during inference
+  }
 }
 
 /// Top-level entry point for the inference worker isolate.
@@ -71,6 +94,9 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           contextParams: contextParams,
           verbose: false,
         );
+
+        // Pre-fault mmap'd pages so first inference doesn't page-fault
+        _warmupModelPages(message.modelPath);
 
         mainSendPort.send(const ModelReadyResponse());
       } catch (e) {
