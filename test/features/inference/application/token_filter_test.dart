@@ -37,5 +37,27 @@ void main() {
       expect(filterInferenceToken('<|incomplete'), '<|incomplete');
       expect(filterInferenceToken('|partial'), '|partial');
     });
+
+    test('returns empty for empty input and marks as not sendable', () {
+      final filtered = filterInferenceToken('');
+      expect(filtered, isEmpty);
+      expect(shouldSendFilteredToken(filtered), isFalse);
+    });
+
+    test('preserves surrounding whitespace when stripping tokens', () {
+      expect(filterInferenceToken('<|FOO|> '), ' ');
+    });
+
+    test('strips consecutive tokens with no text between', () {
+      expect(filterInferenceToken('<|A_TOKEN|><|B_TOKEN|>'), isEmpty);
+    });
+
+    test('strips tokens while preserving unicode text', () {
+      expect(filterInferenceToken('<|USER_TOKEN|>مرحبا'), 'مرحبا');
+    });
+
+    test('does not strip lowercase or digit token names', () {
+      expect(filterInferenceToken('<|foo123|>'), '<|foo123|>');
+    });
   });
 }
