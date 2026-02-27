@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
+
 /// Singleton performance monitor for inference pipeline metrics.
 ///
 /// Collects timing data for model load, per-request inference, and download
@@ -136,8 +138,7 @@ class PerformanceMonitor {
       ...data,
     };
     final line = '[PERF] ${jsonEncode(payload)}';
-    // ignore: avoid_print
-    print(line); // Also print to logcat (developer.log only goes to DevTools)
+    if (kDebugMode) print(line); // ignore: avoid_print
     developer.log(line, name: 'PerformanceMonitor');
   }
 }

@@ -153,7 +153,7 @@ class Settings extends _$Settings {
     final updated = [
       language,
       ...current.recentTargetLanguages,
-    ].where((l) => l.isNotEmpty).toSet().toList()..take(3);
+    ].where((l) => l.isNotEmpty).toSet().toList();
     final recent = updated.length > 3 ? updated.sublist(0, 3) : updated;
     await _prefs.setStringList(_kRecentTargetLanguagesKey, recent);
 

@@ -540,13 +540,12 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     await _loadModel();
   }
 
-  /// Performs the actual model load.
+  /// Signals that model distribution is complete and the model is ready.
   ///
-  /// TODO(phase-4): Wire actual llama_cpp inference load here.
-  /// Phase 4 replaces the LoadingModel → ModelReady transition with real
-  /// llama_cpp_dart initialisation using [modelFilePath].
+  /// Actual model loading is handled by [LlmService] via
+  /// [llmServiceProvider] — this method only transitions the distribution
+  /// state machine to its terminal state.
   Future<void> _loadModel() async {
-    // Phase 2 stub — Phase 4 will replace this with llama_cpp_dart.load()
     state = const ModelReadyState();
   }
 }
