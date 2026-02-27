@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:llama_cpp_dart/llama_cpp_dart.dart';
 
+import '../data/native_memory_advisor.dart';
 import '../domain/inference_message.dart';
 
 /// Regex patterns for Aya model special tokens.
@@ -71,6 +72,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
   // loop in the generate handler yields between each token, letting stop
   // commands arrive and flip this flag cooperatively.
   bool stopped = false;
+  int advisoryFd = -1;
 
   receivePort.listen((message) async {
     if (message is LoadModelCommand) {
@@ -97,6 +99,12 @@ void inferenceIsolateMain(SendPort mainSendPort) {
 
         // Pre-fault mmap'd pages so first inference doesn't page-fault
         _warmupModelPages(message.modelPath);
+
+        // Advise OS to keep model pages in cache (reduces TTFT variance)
+        try {
+          final fileLength = File(message.modelPath).lengthSync();
+          advisoryFd = adviseWillNeed(message.modelPath, fileLength);
+        } catch (_) {}
 
         mainSendPort.send(const ModelReadyResponse());
       } catch (e) {
@@ -160,6 +168,8 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         // Ignore clear errors — if llama is null, there's nothing to clear.
       }
     } else if (message is ShutdownCommand) {
+      closeNativeFd(advisoryFd);
+      advisoryFd = -1;
       llama?.dispose();
       llama = null;
       receivePort.close(); // Closing the port terminates the isolate naturally.

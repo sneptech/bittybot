@@ -147,8 +147,9 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   Future<void> initialize() async {
     state = const CheckingModelState();
 
-    // Give Flutter a chance to paint the first frame before startup I/O begins.
-    await Future<void>.delayed(Duration.zero);
+    // Yield two frames so the loading UI is visible before startup I/O begins.
+    await Future<void>.delayed(const Duration(milliseconds: 16));
+    await Future<void>.delayed(const Duration(milliseconds: 16));
 
     // Start SharedPreferences initialization early so it can overlap with
     // directory and file checks.
@@ -169,6 +170,8 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
       if (alreadyVerified && verifiedSize == actualSize) {
         // Previously verified and file size unchanged — skip SHA-256
+        // Yield one frame before starting heavyweight model loading work.
+        await Future<void>.delayed(const Duration(milliseconds: 16));
         await _proceedToLoad();
       } else {
         // First launch with this file or size mismatch — full verification
