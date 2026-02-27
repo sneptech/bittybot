@@ -143,9 +143,9 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
         memMB,
         l10n,
       ),
-      // LoadingModelState and ModelReadyState should not appear on this screen —
-      // Plan 03 routing will have navigated away. Show fallbacks in case.
-      LoadingModelState() => _buildSpinner(l10n.loadingLanguageModel),
+      // ModelReadyState should not appear on this screen — Plan 03 routing
+      // will have navigated away. Keep a fallback in case.
+      LoadingModelState() => _buildLoadingModelSpinner(l10n),
       ModelReadyState() => _buildSpinner(l10n.readyStatus),
       ErrorState(
         kind: final kind,
@@ -180,6 +180,17 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
         ),
       ],
     );
+  }
+
+  /// Loading label must be distinct from the verify label so users can see
+  /// the transition from integrity-check to model-load.
+  Widget _buildLoadingModelSpinner(AppLocalizations l10n) {
+    final loadingLabel = l10n.loadingLanguageModel.trim();
+    final verifyingLabel = l10n.verifyingDownload.trim();
+    final label = loadingLabel.isEmpty || loadingLabel == verifyingLabel
+        ? 'Loading model...'
+        : loadingLabel;
+    return _buildSpinner(label);
   }
 
   // ─── Progress bar ─────────────────────────────────────────────────────────
