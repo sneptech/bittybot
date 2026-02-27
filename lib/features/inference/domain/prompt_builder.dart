@@ -18,11 +18,11 @@ class PromptBuilder {
 
   /// System prompt for translation mode.
   ///
-  /// Short and directive — the 3.35B model ignores complex instructions.
-  /// Produces copy-pasteable output with optional formality/context note.
+  /// Ultra-short and directive — the 3.35B model ignores complex instructions.
+  /// Must produce ONLY the translated text, nothing else.
   static const translationSystemPrompt =
-      'You are a translator. Translate the given text and reply with only '
-      'the translation. Add a brief note about formality or context when relevant.';
+      'You are a translation machine. Output ONLY the translation, nothing else. '
+      'No explanations, no notes, no extra words.';
 
   /// System prompt for chat mode.
   ///
