@@ -241,3 +241,6 @@ Sprint 5 on-device profiling complete. Results written to `.planning/PROFILING-R
 
 ### Context Window Handoff (2026-02-27)
 Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
+
+### Context Window Handoff (2026-02-27)
+Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
