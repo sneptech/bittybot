@@ -46,3 +46,9 @@ app.*.map.json
 
 # Native shared libraries (built separately, not tracked in git)
 *.so
+
+# Agent infrastructure (not project docs)
+.beads/
+.ntm/
+.planning/agent-state/
+.planning/agent-bootstrap/
