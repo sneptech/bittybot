@@ -4,6 +4,20 @@ import 'package:llama_cpp_dart/llama_cpp_dart.dart';
 
 import '../domain/inference_message.dart';
 
+/// Regex patterns for Aya model special tokens.
+/// Matches both `<|TOKEN_NAME|>` and `|<TOKEN_NAME>|` formats.
+final _specialTokenPattern = RegExp(r'<\|[A-Z_]+\|>|\|<[A-Z_]+>\|');
+
+/// Strip special tokens from model output before sending to UI.
+String filterInferenceToken(String token) {
+  return token.replaceAll(_specialTokenPattern, '');
+}
+
+/// Returns false when filtering removed all visible text from a token.
+bool shouldSendFilteredToken(String filteredToken) {
+  return filteredToken.isNotEmpty;
+}
+
 /// Top-level entry point for the inference worker isolate.
 ///
 /// This function is the [Isolate.spawn] target. It owns the [Llama] FFI
@@ -47,7 +61,8 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           ..nCtx = message.nCtx
           ..nBatch = message.nBatch
           ..nUbatch = message.nBatch
-          ..nPredict = -1; // We control token count manually per GenerateCommand
+          ..nPredict =
+              -1; // We control token count manually per GenerateCommand
 
         llama = Llama(
           message.modelPath,
@@ -62,10 +77,12 @@ void inferenceIsolateMain(SendPort mainSendPort) {
       }
     } else if (message is GenerateCommand) {
       if (llama == null) {
-        mainSendPort.send(ErrorResponse(
-          requestId: message.requestId,
-          message: 'Model not loaded. Send LoadModelCommand first.',
-        ));
+        mainSendPort.send(
+          ErrorResponse(
+            requestId: message.requestId,
+            message: 'Model not loaded. Send LoadModelCommand first.',
+          ),
+        );
         return;
       }
 
@@ -78,24 +95,27 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         await for (final token in llama!.generateText()) {
           if (stopped) break;
 
-          mainSendPort.send(TokenResponse(
-            requestId: message.requestId,
-            token: token,
-          ));
+          final filteredToken = filterInferenceToken(token);
+          if (shouldSendFilteredToken(filteredToken)) {
+            mainSendPort.send(
+              TokenResponse(requestId: message.requestId, token: filteredToken),
+            );
+          }
 
           tokenCount++;
           if (tokenCount >= message.nPredict) break;
         }
 
-        mainSendPort.send(DoneResponse(
-          requestId: message.requestId,
-          stopped: stopped,
-        ));
+        mainSendPort.send(
+          DoneResponse(
+            requestId: message.requestId,
+            stopped: stopped,
+          ),
+        );
       } catch (e) {
-        mainSendPort.send(ErrorResponse(
-          requestId: message.requestId,
-          message: e.toString(),
-        ));
+        mainSendPort.send(
+          ErrorResponse(requestId: message.requestId, message: e.toString()),
+        );
       }
     } else if (message is StopCommand) {
       // Flip the flag. The generate loop checks this between token yields.
