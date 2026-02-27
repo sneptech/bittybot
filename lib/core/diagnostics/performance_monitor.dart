@@ -135,10 +135,10 @@ class PerformanceMonitor {
       'ts': DateTime.now().toIso8601String(),
       ...data,
     };
-    developer.log(
-      '[PERF] ${jsonEncode(payload)}',
-      name: 'PerformanceMonitor',
-    );
+    final line = '[PERF] ${jsonEncode(payload)}';
+    // ignore: avoid_print
+    print(line); // Also print to logcat (developer.log only goes to DevTools)
+    developer.log(line, name: 'PerformanceMonitor');
   }
 }
 
