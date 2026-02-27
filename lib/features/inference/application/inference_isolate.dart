@@ -26,12 +26,23 @@ bool shouldSendFilteredToken(String filteredToken) {
 /// With mmap enabled, the OS lazily loads model pages on first access.
 /// Reading through the entire file forces all pages into RAM upfront,
 /// trading ~10-20s of load time for consistent TTFT on the first inference.
-void _warmupModelPages(String modelPath) {
+Future<void> _warmupModelPages(String modelPath) async {
   try {
     final raf = File(modelPath).openSync(mode: FileMode.read);
     final buffer = Uint8List(65536); // 64 KB read buffer
+    var bytesRead = 0;
+    var nextYieldAt = 64 * 1024 * 1024;
     try {
-      while (raf.readIntoSync(buffer) > 0) {
+      int n;
+      while ((n = raf.readIntoSync(buffer)) > 0) {
+        bytesRead += n;
+
+        // Yield every 64 MB to reduce I/O contention with the UI isolate.
+        if (bytesRead >= nextYieldAt) {
+          await Future<void>.delayed(Duration.zero);
+          nextYieldAt += 64 * 1024 * 1024;
+        }
+
         // Reading triggers page faults — no processing needed
       }
     } finally {
@@ -98,13 +109,14 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         );
 
         // Pre-fault mmap'd pages so first inference doesn't page-fault
-        _warmupModelPages(message.modelPath);
-
-        // Advise OS to keep model pages in cache (reduces TTFT variance)
+        await _warmupModelPages(message.modelPath);
+        // Advise OS to keep model pages resident for lower TTFT variance.
         try {
           final fileLength = File(message.modelPath).lengthSync();
           advisoryFd = adviseWillNeed(message.modelPath, fileLength);
-        } catch (_) {}
+        } catch (_) {
+          advisoryFd = -1;
+        }
 
         mainSendPort.send(const ModelReadyResponse());
       } catch (e) {
