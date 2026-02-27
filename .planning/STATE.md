@@ -5,15 +5,15 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Translation and conversation must work with zero connectivity
-**Current focus:** Phase 5 (Translation UI) executing — Plan 03 complete
+**Current focus:** All feature phases (6-9) code-complete. Pending on-device testing.
 
 ## Current Position
 
-Phase: 5 of 9
-Status: Phase 5 in progress (3/4 plans complete, Plan 04 paused at human verification)
+Phase: 9 of 9
+Status: All feature phases complete (~95%)
 Last activity: 2026-02-25 — Phase 5 Plan 03 executed (language picker sheet, grid item, wired to translation screen, long-press copy on bubbles)
 
-Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Plan 01)
+Progress: [█████████░] ~95% (Phases 1-9 code-complete, pending on-device testing)
 
 ### Phase Status
 
@@ -24,6 +24,10 @@ Progress: [████░░░░░░] ~46% (4 phases complete + Phase 5 Pla
 | 3: App Foundation | Complete | 5/5 | Verification chain passed |
 | 4: Core Inference Arch | Complete | 5/5 | Automated verification passed; human verification deferred to Phase 6 |
 | 5: Translation UI | In progress | 3/4 | Plan 03 complete: language picker sheet, grid item, wired to translation screen, long-press copy |
+| 6: Chat UI | Complete | 1/1 | Chat screen, bubble list, input bar, session messages provider |
+| 7: Chat History | Complete | 1/1 | Chat history drawer, session management, swipe-to-delete |
+| 8: Chat Settings | Complete | 1/1 | Settings screen, auto-clear toggle, clear all history |
+| 9: Web Search | Complete | 1/1 | Web fetch service, URL paste mode, mode indicator |
 
 ## Performance Metrics
 
