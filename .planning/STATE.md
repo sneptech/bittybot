@@ -238,3 +238,6 @@ Sprint 5 on-device profiling complete. Results written to `.planning/PROFILING-R
 3. Add system prompt for chat mode: identity="Bittybot", personality, instructions
 4. Periodic re-fadvise or partial mlock for longer idle retention
 5. Consider system prompt instructions for better multi-turn recall
+
+### Context Window Handoff (2026-02-27)
+Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
