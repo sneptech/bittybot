@@ -130,6 +130,15 @@ class ChatNotifier extends _$ChatNotifier {
   /// (the model's KV cache already has the system prompt).
   int _turnCount = 0;
 
+  /// Buffer for accumulating tokens between UI flushes.
+  final StringBuffer _tokenBuffer = StringBuffer();
+
+  /// Timer that flushes buffered tokens to state at a fixed interval.
+  Timer? _batchTimer;
+
+  /// Interval between token buffer flushes to UI state.
+  static const Duration _kTokenBatchInterval = Duration(milliseconds: 50);
+
   @override
   ChatState build() {
     // Watch modelReadyProvider so the notifier rebuilds when the model
@@ -141,6 +150,7 @@ class ChatNotifier extends _$ChatNotifier {
     // delivering callbacks to a dead object.
     ref.onDispose(() {
       _responseSubscription?.cancel();
+      _batchTimer?.cancel();
     });
 
     return ChatState(isModelReady: isModelReady);
@@ -188,6 +198,8 @@ class ChatNotifier extends _$ChatNotifier {
 
     _turnCount = 0;
     _pendingQueue.clear();
+    _batchTimer?.cancel();
+    _tokenBuffer.clear();
 
     state = state.copyWith(
       activeSession: session,
@@ -260,6 +272,8 @@ class ChatNotifier extends _$ChatNotifier {
 
     _turnCount = 0;
     _pendingQueue.clear();
+    _batchTimer?.cancel();
+    _tokenBuffer.clear();
 
     state = state.copyWith(
       activeSession: newSession,
@@ -368,9 +382,8 @@ class ChatNotifier extends _$ChatNotifier {
         // Ignore tokens for stale requests (e.g., from a previous notifier
         // lifecycle that was interrupted).
         if (requestId != state.activeRequestId) return;
-        state = state.copyWith(
-          currentResponse: state.currentResponse + token,
-        );
+        _tokenBuffer.write(token);
+        _scheduleBatchFlush();
 
       case DoneResponse(:final requestId, :final stopped):
         if (requestId != state.activeRequestId) return;
@@ -389,6 +402,9 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// Persists the completed assistant message and resets generation state.
   Future<void> _finishGeneration({required bool stopped}) async {
+    _batchTimer?.cancel();
+    _flushTokenBuffer();
+
     final session = state.activeSession;
     if (session == null) return;
 
@@ -428,6 +444,9 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// Handles an error from the inference stream.
   Future<void> _handleError(String message) async {
+    _batchTimer?.cancel();
+    _flushTokenBuffer();
+
     // If there is accumulated partial output, persist it as truncated.
     final session = state.activeSession;
     if (session != null && state.currentResponse.isNotEmpty) {
@@ -458,5 +477,21 @@ class ChatNotifier extends _$ChatNotifier {
       final next = _pendingQueue.removeFirst();
       await _processMessage(next);
     }
+  }
+
+  /// Schedules a buffer flush if one is not already pending.
+  void _scheduleBatchFlush() {
+    if (_batchTimer?.isActive ?? false) return;
+    _batchTimer = Timer(_kTokenBatchInterval, _flushTokenBuffer);
+  }
+
+  /// Flushes buffered tokens to state, triggering at most one rebuild.
+  void _flushTokenBuffer() {
+    if (_tokenBuffer.isEmpty) return;
+    final buffered = _tokenBuffer.toString();
+    _tokenBuffer.clear();
+    state = state.copyWith(
+      currentResponse: state.currentResponse + buffered,
+    );
   }
 }
