@@ -92,9 +92,11 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
   // ─── Logo ──────────────────────────────────────────────────────────────────
 
   Widget _buildLogo() {
-    // TODO: Replace placeholder with Image.asset() when a logo asset is added.
-    // No logo asset currently exists in the project (only assets/icon.png).
-    return Icon(Icons.smart_toy, size: 80, color: AppColors.onSurfaceVariant);
+    return Image.asset(
+      'assets/icon.png',
+      width: 80,
+      height: 80,
+    );
   }
 
   // ─── State-specific content ────────────────────────────────────────────────
