@@ -179,6 +179,34 @@ After testing, create a file at `.planning/PROFILING-RESULTS.md` with:
 [Paste relevant [PERF] lines here]
 ```
 
+## Sprint 3 Retest (2026-02-27)
+
+Four critical fixes were pushed. The previous test (`.planning/PROFILING-RESULTS.md`) was OOM-killed before inference could be tested. This retest should verify the fixes AND capture the inference metrics that were missed.
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| `d55753d` | **mmap enabled** (`useMemorymap=true`) | App does NOT get OOM-killed when navigating to Chat tab. Check `adb logcat \| grep lmkd` for kills. |
+| `b74d408` | **nCtx 2048→512** | Reduced KV cache memory. No direct UI change — helps prevent OOM. |
+| `9c35a91` | **SHA-256 skip on 2nd+ launch** | First launch after fresh install: SHA-256 runs (~65s). Second cold start: NO "Verifying download..." phase, goes straight to model load. |
+| `7db3afd` | **"Loading model..." indicator** | After verification (or skip), UI shows "Loading model..." text, NOT "Verifying download..." |
+
+### Retest Checklist
+
+1. **Build + install:** `flutter build apk --debug && adb install -r build/app/outputs/flutter-apk/app-debug.apk`
+2. **First launch:** Model already downloaded from prior test. Should see either brief SHA-256 verification (first launch after update) or skip straight to "Loading model..."
+3. **Verify no OOM:** Navigate to Chat tab. App should NOT crash. Monitor: `adb logcat | grep -E 'lmkd|lowmemory|Zygote.*signal'`
+4. **Chat inference (CRITICAL — never tested):** Send 5+ messages, capture `[PERF] inference_request` events for TTFT and tokens/sec
+5. **Token filtering:** No `<|...|>` tokens visible in chat bubbles
+6. **Multi-turn:** "My name is Alex" → "What is my name?" → should recall
+7. **Translation:** Switch to Translation tab, send a sentence, capture metrics
+8. **Second cold start:** Force-stop app, relaunch. Should skip SHA-256 entirely (no "Verifying download..." screen). Time from launch to usable UI should be ~12-13s (model load only).
+9. **Loading indicator:** During model load phase, UI should show "Loading model..." not "Verifying download..."
+
+### Key Difference from Last Test
+Last test hit OOM at step 3 (Chat tab navigation) due to `use_mmap=false` forcing 2.14 GB into resident RAM. With mmap enabled, the OS will page model data in/out — RSS should stay well under the device's 5.5 GB limit. If OOM still occurs, check `adb logcat | grep -i mmap` for SELinux denials — the app data directory SHOULD have correct `app_data_file` context, but if not, that's the next issue to fix.
+
 ## Architecture Reference
 
 - **PerformanceMonitor**: Singleton at `lib/core/diagnostics/performance_monitor.dart` — tracks all metrics
