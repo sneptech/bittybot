@@ -17,6 +17,37 @@ const _kProgressKey = 'model_download_progress';
 /// Group name used for registering background_downloader callbacks.
 const _kDownloadGroup = 'model_distribution';
 
+double _clampProgress(double progress) {
+  return progress.clamp(0.0, 1.0).toDouble();
+}
+
+/// Returns a progress value that never moves backward.
+double resolveMonotonicProgress({
+  required double previousProgress,
+  required double incomingProgress,
+}) {
+  final clampedPrevious = _clampProgress(previousProgress);
+  final clampedIncoming = _clampProgress(incomingProgress);
+  if (clampedIncoming < clampedPrevious) {
+    return clampedPrevious;
+  }
+  return clampedIncoming;
+}
+
+/// Resolves initial display progress for resume flows.
+///
+/// Uses whichever value is further ahead so persisted progress cannot
+/// overwrite newer live progress.
+double resolveResumeProgress({
+  required double persistedProgress,
+  required double liveProgress,
+}) {
+  return resolveMonotonicProgress(
+    previousProgress: persistedProgress,
+    incomingProgress: liveProgress,
+  );
+}
+
 /// Riverpod Notifier orchestrating the complete model download-verify-load
 /// lifecycle for first-launch and every subsequent launch.
 ///
@@ -104,8 +135,9 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
     // No model on disk — check for a saved partial download progress
     final prefs = await SharedPreferences.getInstance();
-    final savedProgress = prefs.getDouble(_kProgressKey) ?? 0.0;
+    final savedProgress = _clampProgress(prefs.getDouble(_kProgressKey) ?? 0.0);
     if (savedProgress > 0.0) {
+      _lastPersistedProgress = savedProgress;
       state = ResumePromptState(progressFraction: savedProgress);
       return; // Wait for user to confirm or start over
     }
@@ -191,6 +223,24 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// [TaskProgressCallback] provides the full [TaskProgressUpdate] with
   /// network speed and estimated time-remaining data.
   Future<void> _startDownload() async {
+    final prefs = await SharedPreferences.getInstance();
+    final persistedProgress = _clampProgress(
+      prefs.getDouble(_kProgressKey) ?? 0.0,
+    );
+    final stateProgress = switch (state) {
+      ResumePromptState(:final progressFraction) => progressFraction,
+      DownloadingState(:final progressFraction) => progressFraction,
+      _ => 0.0,
+    };
+    final seededProgress = resolveResumeProgress(
+      persistedProgress: persistedProgress,
+      liveProgress: _lastPersistedProgress,
+    );
+    final initialProgress = resolveResumeProgress(
+      persistedProgress: seededProgress,
+      liveProgress: stateProgress,
+    );
+
     // Configure global foreground-service behaviour for large files
     await FileDownloader().configure(
       globalConfig: [(Config.runInForegroundIfFileLargerThan, 500)],
@@ -226,12 +276,13 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
     // Set initial downloading state
     state = DownloadingState(
-      progressFraction: 0.0,
-      downloadedBytes: 0,
+      progressFraction: initialProgress,
+      downloadedBytes: (initialProgress * ModelConstants.fileSizeBytes).round(),
       totalBytes: ModelConstants.fileSizeBytes,
       networkSpeedMBps: 0.0,
       timeRemaining: null,
     );
+    _lastPersistedProgress = initialProgress;
 
     // Register callbacks to receive full TaskProgressUpdate (speed, ETA)
     _downloadCompleter = Completer<TaskStatusUpdate>();
@@ -276,14 +327,21 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// speed and time remaining. Used with [registerCallbacks] + [enqueue].
   void _onProgressCallback(TaskProgressUpdate update) {
     // progress < 0 are sentinel values (-1 unknown, -2 canceled, etc.)
-    final fraction = update.progress.clamp(0.0, 1.0);
+    final previousProgress = switch (state) {
+      DownloadingState(:final progressFraction) => progressFraction,
+      _ => _lastPersistedProgress,
+    };
+    final fraction = resolveMonotonicProgress(
+      previousProgress: previousProgress,
+      incomingProgress: update.progress,
+    );
     final totalBytes = update.hasExpectedFileSize
         ? update.expectedFileSize
         : ModelConstants.fileSizeBytes;
     final downloadedBytes = (fraction * totalBytes).round();
 
     state = DownloadingState(
-      progressFraction: update.progress, // keep raw value for indeterminate UI
+      progressFraction: fraction,
       downloadedBytes: downloadedBytes,
       totalBytes: totalBytes,
       networkSpeedMBps: update.hasNetworkSpeed ? update.networkSpeed : 0.0,
@@ -292,7 +350,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
     // Persist progress — throttled to one write per 5% change to avoid
     // hammering shared_preferences on every callback
-    if ((fraction - _lastPersistedProgress).abs() >= 0.05) {
+    if (fraction - _lastPersistedProgress >= 0.05) {
       _lastPersistedProgress = fraction;
       SharedPreferences.getInstance().then((prefs) {
         prefs.setDouble(_kProgressKey, fraction);
