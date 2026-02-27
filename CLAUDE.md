@@ -68,7 +68,7 @@ Parallel windows:
 - **Language corpus structure**: 4 `mustHave` languages with 18 prompts each, 66 standard languages with 3 reference sentences each. 70 total languages (66 canonical from model card + 4 must-have).
 - **Judge tooling** lives in `tool/` package: 2-tier evaluation -- Claude Sonnet for quick pass/fail, Gemini Flash for full scoring. Not a Flutter package; separate Dart CLI.
 - **ANR risk**: Main-thread inference blocks the UI. All inference MUST run in a dedicated isolate (enforced in Phase 4's architecture).
-- **`use_mmap=false`** required for model files in Android app directories: SELinux `shell_data_file` context blocks mmap.
+- **`use_mmap=true`** is now enabled for model files in app data directories (`/data/user/0/.../files/models/`) with correct SELinux context. # NOTE: mmap now enabled — model lives in app data dir with correct SELinux context.
 
 ## Build Configuration
 

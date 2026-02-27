@@ -55,7 +55,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         final modelParams = ModelParams()
           ..nGpuLayers = 0
           ..mainGpu = -1
-          ..useMemorymap = false;
+          ..useMemorymap = true;
 
         final contextParams = ContextParams()
           ..nCtx = message.nCtx
