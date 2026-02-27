@@ -93,6 +93,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get translationEmptyState => 'اكتب شيئاً للترجمة';
 
   @override
+  String get chatInputHint => 'اكتب رسالة';
+
+  @override
+  String get chatEmptyState => 'ابدأ محادثة';
+
+  @override
   String get newSession => 'جلسة جديدة';
 
   @override
@@ -114,9 +120,103 @@ class AppLocalizationsAr extends AppLocalizations {
   String get copyTranslation => 'نسخ الترجمة';
 
   @override
+  String get copyMessage => 'نسخ الرسالة';
+
+  @override
   String get contextFullBanner =>
       'الجلسة تطول. ابدأ جلسة جديدة للحصول على أفضل النتائج.';
 
   @override
   String get characterLimitWarning => 'اقتراب من حد الأحرف';
+
+  @override
+  String get chatHistory => 'سجل الدردشة';
+
+  @override
+  String get newChat => 'دردشة جديدة';
+
+  @override
+  String get chatHistoryEmpty => 'لا توجد محادثات بعد';
+
+  @override
+  String get deleteSession => 'حذف المحادثة؟';
+
+  @override
+  String get deleteSessionConfirm => 'سيتم حذف هذه المحادثة نهائيًا.';
+
+  @override
+  String get justNow => 'الآن';
+
+  @override
+  String minutesAgo(int count) {
+    return 'منذ $count د';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return 'منذ $count س';
+  }
+
+  @override
+  String get yesterday => 'أمس';
+
+  @override
+  String get webSearchMode => 'وضع الويب';
+
+  @override
+  String get switchToWebSearch => 'التبديل إلى البحث على الويب';
+
+  @override
+  String get switchToChat => 'التبديل إلى الدردشة';
+
+  @override
+  String get webSearchInputHint => 'ألصق رابطًا للترجمة أو التلخيص';
+
+  @override
+  String get webSearchPrompt => 'ترجم ولخّص محتوى صفحة الويب التالية:';
+
+  @override
+  String get noInternetConnection => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get fetchingPage => 'جارٍ جلب الصفحة...';
+
+  @override
+  String get stopTooltip => 'إيقاف';
+
+  @override
+  String get sendTooltip => 'إرسال';
+
+  @override
+  String get chatSettings => 'الدردشة';
+
+  @override
+  String get autoClearHistory => 'المسح التلقائي للسجل';
+
+  @override
+  String get autoClearDescription => 'احذف المحادثات القديمة تلقائيًا';
+
+  @override
+  String get autoClearPeriod => 'احذف المحادثات الأقدم من';
+
+  @override
+  String daysCount(int count) {
+    return '$count يومًا';
+  }
+
+  @override
+  String get dangerZone => 'البيانات';
+
+  @override
+  String get clearAllHistory => 'مسح كل السجل';
+
+  @override
+  String get clearAllHistoryConfirm =>
+      'هل أنت متأكد؟ سيتم حذف جميع المحادثات نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get clearAllHistoryAction => 'حذف الكل';
+
+  @override
+  String get historyCleared => 'تم مسح كل السجل';
 }

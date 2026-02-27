@@ -88,6 +88,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get translationEmptyState => '번역할 내용을 입력하세요';
 
   @override
+  String get chatInputHint => '메시지를 입력하세요';
+
+  @override
+  String get chatEmptyState => '대화를 시작하세요';
+
+  @override
   String get newSession => '새 세션';
 
   @override
@@ -109,8 +115,102 @@ class AppLocalizationsKo extends AppLocalizations {
   String get copyTranslation => '번역 복사';
 
   @override
+  String get copyMessage => '메시지 복사';
+
+  @override
   String get contextFullBanner => '세션이 길어지고 있어요. 더 나은 결과를 위해 새 세션을 시작하세요.';
 
   @override
   String get characterLimitWarning => '글자 수 제한에 가까워지고 있어요';
+
+  @override
+  String get chatHistory => '채팅 기록';
+
+  @override
+  String get newChat => '새 채팅';
+
+  @override
+  String get chatHistoryEmpty => '아직 대화가 없습니다';
+
+  @override
+  String get deleteSession => '대화를 삭제할까요?';
+
+  @override
+  String get deleteSessionConfirm => '이 대화는 영구적으로 삭제됩니다.';
+
+  @override
+  String get justNow => '방금 전';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count분 전';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count시간 전';
+  }
+
+  @override
+  String get yesterday => '어제';
+
+  @override
+  String get webSearchMode => '웹 모드';
+
+  @override
+  String get switchToWebSearch => '웹 검색으로 전환';
+
+  @override
+  String get switchToChat => '채팅으로 전환';
+
+  @override
+  String get webSearchInputHint => '번역 또는 요약할 URL을 붙여넣으세요';
+
+  @override
+  String get webSearchPrompt => '다음 웹페이지 내용을 번역하고 요약하세요:';
+
+  @override
+  String get noInternetConnection => '인터넷 연결이 없습니다';
+
+  @override
+  String get fetchingPage => '페이지를 불러오는 중...';
+
+  @override
+  String get stopTooltip => '중지';
+
+  @override
+  String get sendTooltip => '보내기';
+
+  @override
+  String get chatSettings => '채팅';
+
+  @override
+  String get autoClearHistory => '기록 자동 삭제';
+
+  @override
+  String get autoClearDescription => '오래된 대화를 자동으로 삭제합니다';
+
+  @override
+  String get autoClearPeriod => '다음 기간보다 오래된 대화 삭제';
+
+  @override
+  String daysCount(int count) {
+    return '$count일';
+  }
+
+  @override
+  String get dangerZone => '데이터';
+
+  @override
+  String get clearAllHistory => '전체 기록 삭제';
+
+  @override
+  String get clearAllHistoryConfirm =>
+      '정말로 삭제하시겠어요? 모든 대화가 영구적으로 삭제되며 되돌릴 수 없습니다.';
+
+  @override
+  String get clearAllHistoryAction => '모두 삭제';
+
+  @override
+  String get historyCleared => '전체 기록이 삭제되었습니다';
 }

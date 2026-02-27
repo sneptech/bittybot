@@ -95,6 +95,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get translationEmptyState => 'अनुवाद के लिए कुछ टाइप करें';
 
   @override
+  String get chatInputHint => 'संदेश टाइप करें';
+
+  @override
+  String get chatEmptyState => 'बातचीत शुरू करें';
+
+  @override
   String get newSession => 'नया सत्र';
 
   @override
@@ -116,9 +122,104 @@ class AppLocalizationsHi extends AppLocalizations {
   String get copyTranslation => 'अनुवाद कॉपी करें';
 
   @override
+  String get copyMessage => 'संदेश कॉपी करें';
+
+  @override
   String get contextFullBanner =>
       'सत्र लंबा हो रहा है। बेहतर परिणामों के लिए नया सत्र शुरू करें।';
 
   @override
   String get characterLimitWarning => 'वर्ण सीमा के करीब';
+
+  @override
+  String get chatHistory => 'चैट इतिहास';
+
+  @override
+  String get newChat => 'नई चैट';
+
+  @override
+  String get chatHistoryEmpty => 'अभी तक कोई बातचीत नहीं';
+
+  @override
+  String get deleteSession => 'बातचीत हटाएँ?';
+
+  @override
+  String get deleteSessionConfirm => 'यह बातचीत स्थायी रूप से हटा दी जाएगी।';
+
+  @override
+  String get justNow => 'अभी-अभी';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count मि पहले';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count घं पहले';
+  }
+
+  @override
+  String get yesterday => 'कल';
+
+  @override
+  String get webSearchMode => 'वेब मोड';
+
+  @override
+  String get switchToWebSearch => 'वेब खोज पर स्विच करें';
+
+  @override
+  String get switchToChat => 'चैट पर स्विच करें';
+
+  @override
+  String get webSearchInputHint => 'अनुवाद या सारांश के लिए URL पेस्ट करें';
+
+  @override
+  String get webSearchPrompt =>
+      'निम्न वेब पेज सामग्री का अनुवाद और सारांश करें:';
+
+  @override
+  String get noInternetConnection => 'इंटरनेट कनेक्शन नहीं है';
+
+  @override
+  String get fetchingPage => 'पेज प्राप्त किया जा रहा है...';
+
+  @override
+  String get stopTooltip => 'रोकें';
+
+  @override
+  String get sendTooltip => 'भेजें';
+
+  @override
+  String get chatSettings => 'चैट';
+
+  @override
+  String get autoClearHistory => 'इतिहास अपने-आप साफ करें';
+
+  @override
+  String get autoClearDescription => 'पुरानी बातचीत अपने-आप हटाएँ';
+
+  @override
+  String get autoClearPeriod => 'इतने दिनों से पुरानी बातचीत हटाएँ';
+
+  @override
+  String daysCount(int count) {
+    return '$count दिन';
+  }
+
+  @override
+  String get dangerZone => 'डेटा';
+
+  @override
+  String get clearAllHistory => 'सारा इतिहास साफ करें';
+
+  @override
+  String get clearAllHistoryConfirm =>
+      'क्या आप सुनिश्चित हैं? सभी बातचीत स्थायी रूप से हट जाएँगी। इसे वापस नहीं किया जा सकता।';
+
+  @override
+  String get clearAllHistoryAction => 'सब हटाएँ';
+
+  @override
+  String get historyCleared => 'सारा इतिहास साफ कर दिया गया';
 }

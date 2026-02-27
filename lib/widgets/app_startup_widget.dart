@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/chat/application/chat_repository_provider.dart';
+import '../features/settings/application/auto_clear_service.dart';
 import '../features/settings/application/settings_provider.dart';
 import 'model_loading_screen.dart';
 import 'app_startup_error_screen.dart';
@@ -23,7 +25,11 @@ part 'app_startup_widget.g.dart';
 /// the startup future should run exactly once per app session.
 @Riverpod(keepAlive: true)
 Future<void> appStartup(Ref ref) async {
-  await ref.watch(settingsProvider.future);
+  final settings = await ref.watch(settingsProvider.future);
+  await runAutoClearIfEnabled(
+    settings: settings,
+    chatRepo: ref.read(chatRepositoryProvider),
+  );
 }
 
 /// Async gate that shows loading / error / main UI based on startup state.

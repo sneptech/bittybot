@@ -96,6 +96,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get translationEmptyState => 'Digite algo para traduzir';
 
   @override
+  String get chatInputHint => 'Digite uma mensagem';
+
+  @override
+  String get chatEmptyState => 'Inicie uma conversa';
+
+  @override
   String get newSession => 'Nova sessão';
 
   @override
@@ -117,9 +123,106 @@ class AppLocalizationsPt extends AppLocalizations {
   String get copyTranslation => 'Copiar tradução';
 
   @override
+  String get copyMessage => 'Copiar mensagem';
+
+  @override
   String get contextFullBanner =>
       'A sessão está ficando longa. Inicie uma nova sessão para melhores resultados.';
 
   @override
   String get characterLimitWarning => 'Aproximando-se do limite de caracteres';
+
+  @override
+  String get chatHistory => 'Histórico de conversas';
+
+  @override
+  String get newChat => 'Novo chat';
+
+  @override
+  String get chatHistoryEmpty => 'Ainda não há conversas';
+
+  @override
+  String get deleteSession => 'Excluir conversa?';
+
+  @override
+  String get deleteSessionConfirm =>
+      'Esta conversa será excluída permanentemente.';
+
+  @override
+  String get justNow => 'Agora mesmo';
+
+  @override
+  String minutesAgo(int count) {
+    return 'há $count min';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return 'há $count h';
+  }
+
+  @override
+  String get yesterday => 'Ontem';
+
+  @override
+  String get webSearchMode => 'Modo web';
+
+  @override
+  String get switchToWebSearch => 'Alternar para pesquisa na web';
+
+  @override
+  String get switchToChat => 'Alternar para chat';
+
+  @override
+  String get webSearchInputHint => 'Cole uma URL para traduzir ou resumir';
+
+  @override
+  String get webSearchPrompt =>
+      'Traduza e resuma o seguinte conteúdo da página da web:';
+
+  @override
+  String get noInternetConnection => 'Sem conexão com a internet';
+
+  @override
+  String get fetchingPage => 'Buscando página...';
+
+  @override
+  String get stopTooltip => 'Parar';
+
+  @override
+  String get sendTooltip => 'Enviar';
+
+  @override
+  String get chatSettings => 'Chat';
+
+  @override
+  String get autoClearHistory => 'Limpar histórico automaticamente';
+
+  @override
+  String get autoClearDescription =>
+      'Excluir automaticamente conversas antigas';
+
+  @override
+  String get autoClearPeriod => 'Excluir conversas com mais de';
+
+  @override
+  String daysCount(int count) {
+    return '$count dias';
+  }
+
+  @override
+  String get dangerZone => 'Dados';
+
+  @override
+  String get clearAllHistory => 'Limpar todo o histórico';
+
+  @override
+  String get clearAllHistoryConfirm =>
+      'Tem certeza? Todas as conversas serão excluídas permanentemente. Esta ação não pode ser desfeita.';
+
+  @override
+  String get clearAllHistoryAction => 'Excluir tudo';
+
+  @override
+  String get historyCleared => 'Todo o histórico foi limpo';
 }

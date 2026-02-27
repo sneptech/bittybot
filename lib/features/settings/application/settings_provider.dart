@@ -25,12 +25,16 @@ class AppSettings {
   final ErrorTone errorTone;
   final String targetLanguage;
   final List<String> recentTargetLanguages;
+  final bool autoClearEnabled;
+  final int autoClearDays;
 
   const AppSettings({
     this.localeOverride,
     this.errorTone = ErrorTone.friendly,
     this.targetLanguage = 'Spanish',
     this.recentTargetLanguages = const [],
+    this.autoClearEnabled = false,
+    this.autoClearDays = 30,
   });
 
   /// Returns a new [AppSettings] with the given fields replaced.
@@ -42,14 +46,19 @@ class AppSettings {
     ErrorTone? errorTone,
     String? targetLanguage,
     List<String>? recentTargetLanguages,
+    bool? autoClearEnabled,
+    int? autoClearDays,
   }) {
     return AppSettings(
-      localeOverride:
-          localeOverride != null ? localeOverride() : this.localeOverride,
+      localeOverride: localeOverride != null
+          ? localeOverride()
+          : this.localeOverride,
       errorTone: errorTone ?? this.errorTone,
       targetLanguage: targetLanguage ?? this.targetLanguage,
       recentTargetLanguages:
           recentTargetLanguages ?? this.recentTargetLanguages,
+      autoClearEnabled: autoClearEnabled ?? this.autoClearEnabled,
+      autoClearDays: autoClearDays ?? this.autoClearDays,
     );
   }
 }
@@ -77,6 +86,10 @@ class Settings extends _$Settings {
   static const _kErrorToneKey = 'error_tone';
   static const _kTargetLanguageKey = 'target_language';
   static const _kRecentTargetLanguagesKey = 'recent_target_languages';
+  static const _kAutoClearEnabledKey = 'auto_clear_enabled';
+  static const _kAutoClearDaysKey = 'auto_clear_days';
+
+  static const _kAutoClearDayOptions = {7, 30, 90};
 
   @override
   Future<AppSettings> build() async {
@@ -87,15 +100,19 @@ class Settings extends _$Settings {
     final localeCode = _prefs.getString(_kLocaleKey);
     final toneStr = _prefs.getString(_kErrorToneKey);
     final targetLang = _prefs.getString(_kTargetLanguageKey);
-    final recentLangs =
-        _prefs.getStringList(_kRecentTargetLanguagesKey) ?? [];
+    final recentLangs = _prefs.getStringList(_kRecentTargetLanguagesKey) ?? [];
+    final autoClearEnabled = _prefs.getBool(_kAutoClearEnabledKey) ?? false;
+    final autoClearDays = _prefs.getInt(_kAutoClearDaysKey) ?? 30;
+    final normalizedAutoClearDays =
+        _kAutoClearDayOptions.contains(autoClearDays) ? autoClearDays : 30;
 
     return AppSettings(
       localeOverride: localeCode != null ? Locale(localeCode) : null,
-      errorTone:
-          toneStr == 'direct' ? ErrorTone.direct : ErrorTone.friendly,
+      errorTone: toneStr == 'direct' ? ErrorTone.direct : ErrorTone.friendly,
       targetLanguage: targetLang ?? 'Spanish',
       recentTargetLanguages: recentLangs,
+      autoClearEnabled: autoClearEnabled,
+      autoClearDays: normalizedAutoClearDays,
     );
   }
 
@@ -133,19 +150,35 @@ class Settings extends _$Settings {
 
     // Update rolling recent list: prepend, remove duplicates, cap at 3.
     final current = state.value ?? const AppSettings();
-    final updated = [language, ...current.recentTargetLanguages]
-        .where((l) => l.isNotEmpty)
-        .toSet()
-        .toList()
-      ..take(3);
+    final updated = [
+      language,
+      ...current.recentTargetLanguages,
+    ].where((l) => l.isNotEmpty).toSet().toList()..take(3);
     final recent = updated.length > 3 ? updated.sublist(0, 3) : updated;
     await _prefs.setStringList(_kRecentTargetLanguagesKey, recent);
 
     state = AsyncValue.data(
-      current.copyWith(
-        targetLanguage: language,
-        recentTargetLanguages: recent,
-      ),
+      current.copyWith(targetLanguage: language, recentTargetLanguages: recent),
     );
+  }
+
+  /// Enables/disables automatic history cleanup on app startup.
+  Future<void> setAutoClearEnabled(bool enabled) async {
+    await _prefs.setBool(_kAutoClearEnabledKey, enabled);
+
+    final current = state.value ?? const AppSettings();
+    state = AsyncValue.data(current.copyWith(autoClearEnabled: enabled));
+  }
+
+  /// Sets how many days of history to keep before auto-clear deletes sessions.
+  ///
+  /// Supported values: 7, 30, 90.
+  Future<void> setAutoClearDays(int days) async {
+    if (!_kAutoClearDayOptions.contains(days)) return;
+
+    await _prefs.setInt(_kAutoClearDaysKey, days);
+
+    final current = state.value ?? const AppSettings();
+    state = AsyncValue.data(current.copyWith(autoClearDays: days));
   }
 }

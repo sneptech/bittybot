@@ -87,6 +87,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get translationEmptyState => '输入要翻译的内容';
 
   @override
+  String get chatInputHint => '输入消息';
+
+  @override
+  String get chatEmptyState => '开始对话';
+
+  @override
   String get newSession => '新会话';
 
   @override
@@ -108,8 +114,101 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copyTranslation => '复制翻译';
 
   @override
+  String get copyMessage => '复制消息';
+
+  @override
   String get contextFullBanner => '会话内容过长，建议开启新会话以获得最佳效果。';
 
   @override
   String get characterLimitWarning => '即将达到字符限制';
+
+  @override
+  String get chatHistory => '聊天记录';
+
+  @override
+  String get newChat => '新聊天';
+
+  @override
+  String get chatHistoryEmpty => '还没有对话';
+
+  @override
+  String get deleteSession => '删除对话？';
+
+  @override
+  String get deleteSessionConfirm => '此对话将被永久删除。';
+
+  @override
+  String get justNow => '刚刚';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count分钟前';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count小时前';
+  }
+
+  @override
+  String get yesterday => '昨天';
+
+  @override
+  String get webSearchMode => '网页模式';
+
+  @override
+  String get switchToWebSearch => '切换到网页搜索';
+
+  @override
+  String get switchToChat => '切换到聊天';
+
+  @override
+  String get webSearchInputHint => '粘贴一个 URL 进行翻译或总结';
+
+  @override
+  String get webSearchPrompt => '请翻译并总结以下网页内容：';
+
+  @override
+  String get noInternetConnection => '无互联网连接';
+
+  @override
+  String get fetchingPage => '正在获取页面...';
+
+  @override
+  String get stopTooltip => '停止';
+
+  @override
+  String get sendTooltip => '发送';
+
+  @override
+  String get chatSettings => '聊天';
+
+  @override
+  String get autoClearHistory => '自动清理历史记录';
+
+  @override
+  String get autoClearDescription => '自动删除旧对话';
+
+  @override
+  String get autoClearPeriod => '删除超过以下时长的对话';
+
+  @override
+  String daysCount(int count) {
+    return '$count天';
+  }
+
+  @override
+  String get dangerZone => '数据';
+
+  @override
+  String get clearAllHistory => '清空全部历史记录';
+
+  @override
+  String get clearAllHistoryConfirm => '确定吗？所有对话将被永久删除，且无法撤销。';
+
+  @override
+  String get clearAllHistoryAction => '全部删除';
+
+  @override
+  String get historyCleared => '已清空全部历史记录';
 }

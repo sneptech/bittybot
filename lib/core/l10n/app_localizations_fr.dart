@@ -96,6 +96,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get translationEmptyState => 'Écrivez quelque chose à traduire';
 
   @override
+  String get chatInputHint => 'Saisissez un message';
+
+  @override
+  String get chatEmptyState => 'Démarrer une conversation';
+
+  @override
   String get newSession => 'Nouvelle session';
 
   @override
@@ -117,9 +123,106 @@ class AppLocalizationsFr extends AppLocalizations {
   String get copyTranslation => 'Copier la traduction';
 
   @override
+  String get copyMessage => 'Copier le message';
+
+  @override
   String get contextFullBanner =>
       'La session devient longue. Démarrez une nouvelle session pour de meilleurs résultats.';
 
   @override
   String get characterLimitWarning => 'Limite de caractères presque atteinte';
+
+  @override
+  String get chatHistory => 'Historique des discussions';
+
+  @override
+  String get newChat => 'Nouvelle discussion';
+
+  @override
+  String get chatHistoryEmpty => 'Aucune conversation pour le moment';
+
+  @override
+  String get deleteSession => 'Supprimer la conversation ?';
+
+  @override
+  String get deleteSessionConfirm =>
+      'Cette conversation sera supprimée définitivement.';
+
+  @override
+  String get justNow => 'À l’instant';
+
+  @override
+  String minutesAgo(int count) {
+    return 'il y a $count min';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return 'il y a $count h';
+  }
+
+  @override
+  String get yesterday => 'Hier';
+
+  @override
+  String get webSearchMode => 'Mode web';
+
+  @override
+  String get switchToWebSearch => 'Passer à la recherche web';
+
+  @override
+  String get switchToChat => 'Revenir au chat';
+
+  @override
+  String get webSearchInputHint => 'Collez une URL pour traduire ou résumer';
+
+  @override
+  String get webSearchPrompt =>
+      'Traduisez et résumez le contenu de la page web suivante :';
+
+  @override
+  String get noInternetConnection => 'Pas de connexion Internet';
+
+  @override
+  String get fetchingPage => 'Récupération de la page...';
+
+  @override
+  String get stopTooltip => 'Arrêter';
+
+  @override
+  String get sendTooltip => 'Envoyer';
+
+  @override
+  String get chatSettings => 'Discussion';
+
+  @override
+  String get autoClearHistory => 'Effacer automatiquement l’historique';
+
+  @override
+  String get autoClearDescription =>
+      'Supprimer automatiquement les anciennes conversations';
+
+  @override
+  String get autoClearPeriod => 'Supprimer les conversations datant de plus de';
+
+  @override
+  String daysCount(int count) {
+    return '$count jours';
+  }
+
+  @override
+  String get dangerZone => 'Données';
+
+  @override
+  String get clearAllHistory => 'Effacer tout l’historique';
+
+  @override
+  String get clearAllHistoryConfirm =>
+      'Êtes-vous sûr ? Toutes les conversations seront supprimées définitivement. Cette action est irréversible.';
+
+  @override
+  String get clearAllHistoryAction => 'Tout supprimer';
+
+  @override
+  String get historyCleared => 'Tout l’historique a été effacé';
 }

@@ -79,6 +79,12 @@
   "translationEmptyState": "Type something to translate",
   "@translationEmptyState": { "description": "Centered empty-state prompt shown when no messages exist" },
 
+  "chatInputHint": "Type a message",
+  "@chatInputHint": { "description": "Placeholder text in the chat input field" },
+
+  "chatEmptyState": "Start a conversation",
+  "@chatEmptyState": { "description": "Centered empty-state prompt shown in the chat screen when no messages exist" },
+
   "newSession": "New session",
   "@newSession": { "description": "Tooltip/label for the new session button in the translation screen top bar" },
 
@@ -100,9 +106,96 @@
   "copyTranslation": "Copy translation",
   "@copyTranslation": { "description": "Label for the copy action in the long-press context menu on translation bubbles" },
 
+  "copyMessage": "Copy message",
+  "@copyMessage": { "description": "Label for the copy action in the long-press context menu on chat bubbles" },
+
   "contextFullBanner": "Session is getting long. Start a new session for best results.",
   "@contextFullBanner": { "description": "Banner shown when the translation context approaches the model's limit" },
 
   "characterLimitWarning": "Approaching character limit",
-  "@characterLimitWarning": { "description": "Warning shown in the input field when the user approaches the soft character limit" }
+  "@characterLimitWarning": { "description": "Warning shown in the input field when the user approaches the soft character limit" },
+
+  "chatHistory": "Chat History",
+  "@chatHistory": { "description": "Title shown at the top of the chat history drawer" },
+
+  "newChat": "New Chat",
+  "@newChat": { "description": "Button label and fallback title for untitled chat sessions in the drawer" },
+
+  "chatHistoryEmpty": "No conversations yet",
+  "@chatHistoryEmpty": { "description": "Empty state text shown in the chat history drawer when no sessions exist" },
+
+  "deleteSession": "Delete conversation?",
+  "@deleteSession": { "description": "Title of the confirmation dialog when deleting a chat session" },
+
+  "deleteSessionConfirm": "This conversation will be permanently deleted.",
+  "@deleteSessionConfirm": { "description": "Body text of the delete session confirmation dialog" },
+
+  "justNow": "Just now",
+  "@justNow": { "description": "Relative time label for events less than 1 minute ago" },
+
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": { "description": "Relative time label for events N minutes ago", "placeholders": { "count": { "type": "int" } } },
+
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": { "description": "Relative time label for events N hours ago", "placeholders": { "count": { "type": "int" } } },
+
+  "yesterday": "Yesterday",
+  "@yesterday": { "description": "Relative time label for events that occurred yesterday" },
+
+  "webSearchMode": "Web mode",
+  "@webSearchMode": { "description": "Indicator label shown when web search mode is active" },
+
+  "switchToWebSearch": "Switch to web search",
+  "@switchToWebSearch": { "description": "Tooltip for the toggle button to enable web search mode" },
+
+  "switchToChat": "Switch to chat",
+  "@switchToChat": { "description": "Tooltip for the toggle button to return to normal chat mode" },
+
+  "webSearchInputHint": "Paste a URL to translate or summarize",
+  "@webSearchInputHint": { "description": "Placeholder text in the input field when web search mode is active" },
+
+  "webSearchPrompt": "Translate and summarize the following web page content:",
+  "@webSearchPrompt": { "description": "Prompt prefix sent to the model before fetched web page content" },
+
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": { "description": "Error shown when attempting web search without network connectivity" },
+
+  "fetchingPage": "Fetching page...",
+  "@fetchingPage": { "description": "Loading indicator text shown while fetching a web page" },
+
+  "stopTooltip": "Stop",
+  "@stopTooltip": { "description": "Tooltip for the stop generation button in chat and translation input bars" },
+
+  "sendTooltip": "Send",
+  "@sendTooltip": { "description": "Tooltip for the send message button in chat and translation input bars" },
+
+  "chatSettings": "Chat",
+  "@chatSettings": { "description": "Section header for chat-related settings" },
+
+  "autoClearHistory": "Auto-clear history",
+  "@autoClearHistory": { "description": "Label for the auto-clear toggle switch in settings" },
+
+  "autoClearDescription": "Automatically delete old conversations",
+  "@autoClearDescription": { "description": "Subtitle explaining the auto-clear toggle" },
+
+  "autoClearPeriod": "Delete conversations older than",
+  "@autoClearPeriod": { "description": "Label for the auto-clear time period selector" },
+
+  "daysCount": "{count} days",
+  "@daysCount": { "description": "Time period label showing number of days", "placeholders": { "count": { "type": "int" } } },
+
+  "dangerZone": "Data",
+  "@dangerZone": { "description": "Section header for destructive data operations in settings" },
+
+  "clearAllHistory": "Clear all history",
+  "@clearAllHistory": { "description": "Button label for deleting all chat history" },
+
+  "clearAllHistoryConfirm": "Are you sure? All conversations will be permanently deleted. This cannot be undone.",
+  "@clearAllHistoryConfirm": { "description": "Confirmation dialog body text for clear all history action" },
+
+  "clearAllHistoryAction": "Delete all",
+  "@clearAllHistoryAction": { "description": "Destructive action button label in the clear all confirmation dialog" },
+
+  "historyCleared": "All history cleared",
+  "@historyCleared": { "description": "Snackbar confirmation shown after all history is deleted" }
 }

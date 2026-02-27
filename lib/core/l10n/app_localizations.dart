@@ -270,6 +270,18 @@ abstract class AppLocalizations {
   /// **'Type something to translate'**
   String get translationEmptyState;
 
+  /// Placeholder text in the chat input field
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message'**
+  String get chatInputHint;
+
+  /// Centered empty-state prompt shown in the chat screen when no messages exist
+  ///
+  /// In en, this message translates to:
+  /// **'Start a conversation'**
+  String get chatEmptyState;
+
   /// Tooltip/label for the new session button in the translation screen top bar
   ///
   /// In en, this message translates to:
@@ -312,6 +324,12 @@ abstract class AppLocalizations {
   /// **'Copy translation'**
   String get copyTranslation;
 
+  /// Label for the copy action in the long-press context menu on chat bubbles
+  ///
+  /// In en, this message translates to:
+  /// **'Copy message'**
+  String get copyMessage;
+
   /// Banner shown when the translation context approaches the model's limit
   ///
   /// In en, this message translates to:
@@ -323,6 +341,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Approaching character limit'**
   String get characterLimitWarning;
+
+  /// Title shown at the top of the chat history drawer
+  ///
+  /// In en, this message translates to:
+  /// **'Chat History'**
+  String get chatHistory;
+
+  /// Button label and fallback title for untitled chat sessions in the drawer
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get newChat;
+
+  /// Empty state text shown in the chat history drawer when no sessions exist
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get chatHistoryEmpty;
+
+  /// Title of the confirmation dialog when deleting a chat session
+  ///
+  /// In en, this message translates to:
+  /// **'Delete conversation?'**
+  String get deleteSession;
+
+  /// Body text of the delete session confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation will be permanently deleted.'**
+  String get deleteSessionConfirm;
+
+  /// Relative time label for events less than 1 minute ago
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// Relative time label for events N minutes ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String minutesAgo(int count);
+
+  /// Relative time label for events N hours ago
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String hoursAgo(int count);
+
+  /// Relative time label for events that occurred yesterday
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// Indicator label shown when web search mode is active
+  ///
+  /// In en, this message translates to:
+  /// **'Web mode'**
+  String get webSearchMode;
+
+  /// Tooltip for the toggle button to enable web search mode
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to web search'**
+  String get switchToWebSearch;
+
+  /// Tooltip for the toggle button to return to normal chat mode
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to chat'**
+  String get switchToChat;
+
+  /// Placeholder text in the input field when web search mode is active
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a URL to translate or summarize'**
+  String get webSearchInputHint;
+
+  /// Prompt prefix sent to the model before fetched web page content
+  ///
+  /// In en, this message translates to:
+  /// **'Translate and summarize the following web page content:'**
+  String get webSearchPrompt;
+
+  /// Error shown when attempting web search without network connectivity
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get noInternetConnection;
+
+  /// Loading indicator text shown while fetching a web page
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching page...'**
+  String get fetchingPage;
+
+  /// Tooltip for the stop generation button in chat and translation input bars
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopTooltip;
+
+  /// Tooltip for the send message button in chat and translation input bars
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get sendTooltip;
+
+  /// Section header for chat-related settings
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatSettings;
+
+  /// Label for the auto-clear toggle switch in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-clear history'**
+  String get autoClearHistory;
+
+  /// Subtitle explaining the auto-clear toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically delete old conversations'**
+  String get autoClearDescription;
+
+  /// Label for the auto-clear time period selector
+  ///
+  /// In en, this message translates to:
+  /// **'Delete conversations older than'**
+  String get autoClearPeriod;
+
+  /// Time period label showing number of days
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String daysCount(int count);
+
+  /// Section header for destructive data operations in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get dangerZone;
+
+  /// Button label for deleting all chat history
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all history'**
+  String get clearAllHistory;
+
+  /// Confirmation dialog body text for clear all history action
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure? All conversations will be permanently deleted. This cannot be undone.'**
+  String get clearAllHistoryConfirm;
+
+  /// Destructive action button label in the clear all confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get clearAllHistoryAction;
+
+  /// Snackbar confirmation shown after all history is deleted
+  ///
+  /// In en, this message translates to:
+  /// **'All history cleared'**
+  String get historyCleared;
 }
 
 class _AppLocalizationsDelegate
