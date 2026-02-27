@@ -123,6 +123,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get characterLimitWarning => '即将达到字符限制';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => '聊天记录';
 
   @override
@@ -275,6 +280,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadFailed => '下载失败';
+
+  @override
+  String get downloadErrorNoInternet => '无互联网连接。请连接 Wi-Fi 或移动数据以下载语言模型。';
+
+  @override
+  String get downloadErrorFailed => '下载失败。请重试。';
+
+  @override
+  String get downloadErrorNotFound => '服务器上未找到模型文件。请检查你的网络连接后重试。';
+
+  @override
+  String get downloadErrorVerificationFailed => '下载校验失败。文件可能已损坏。请重试。';
 
   @override
   String get calculating => '计算中...';

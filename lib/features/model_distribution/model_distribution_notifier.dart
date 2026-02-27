@@ -173,8 +173,8 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     switch (connection) {
       case ConnectionType.none:
         state = ErrorState(
-          message:
-              'No internet connection. Connect to Wi-Fi or cellular data to download the language model.',
+          kind: DownloadErrorKind.noInternet,
+          message: '',
           failureCount: _failureCount,
         );
       case ConnectionType.cellular:
@@ -192,9 +192,9 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// network speed and estimated time-remaining data.
   Future<void> _startDownload() async {
     // Configure global foreground-service behaviour for large files
-    await FileDownloader().configure(globalConfig: [
-      (Config.runInForegroundIfFileLargerThan, 500),
-    ]);
+    await FileDownloader().configure(
+      globalConfig: [(Config.runInForegroundIfFileLargerThan, 500)],
+    );
 
     // Configure OS-level download notification
     FileDownloader().configureNotification(
@@ -244,7 +244,9 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     // Enqueue — callbacks fire asynchronously; await via completer
     final enqueued = await FileDownloader().enqueue(task);
     if (!enqueued) {
-      _downloadCompleter!.completeError(Exception('Failed to enqueue download'));
+      _downloadCompleter!.completeError(
+        Exception('Failed to enqueue download'),
+      );
     }
 
     // Await completion via the completer — resolved in _onStatusCallback
@@ -259,12 +261,11 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
         await _onDownloadComplete();
       case TaskStatus.failed:
         await _onDownloadFailed(
-          result.exception?.description ?? 'Download failed. Please try again.',
+          kind: DownloadErrorKind.downloadFailed,
+          message: result.exception?.description ?? '',
         );
       case TaskStatus.notFound:
-        await _onDownloadFailed(
-          'Model file not found on the server. Please check your internet connection and try again.',
-        );
+        await _onDownloadFailed(kind: DownloadErrorKind.notFound, message: '');
       default:
         // canceled, paused, etc. — no state transition needed here
         break;
@@ -311,8 +312,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
       case TaskStatus.notFound:
       case TaskStatus.canceled:
         // Complete the awaiter with the final status
-        if (_downloadCompleter != null &&
-            !_downloadCompleter!.isCompleted) {
+        if (_downloadCompleter != null && !_downloadCompleter!.isCompleted) {
           _downloadCompleter!.complete(update);
         }
       default:
@@ -344,18 +344,21 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
       _lastPersistedProgress = 0.0;
       _failureCount++;
       state = ErrorState(
-        message: _buildErrorMessage(
-          'Download verification failed. The file may be corrupted. Please try again.',
-        ),
+        kind: DownloadErrorKind.verificationFailed,
+        message: '',
         failureCount: _failureCount,
       );
     }
   }
 
   /// Called when background_downloader reports a permanent download failure.
-  Future<void> _onDownloadFailed(String message) async {
+  Future<void> _onDownloadFailed({
+    required DownloadErrorKind kind,
+    required String message,
+  }) async {
     _failureCount++;
     state = ErrorState(
+      kind: kind,
       message: _buildErrorMessage(message),
       failureCount: _failureCount,
     );
@@ -363,6 +366,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
   /// Appends troubleshooting hints to [message] when [_failureCount] >= 3.
   String _buildErrorMessage(String message) {
+    if (message.trim().isEmpty) return '';
     if (_failureCount >= 3) {
       return '$message\n\nTroubleshooting:\n'
           '- Make sure you have at least 2.5 GB of free storage\n'

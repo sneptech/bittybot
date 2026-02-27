@@ -132,6 +132,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get characterLimitWarning => 'वर्ण सीमा के करीब';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => 'चैट इतिहास';
 
   @override
@@ -286,6 +291,21 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get downloadFailed => 'डाउनलोड विफल';
+
+  @override
+  String get downloadErrorNoInternet =>
+      'इंटरनेट कनेक्शन नहीं है। भाषा मॉडल डाउनलोड करने के लिए Wi-Fi या मोबाइल डेटा से कनेक्ट करें।';
+
+  @override
+  String get downloadErrorFailed => 'डाउनलोड विफल हुआ। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get downloadErrorNotFound =>
+      'सर्वर पर मॉडल फ़ाइल नहीं मिली। कृपया अपना इंटरनेट कनेक्शन जांचें और पुनः प्रयास करें।';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      'डाउनलोड सत्यापन विफल हुआ। फ़ाइल क्षतिग्रस्त हो सकती है। कृपया पुनः प्रयास करें।';
 
   @override
   String get calculating => 'गणना की जा रही है...';

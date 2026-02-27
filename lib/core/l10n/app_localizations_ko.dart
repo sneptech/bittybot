@@ -124,6 +124,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get characterLimitWarning => '글자 수 제한에 가까워지고 있어요';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => '채팅 기록';
 
   @override
@@ -277,6 +282,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get downloadFailed => '다운로드 실패';
+
+  @override
+  String get downloadErrorNoInternet =>
+      '인터넷에 연결되어 있지 않습니다. 언어 모델을 다운로드하려면 Wi-Fi 또는 모바일 데이터에 연결하세요.';
+
+  @override
+  String get downloadErrorFailed => '다운로드에 실패했습니다. 다시 시도해 주세요.';
+
+  @override
+  String get downloadErrorNotFound =>
+      '서버에서 모델 파일을 찾을 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      '다운로드 검증에 실패했습니다. 파일이 손상되었을 수 있습니다. 다시 시도해 주세요.';
 
   @override
   String get calculating => '계산 중...';

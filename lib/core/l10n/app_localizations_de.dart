@@ -133,6 +133,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get characterLimitWarning => 'Zeichenlimit wird erreicht';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => 'Chatverlauf';
 
   @override
@@ -290,6 +295,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get downloadFailed => 'Download fehlgeschlagen';
+
+  @override
+  String get downloadErrorNoInternet =>
+      'Keine Internetverbindung. Verbinden Sie sich mit WLAN oder mobilen Daten, um das Sprachmodell herunterzuladen.';
+
+  @override
+  String get downloadErrorFailed =>
+      'Download fehlgeschlagen. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get downloadErrorNotFound =>
+      'Die Modelldatei wurde auf dem Server nicht gefunden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      'Download-Überprüfung fehlgeschlagen. Die Datei ist möglicherweise beschädigt. Bitte versuchen Sie es erneut.';
 
   @override
   String get calculating => 'Wird berechnet...';

@@ -123,6 +123,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get characterLimitWarning => '文字数制限に近づいています';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => 'チャット履歴';
 
   @override
@@ -276,6 +281,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get downloadFailed => 'ダウンロードに失敗しました';
+
+  @override
+  String get downloadErrorNoInternet =>
+      'インターネット接続がありません。言語モデルをダウンロードするには Wi-Fi またはモバイルデータに接続してください。';
+
+  @override
+  String get downloadErrorFailed => 'ダウンロードに失敗しました。もう一度お試しください。';
+
+  @override
+  String get downloadErrorNotFound =>
+      'サーバー上にモデルファイルが見つかりません。インターネット接続を確認して、もう一度お試しください。';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      'ダウンロードの検証に失敗しました。ファイルが破損している可能性があります。もう一度お試しください。';
 
   @override
   String get calculating => '計算中...';

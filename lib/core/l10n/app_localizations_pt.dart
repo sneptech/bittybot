@@ -133,6 +133,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get characterLimitWarning => 'Aproximando-se do limite de caracteres';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => 'Histórico de conversas';
 
   @override
@@ -288,6 +293,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get downloadFailed => 'Falha no download';
+
+  @override
+  String get downloadErrorNoInternet =>
+      'Sem conexão com a internet. Conecte-se ao Wi-Fi ou aos dados móveis para baixar o modelo de idioma.';
+
+  @override
+  String get downloadErrorFailed => 'Falha no download. Tente novamente.';
+
+  @override
+  String get downloadErrorNotFound =>
+      'Arquivo do modelo não encontrado no servidor. Verifique sua conexão com a internet e tente novamente.';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      'A verificação do download falhou. O arquivo pode estar corrompido. Tente novamente.';
 
   @override
   String get calculating => 'Calculando...';

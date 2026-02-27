@@ -342,6 +342,12 @@ abstract class AppLocalizations {
   /// **'Approaching character limit'**
   String get characterLimitWarning;
 
+  /// Character counter shown below chat/translation input while approaching soft limit
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {max}'**
+  String characterCount(int current, int max);
+
   /// Title shown at the top of the chat history drawer
   ///
   /// In en, this message translates to:
@@ -611,6 +617,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download failed'**
   String get downloadFailed;
+
+  /// Error body shown when model download preflight detects no network connection
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Connect to Wi-Fi or cellular data to download the language model.'**
+  String get downloadErrorNoInternet;
+
+  /// Generic error body shown when the download fails without a detailed library-provided message
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed. Please try again.'**
+  String get downloadErrorFailed;
+
+  /// Error body shown when the model download URL returns not found
+  ///
+  /// In en, this message translates to:
+  /// **'Model file not found on the server. Please check your internet connection and try again.'**
+  String get downloadErrorNotFound;
+
+  /// Error body shown when the downloaded model hash does not match expected SHA-256
+  ///
+  /// In en, this message translates to:
+  /// **'Download verification failed. The file may be corrupted. Please try again.'**
+  String get downloadErrorVerificationFailed;
 
   /// Fallback remaining-time label when ETA cannot yet be computed
   ///

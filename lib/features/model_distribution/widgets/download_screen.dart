@@ -63,7 +63,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -94,26 +94,31 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
   Widget _buildLogo() {
     // TODO: Replace placeholder with Image.asset() when a logo asset is added.
     // No logo asset currently exists in the project (only assets/icon.png).
-    return Icon(
-      Icons.smart_toy,
-      size: 80,
-      color: AppColors.onSurfaceVariant,
-    );
+    return Icon(Icons.smart_toy, size: 80, color: AppColors.onSurfaceVariant);
   }
 
   // ─── State-specific content ────────────────────────────────────────────────
 
-  Widget _buildStateContent(ModelDistributionState state, AppLocalizations l10n) {
+  Widget _buildStateContent(
+    ModelDistributionState state,
+    AppLocalizations l10n,
+  ) {
     return switch (state) {
       CheckingModelState() => _buildSpinner(l10n.checkingForLanguageModel),
       PreflightState() => _buildSpinner(l10n.preparingDownload),
-      ResumePromptState(progressFraction: final fraction) =>
-        _buildProgressBar(fraction, l10n: l10n, downloadedBytes: 0, totalBytes: 0,
-            networkSpeedMBps: 0, timeRemaining: null, isBackground: true),
+      ResumePromptState(progressFraction: final fraction) => _buildProgressBar(
+        fraction,
+        l10n: l10n,
+        downloadedBytes: 0,
+        totalBytes: 0,
+        networkSpeedMBps: 0,
+        timeRemaining: null,
+        isBackground: true,
+      ),
       CellularWarningState() => _buildSpinner(l10n.awaitingYourChoice),
       InsufficientStorageState(
         neededBytes: final needed,
-        availableBytes: final available
+        availableBytes: final available,
       ) =>
         _buildStorageError(needed, available, l10n),
       DownloadingState(
@@ -121,22 +126,31 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
         downloadedBytes: final downloaded,
         totalBytes: final total,
         networkSpeedMBps: final speed,
-        timeRemaining: final eta
+        timeRemaining: final eta,
       ) =>
-        _buildProgressBar(fraction, l10n: l10n,
-            downloadedBytes: downloaded,
-            totalBytes: total,
-            networkSpeedMBps: speed,
-            timeRemaining: eta),
+        _buildProgressBar(
+          fraction,
+          l10n: l10n,
+          downloadedBytes: downloaded,
+          totalBytes: total,
+          networkSpeedMBps: speed,
+          timeRemaining: eta,
+        ),
       VerifyingState() => _buildSpinner(l10n.verifyingDownload),
-      LowMemoryWarningState(availableMB: final memMB) =>
-        _buildLowMemoryWarning(memMB, l10n),
+      LowMemoryWarningState(availableMB: final memMB) => _buildLowMemoryWarning(
+        memMB,
+        l10n,
+      ),
       // LoadingModelState and ModelReadyState should not appear on this screen —
       // Plan 03 routing will have navigated away. Show fallbacks in case.
       LoadingModelState() => _buildSpinner(l10n.loadingLanguageModel),
       ModelReadyState() => _buildSpinner(l10n.readyStatus),
-      ErrorState(message: final msg, failureCount: final count) =>
-        _buildError(msg, count, l10n),
+      ErrorState(
+        kind: final kind,
+        message: final msg,
+        failureCount: final count,
+      ) =>
+        _buildError(msg, count, l10n, kind),
     };
   }
 
@@ -157,7 +171,10 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
+          style: const TextStyle(
+            color: AppColors.onSurfaceVariant,
+            fontSize: 14,
+          ),
         ),
       ],
     );
@@ -185,8 +202,7 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
             value: value,
             minHeight: 8,
             backgroundColor: AppColors.surfaceContainer,
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(AppColors.primary),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
         ),
         if (!isBackground) ...[
@@ -222,8 +238,9 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
     AppLocalizations l10n,
   ) {
     final neededGB = (neededBytes / (1024 * 1024 * 1024)).toStringAsFixed(1);
-    final availableGB =
-        (availableBytes / (1024 * 1024 * 1024)).toStringAsFixed(1);
+    final availableGB = (availableBytes / (1024 * 1024 * 1024)).toStringAsFixed(
+      1,
+    );
 
     return _buildCard(
       icon: Icons.warning_amber_rounded,
@@ -253,13 +270,27 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
 
   // ─── Error state ──────────────────────────────────────────────────────────
 
-  Widget _buildError(String message, int failureCount, AppLocalizations l10n) {
+  Widget _buildError(
+    String message,
+    int failureCount,
+    AppLocalizations l10n,
+    DownloadErrorKind kind,
+  ) {
+    final localizedMessage = switch (kind) {
+      DownloadErrorKind.noInternet => l10n.downloadErrorNoInternet,
+      DownloadErrorKind.downloadFailed =>
+        message.isNotEmpty ? message : l10n.downloadErrorFailed,
+      DownloadErrorKind.notFound => l10n.downloadErrorNotFound,
+      DownloadErrorKind.verificationFailed =>
+        l10n.downloadErrorVerificationFailed,
+    };
+
     return _buildCard(
       icon: Icons.error_outline,
       iconColor: AppColors.error,
       title: l10n.downloadFailed,
-      // message already includes troubleshooting hints when failureCount >= 3
-      message: message,
+      // message may include library exception details for downloadFailed.
+      message: localizedMessage,
       buttonLabel: l10n.retry,
       onButton: () =>
           ref.read(modelDistributionProvider.notifier).retryDownload(),
@@ -303,8 +334,10 @@ class _DownloadScreenState extends ConsumerState<DownloadScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: AppColors.onSurface,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: 32,
+              vertical: 14,
+            ),
           ),
           onPressed: onButton,
           child: Text(buttonLabel),

@@ -130,6 +130,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get characterLimitWarning => 'اقتراب من حد الأحرف';
 
   @override
+  String characterCount(int current, int max) {
+    return '$current / $max';
+  }
+
+  @override
   String get chatHistory => 'سجل الدردشة';
 
   @override
@@ -283,6 +288,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get downloadFailed => 'فشل التنزيل';
+
+  @override
+  String get downloadErrorNoInternet =>
+      'لا يوجد اتصال بالإنترنت. اتصل بشبكة Wi-Fi أو بيانات الهاتف لتنزيل نموذج اللغة.';
+
+  @override
+  String get downloadErrorFailed => 'فشل التنزيل. يُرجى المحاولة مرة أخرى.';
+
+  @override
+  String get downloadErrorNotFound =>
+      'ملف النموذج غير موجود على الخادم. يُرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.';
+
+  @override
+  String get downloadErrorVerificationFailed =>
+      'فشل التحقق من التنزيل. قد يكون الملف تالفًا. يُرجى المحاولة مرة أخرى.';
 
   @override
   String get calculating => 'جارٍ الحساب...';

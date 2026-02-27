@@ -131,7 +131,7 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
                 final isOverLimit = length > 500;
                 final counterText = isOverLimit
                     ? l10n.characterLimitWarning
-                    : '$length / 500';
+                    : l10n.characterCount(length, 500);
                 return Padding(
                   padding:
                       const EdgeInsetsDirectional.fromSTEB(4, 2, 4, 0),

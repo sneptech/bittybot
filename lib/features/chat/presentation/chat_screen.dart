@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../widgets/context_full_banner.dart';
 import '../application/chat_notifier.dart';
 import 'widgets/chat_bubble_list.dart';
 import 'widgets/chat_history_drawer.dart';
@@ -60,7 +61,7 @@ class ChatScreen extends ConsumerWidget {
         children: [
           // Context-full banner.
           if (state.isContextFull)
-            _ContextFullBanner(
+            ContextFullBanner(
               onNewSession: () => ref
                   .read(chatProvider.notifier)
                   .startNewSessionWithCarryForward(),
@@ -72,44 +73,6 @@ class ChatScreen extends ConsumerWidget {
 
           // Input bar — hugs the bottom with SafeArea inside.
           const ChatInputBar(),
-        ],
-      ),
-    );
-  }
-}
-
-/// Subtle warning banner shown when the chat context approaches
-/// the model's limit (~90% of nCtx=2048 tokens).
-class _ContextFullBanner extends StatelessWidget {
-  const _ContextFullBanner({required this.onNewSession, required this.l10n});
-
-  final VoidCallback onNewSession;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      color: AppColors.secondaryContainer,
-      padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 8, 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.contextFullBanner,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.onSecondaryContainer,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: onNewSession,
-            child: Text(
-              l10n.newSession,
-              style: textTheme.labelSmall?.copyWith(color: AppColors.secondary),
-            ),
-          ),
         ],
       ),
     );

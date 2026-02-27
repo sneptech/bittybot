@@ -29,6 +29,13 @@ sealed class ModelDistributionState {
   const ModelDistributionState();
 }
 
+enum DownloadErrorKind {
+  noInternet,
+  downloadFailed,
+  notFound,
+  verificationFailed,
+}
+
 /// App just launched. Checking whether the model file exists on disk and
 /// whether its SHA-256 matches [ModelConstants.sha256Hash].
 final class CheckingModelState extends ModelDistributionState {
@@ -142,11 +149,17 @@ final class ModelReadyState extends ModelDistributionState {
 /// - 3+ failures: troubleshooting hints shown below the retry button
 final class ErrorState extends ModelDistributionState {
   const ErrorState({
+    required this.kind,
     required this.message,
     required this.failureCount,
   });
 
+  /// Category used by the widget layer to map to localized copy.
+  final DownloadErrorKind kind;
+
   /// Human-readable error message shown in the UI.
+  ///
+  /// This is a fallback channel for library-provided exceptions.
   final String message;
 
   /// How many consecutive failures have occurred. Drives escalating UX hints.

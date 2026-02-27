@@ -114,6 +114,8 @@
 
   "characterLimitWarning": "Approaching character limit",
   "@characterLimitWarning": { "description": "Warning shown in the input field when the user approaches the soft character limit" },
+  "characterCount": "{current} / {max}",
+  "@characterCount": { "description": "Character counter shown below chat/translation input while approaching soft limit", "placeholders": { "current": { "type": "int" }, "max": { "type": "int" } } },
 
   "chatHistory": "Chat History",
   "@chatHistory": { "description": "Title shown at the top of the chat history drawer" },
@@ -218,6 +220,14 @@
   "@continueAnyway": { "description": "Action label to proceed despite low-memory warning" },
   "downloadFailed": "Download failed",
   "@downloadFailed": { "description": "Title shown when model download encounters an unrecoverable error state" },
+  "downloadErrorNoInternet": "No internet connection. Connect to Wi-Fi or cellular data to download the language model.",
+  "@downloadErrorNoInternet": { "description": "Error body shown when model download preflight detects no network connection" },
+  "downloadErrorFailed": "Download failed. Please try again.",
+  "@downloadErrorFailed": { "description": "Generic error body shown when the download fails without a detailed library-provided message" },
+  "downloadErrorNotFound": "Model file not found on the server. Please check your internet connection and try again.",
+  "@downloadErrorNotFound": { "description": "Error body shown when the model download URL returns not found" },
+  "downloadErrorVerificationFailed": "Download verification failed. The file may be corrupted. Please try again.",
+  "@downloadErrorVerificationFailed": { "description": "Error body shown when the downloaded model hash does not match expected SHA-256" },
   "calculating": "Calculating...",
   "@calculating": { "description": "Fallback remaining-time label when ETA cannot yet be computed" },
   "durationHoursMinutes": "{hours}h {minutes}m",
