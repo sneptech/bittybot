@@ -30,7 +30,7 @@ final class LoadModelCommand extends InferenceCommand {
     required this.modelPath,
     this.nCtx = 512,
     this.nBatch = 256,
-    this.nThreads = 4,
+    this.nThreads = 6,
   });
 }
 
