@@ -207,11 +207,83 @@ Four critical fixes were pushed. The previous test (`.planning/PROFILING-RESULTS
 ### Key Difference from Last Test
 Last test hit OOM at step 3 (Chat tab navigation) due to `use_mmap=false` forcing 2.14 GB into resident RAM. With mmap enabled, the OS will page model data in/out — RSS should stay well under the device's 5.5 GB limit. If OOM still occurs, check `adb logcat | grep -i mmap` for SELinux denials — the app data directory SHOULD have correct `app_data_file` context, but if not, that's the next issue to fix.
 
+## Sprint 4 Retest (2026-02-27)
+
+Five fixes targeting inference speed. The Sprint 3 retest showed TTFT 2.6–10s and 0.5–2.8 tok/s — both FAIL — because the 2.14 GB Q4_K_M model couldn't stay fully resident on a 5.5 GB device. Sprint 4 addresses this with a smaller model, more threads, startup jank fix, and page warmup.
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| (release `v0.1.0-q3ks`) | **Q3_K_S model** (1.55 GB, down from 2.14 GB Q4_K_M) | App detects size mismatch → re-downloads new model from GitHub release. Download completes, SHA-256 verifies. |
+| `0e1144a` | **ModelConstants updated** for Q3_K_S | New URL, hash, size all correct. Download screen shows "~1.55 GB". |
+| `114c1d4` | **nThreads 4→6** | Uses all 6 big cores. Check `adb logcat \| grep nThreads` if logged. |
+| `7e3f578` | **Startup jank fix** | Fewer frames skipped on cold start (was 175, should be much less). Check Choreographer logs. |
+| `f784c00` | **Page warmup** | After model load, all mmap pages are pre-faulted. Model load time will be LONGER (includes sequential read of 1.55 GB), but first inference TTFT should be fast since all pages are already in RAM. |
+
+### Retest Checklist
+
+**IMPORTANT:** The app MUST re-download the model since it switched from Q4_K_M (2.14 GB) to Q3_K_S (1.55 GB). The existing model file will fail the size check and be deleted. You need a working internet connection for the first launch.
+
+1. **Build + install:** `flutter build apk --debug && adb install -r build/app/outputs/flutter-apk/app-debug.apk`
+2. **First launch — model re-download:**
+   - App should detect existing Q4_K_M file has wrong size → delete → re-download Q3_K_S (~1.55 GB)
+   - Progress bar should be smooth (monotonic, no oscillation)
+   - BittyBot logo should be visible on download screen
+   - After download: SHA-256 verification runs (one-time, ~35-40s for 1.55 GB)
+   - After verification: "Loading model..." indicator → model loads
+   - **Expected model load time:** longer than before (~15-25s) because page warmup reads the entire file after load. This is intentional — it pre-faults mmap pages so first inference is fast.
+3. **Memory check:** `adb shell dumpsys meminfo com.bittybot.bittybot`
+   - Model mmap should be ~1,550 MB mapped (vs 2,082 MB before)
+   - RSS should be ~700-900 MB (vs 1,189 MB before)
+   - Swap should be minimal (<100 MB, vs 268 MB before)
+   - Key: model + KV cache + app should fit in ~2.1 GB available with ~400 MB headroom
+4. **Chat inference (THE KEY TEST):**
+   - Send 5+ messages, capture `[PERF] inference_request` events
+   - **Expected TTFT: <2s consistently** (not just once — model should stay resident)
+   - **Expected tok/s: 3-5+** with nThreads=6 and full residency
+   - Compare request #0 vs #4 — should be similar (no page eviction between requests)
+5. **Startup jank:** Check Choreographer frame skips on launch
+   - Was 175 frames in Sprint 3 → should be significantly fewer with the jank fix
+   - `adb logcat | grep -E 'Skipped.*frames'`
+6. **Second cold start:** Force-stop, relaunch
+   - SHA-256 should be SKIPPED (flag persisted from first launch)
+   - Model loads → page warmup → ready
+   - Total time to usable UI should be model load + warmup (~15-25s)
+7. **Inference after second cold start:**
+   - First message should have TTFT <2s (pages pre-faulted by warmup)
+   - If TTFT is >5s, page warmup may not be working — check logs for errors
+8. **All Sprint 3 tests still pass:**
+   - Token filtering: no `<|...|>` tokens visible
+   - Multi-turn: "My name is Alex" → recall works
+   - Translation: switch tabs, send message, capture metrics
+   - No OOM kill (should be even better now with smaller model)
+
+### Performance Targets (Updated)
+
+| Metric | Target | Sprint 3 Best | Expected Sprint 4 |
+|--------|--------|---------------|-------------------|
+| Model load + warmup | < 30s | 7.5s (no warmup) | 15-25s (with warmup) |
+| Cold start (2nd+) | < 30s | 10s | 15-25s (with warmup) |
+| TTFT | < 2s | 2.6s (100% resident) | < 2s (consistent) |
+| Token generation | > 5 tok/s | 2.8 tok/s (100% resident) | 3-5+ tok/s (nThreads=6) |
+| TTFT consistency | < 1s variance | 2.6s–10.5s (7.9s variance!) | < 1s variance |
+| Startup frame skips | < 50 | 175 | < 50 |
+
+### Key Difference from Sprint 3 Test
+Sprint 3's fundamental problem: 2.14 GB model on 5.5 GB device left NO headroom. Model pages were constantly evicted, causing 5-10x slowdowns. Sprint 4's Q3_K_S at 1.55 GB leaves ~400 MB headroom after model + KV cache + app overhead. Combined with page warmup, the model should stay fully resident and inference should be consistently fast.
+
+**If TTFT is still >5s:** Check `adb shell cat /proc/meminfo | grep -E 'MemAvailable|SwapFree'` — if available memory is very low, background services may still be evicting pages. Report exact numbers.
+
+**If download fails:** The model URL is a GitHub release asset: `https://github.com/sneptech/bittybot/releases/download/v0.1.0-q3ks/tiny-aya-global-q3_k_s.gguf`. Verify it's accessible from the device's browser first.
+
 ## Architecture Reference
 
 - **PerformanceMonitor**: Singleton at `lib/core/diagnostics/performance_monitor.dart` — tracks all metrics
 - **InferenceProfiler**: Static helper at `lib/core/diagnostics/inference_profiler.dart` — DevTools Timeline spans
 - **Token batching**: `ChatNotifier` buffers tokens for 50ms before UI rebuild (T-P4 fix)
-- **nThreads=4**: Inference isolate uses 4 threads (prevents big.LITTLE over-subscription)
+- **nThreads=6**: Inference isolate uses 6 threads (all big cores on Galaxy A25)
 - **Token filter**: Regex in `inference_isolate.dart` strips `<|UPPER_CASE_TOKEN|>` patterns
 - **Monotonic progress**: `resolveMonotonicProgress()` in notifier prevents backward progress jumps
+- **Page warmup**: `_warmupModelPages()` in `inference_isolate.dart` reads entire model file after load to pre-fault mmap pages
+- **Model**: Q3_K_S quantization (~1.55 GB), hosted on GitHub release `v0.1.0-q3ks`
