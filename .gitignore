@@ -52,3 +52,6 @@ app.*.map.json
 .ntm/
 .planning/agent-state/
 .planning/agent-bootstrap/
+
+# Secrets
+.env
