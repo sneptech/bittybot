@@ -110,6 +110,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   final _StorageChecker _storageChecker;
   final _ConnectionChecker _connectionChecker;
   final _LowMemoryChecker _lowMemoryChecker;
+  Future<SharedPreferences>? _sharedPreferencesFuture;
 
   /// Absolute path to the GGUF model file resolved during [initialize].
   late String _modelFilePath;
@@ -146,18 +147,22 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   Future<void> initialize() async {
     state = const CheckingModelState();
 
+    // Give Flutter a chance to paint the first frame before startup I/O begins.
+    await Future<void>.delayed(Duration.zero);
+
+    // Start SharedPreferences initialization early so it can overlap with
+    // directory and file checks.
+    final prefsFuture = _getSharedPreferences();
+
     // Resolve paths
     final appSupportDir = await _appSupportDirectoryProvider();
     _modelDirPath = ModelConstants.modelDirectory(appSupportDir.path);
     _modelFilePath = ModelConstants.modelFilePath(appSupportDir.path);
 
-    // Ensure the models directory exists
-    await Directory(_modelDirPath).create(recursive: true);
-
     final modelFile = File(_modelFilePath);
     if (await modelFile.exists()) {
       // Check if model was already verified in a previous session
-      final prefs = await _sharedPreferencesProvider();
+      final prefs = await prefsFuture;
       final alreadyVerified = prefs.getBool(_kModelVerifiedKey) ?? false;
       final verifiedSize = prefs.getInt(_kModelVerifiedSizeKey) ?? -1;
       final actualSize = await modelFile.length();
@@ -184,8 +189,11 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
       return;
     }
 
+    // Ensure the models directory exists only when a download may be needed.
+    await Directory(_modelDirPath).create(recursive: true);
+
     // No model on disk — check for a saved partial download progress
-    final prefs = await _sharedPreferencesProvider();
+    final prefs = await prefsFuture;
     final savedProgress = _clampProgress(prefs.getDouble(_kProgressKey) ?? 0.0);
     if (savedProgress > 0.0) {
       _lastPersistedProgress = savedProgress;
@@ -235,6 +243,22 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
   // ─── Private lifecycle methods ─────────────────────────────────────────────
 
+  Future<SharedPreferences> _getSharedPreferences() {
+    final existing = _sharedPreferencesFuture;
+    if (existing != null) return existing;
+
+    final future = _sharedPreferencesProvider();
+    _sharedPreferencesFuture = future;
+    unawaited(
+      future.then<void>((_) {}).catchError((_) {
+        if (identical(_sharedPreferencesFuture, future)) {
+          _sharedPreferencesFuture = null;
+        }
+      }),
+    );
+    return future;
+  }
+
   /// Runs storage and connectivity preflight checks.
   /// Sets the appropriate state and either continues to [_startDownload] or
   /// surfaces an error/warning state for the user to resolve.
@@ -277,7 +301,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// [TaskProgressCallback] provides the full [TaskProgressUpdate] with
   /// network speed and estimated time-remaining data.
   Future<void> _startDownload() async {
-    final prefs = await _sharedPreferencesProvider();
+    final prefs = await _getSharedPreferences();
     final persistedProgress = _clampProgress(
       prefs.getDouble(_kProgressKey) ?? 0.0,
     );
@@ -406,9 +430,11 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     // hammering shared_preferences on every callback
     if (fraction - _lastPersistedProgress >= 0.05) {
       _lastPersistedProgress = fraction;
-      _sharedPreferencesProvider().then((prefs) {
-        prefs.setDouble(_kProgressKey, fraction);
-      });
+      unawaited(
+        _getSharedPreferences().then((prefs) {
+          prefs.setDouble(_kProgressKey, fraction);
+        }),
+      );
     }
   }
 
@@ -441,7 +467,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     final valid = await _verifyModelFileFn(_modelFilePath);
     if (valid) {
       // Clear persisted partial-progress and mark model as verified
-      final prefs = await _sharedPreferencesProvider();
+      final prefs = await _getSharedPreferences();
       await prefs.remove(_kProgressKey);
       _lastPersistedProgress = 0.0;
       final fileSize = await File(_modelFilePath).length();
@@ -454,7 +480,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
       if (await modelFile.exists()) {
         await modelFile.delete();
       }
-      final prefs = await _sharedPreferencesProvider();
+      final prefs = await _getSharedPreferences();
       await prefs.remove(_kProgressKey);
       await prefs.remove(_kModelVerifiedKey);
       await prefs.remove(_kModelVerifiedSizeKey);
