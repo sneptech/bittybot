@@ -59,6 +59,23 @@ Phase 4 (DONE)
 ### MCP Agent Mail (REQUIRED)
 All agents MUST use MCP Agent Mail. Project key: `/home/agent/git/bittybot`
 
+**CRITICAL: Agent Mail does NOT wake other agents.** After sending ANY Agent Mail message, you MUST ALSO run an `ntm send` command to nudge the recipient into reading their inbox. Without this nudge, the recipient will never see your message.
+
+```bash
+# After EVERY send_message or reply_message, run this for EACH recipient:
+ntm send bittybot --pane=<RECIPIENT_PANE> "You have Agent Mail from <your_name> re: <short subject>. Check inbox."
+```
+
+**Pane directory (Sprint 5):**
+| Pane | Agent | Role |
+|------|-------|------|
+| 0 | BlueMountain | Orchestrator |
+| 1 | RoseFinch | Manager A (manages panes 3+4) |
+| 2 | WindyRobin | Manager B (manages pane 5) |
+| 3 | (Codex worker) | S5-T1: posix_fadvise FFI |
+| 4 | (Codex worker) | S5-T2: frame skip fix |
+| 5 | SageHill | S5-T3: bug verification |
+
 **On session start:**
 1. `register_agent(project_key="/home/agent/git/bittybot", program="<your_program>", model="<your_model>")`
 2. `fetch_inbox(project_key="/home/agent/git/bittybot", agent_name="<your_name>", include_bodies=true)`
@@ -69,11 +86,15 @@ All agents MUST use MCP Agent Mail. Project key: `/home/agent/git/bittybot`
 - `file_reservation_paths(project_key="/home/agent/git/bittybot", agent_name="<your_name>", paths=["lib/features/chat/**"], ttl_seconds=3600, exclusive=true, reason="T-03")`
 
 **When starting a task:**
-- `send_message(project_key="/home/agent/git/bittybot", sender_name="<your_name>", to=["BlueMountain"], subject="[T-XX] Starting: <title>", body_md="Claiming T-XX. Reserving files: [list]. Plan: [brief].", broadcast=false)`
+- `send_message(...)` to your manager/orchestrator
+- **THEN** `ntm send bittybot --pane=<MANAGER_PANE> "Agent Mail from <you>: starting <task>"`
 
 **When finishing a task:**
-- `send_message(project_key="/home/agent/git/bittybot", sender_name="<your_name>", to=["BlueMountain"], subject="[T-XX] Complete: <title>", body_md="Summary of changes. Files modified: [list]. Tests: [status].", broadcast=true)`
+- `send_message(...)` with completion details
+- **THEN** `ntm send bittybot --pane=<MANAGER_PANE> "Agent Mail from <you>: <task> complete, ready for review"`
 - `release_file_reservations(project_key="/home/agent/git/bittybot", agent_name="<your_name>")`
+
+**Rule: No send_message without a matching ntm send.** Every Agent Mail message MUST be followed by an ntm nudge to the recipient's pane. This is non-negotiable.
 
 ### File Ownership Boundaries
 

@@ -277,6 +277,94 @@ Sprint 3's fundamental problem: 2.14 GB model on 5.5 GB device left NO headroom.
 
 **If download fails:** The model URL is a GitHub release asset: `https://github.com/sneptech/bittybot/releases/download/v0.1.0-q3ks/tiny-aya-global-q3_k_s.gguf`. Verify it's accessible from the device's browser first.
 
+## Sprint 5 Retest (2026-02-27)
+
+Three fixes targeting TTFT consistency and cold start frame skips. Sprint 4 showed TTFT 3-10s (fails <2s target) because mmap pages got evicted during idle, and 184 frame skips on 2nd cold start (regression from 65).
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| `90e90f6` S5-T1 | **posix_fadvise(POSIX_FADV_WILLNEED)** via Dart FFI | After model loads + warmup, kernel is advised to keep pages resident. TTFT after 30s idle should be ~3s (was ~10s). |
+| `1f6f6ed` S5-T2 | **Multi-frame yields in initialize()** | Two 16ms yields before I/O, one yield before `_proceedToLoad()` on fast path. |
+| `2991fac` S5-T2 | **Cooperative warmup with yields every 64 MB** | `_warmupModelPages` now async, yields to reduce main-thread I/O contention. |
+| `8803e4e` S5-T3 | **Dead code cleanup** | Removed legacy "Phase 1 spike" comment from prompt_builder.dart. Verified startup path + icons correct. |
+
+### Retest Checklist
+
+**No model re-download needed.** Q3_K_S model from Sprint 4 should still be on device.
+
+1. **Build + install:** `flutter build apk --debug && adb install -r build/app/outputs/flutter-apk/app-debug.apk`
+
+2. **First cold start (app was already installed):**
+   - SHA-256 should be SKIPPED (flag from Sprint 4)
+   - Model loads + warmup runs (warmup now cooperative with yields)
+   - `adb logcat | grep -E 'Skipped.*frames'` — target < 50 frame skips (was 65/184)
+   - `adb logcat -s flutter | grep '\[PERF\]' | grep model_load` — note duration
+
+3. **Chat inference — WARM (THE KEY TEST):**
+   - Send 5+ messages back-to-back
+   - `adb logcat -s flutter | grep inference_request`
+   - **Expected: TTFT ~3s, tok/s ~2** (tok/s is hardware ceiling, won't change)
+
+4. **Chat inference — AFTER 30s IDLE (posix_fadvise test):**
+   - Send 3 messages, then WAIT 30 seconds (lock phone or switch to another app)
+   - Come back, send another message
+   - **KEY METRIC: TTFT on first message after idle**
+   - Sprint 4 without fadvise: ~8-10s
+   - Sprint 5 with fadvise: **expected ~3-5s** (pages should stay resident)
+   - If still ~8-10s, posix_fadvise isn't effective enough → may need mlock or smaller quant
+
+5. **Longer idle test (2+ minutes):**
+   - Same as above but wait 2 minutes
+   - If TTFT degrades to ~8s+, the advisory isn't strong enough against Android's LMK
+   - Report exact TTFT + `adb shell cat /proc/meminfo | grep -E 'MemAvailable|SwapFree'`
+
+6. **Second cold start:**
+   - Force-stop app, relaunch
+   - `adb logcat | grep -E 'Skipped.*frames'` — target < 50 (was 184)
+   - SHA-256 skipped, model loads, warmup runs
+   - Send first message — note TTFT
+
+7. **Third cold start (repeat for consistency):**
+   - Force-stop, relaunch, measure frame skips again
+   - Is 2nd vs 3rd launch consistent?
+
+8. **Memory check:** `adb shell dumpsys meminfo com.bittybot.bittybot`
+   - Note: mmap size, Native Heap, Swap PSS
+   - Compare to Sprint 4: mmap ~1,611 MB, Swap 226 MB
+
+9. **All prior tests still pass:**
+   - Token filtering: no `<|...|>` tokens visible
+   - Multi-turn: "My name is Alex" → recall
+   - Translation: switch tabs, 3 translations, all direct (no explanations)
+   - No OOM kill
+
+### Performance Targets (Updated for Sprint 5)
+
+| Metric | Target | Sprint 4 Best | Sprint 4 Typical | Sprint 5 Expected |
+|--------|--------|---------------|-----------------|-------------------|
+| TTFT (warm) | < 5s | 3.1s | 3.1-3.3s | ~3s (same) |
+| TTFT (after 30s idle) | < 5s | N/A | 8-10s | **< 5s** (fadvise) |
+| TTFT consistency | < 2s variance | 3.1-3.3s warm | 3.1-10.7s (7.6s!) | **< 2s variance** |
+| tok/s | ~2 (hw ceiling) | 2.09 | 1.9 | ~2 (unchanged) |
+| Frame skips (1st launch) | < 50 | 65 | 65 | **< 50** |
+| Frame skips (2nd launch) | < 50 | 184 | 184 | **< 50** (key fix) |
+| Model load + warmup | < 15s | 3.7-6.4s | 6.4s | Similar |
+
+### Key Difference from Sprint 4 Test
+
+Sprint 4's warmup read pages in but they got evicted within seconds. Sprint 5 adds `posix_fadvise(POSIX_FADV_WILLNEED)` which tells the kernel to keep those pages in page cache. The native fd stays open for the model's lifetime. This is an advisory — the kernel CAN still evict pages under extreme memory pressure, but should strongly prefer keeping them.
+
+The frame skip fix adds proper multi-frame yields (16ms each = one Flutter frame) at multiple points in `initialize()`, plus cooperative warmup yields every 64 MB. This should fix the 2nd cold start regression where 184 frames were skipped.
+
+**If TTFT after idle is still >5s:** `posix_fadvise` alone isn't sufficient. Next options:
+1. `mlock()` via FFI (requires checking ulimit -l on Android)
+2. Periodic background re-read (keep-alive timer)
+3. Drop to IQ3_XXS (~1.2 GB) for more headroom
+
+**Report findings to `.planning/PROFILING-RESULTS.md`** — append a Sprint 5 section.
+
 ## Architecture Reference
 
 - **PerformanceMonitor**: Singleton at `lib/core/diagnostics/performance_monitor.dart` — tracks all metrics
@@ -285,5 +373,7 @@ Sprint 3's fundamental problem: 2.14 GB model on 5.5 GB device left NO headroom.
 - **nThreads=6**: Inference isolate uses 6 threads (all big cores on Galaxy A25)
 - **Token filter**: Regex in `inference_isolate.dart` strips `<|UPPER_CASE_TOKEN|>` patterns
 - **Monotonic progress**: `resolveMonotonicProgress()` in notifier prevents backward progress jumps
-- **Page warmup**: `_warmupModelPages()` in `inference_isolate.dart` reads entire model file after load to pre-fault mmap pages
+- **Page warmup**: `_warmupModelPages()` in `inference_isolate.dart` reads entire model file after load to pre-fault mmap pages (now async with yields every 64 MB)
+- **posix_fadvise FFI**: `native_memory_advisor.dart` — opens model file via libc, calls `posix_fadvise(POSIX_FADV_WILLNEED)`, keeps fd open for model lifetime, closes on shutdown
+- **Frame skip yields**: 3x 16ms yields in `model_distribution_notifier.dart initialize()` — two before I/O, one before `_proceedToLoad()` on fast path
 - **Model**: Q3_K_S quantization (~1.55 GB), hosted on GitHub release `v0.1.0-q3ks`
