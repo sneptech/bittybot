@@ -175,6 +175,127 @@ class AppLocalizationsJa extends AppLocalizations {
   String get fetchingPage => 'ページを取得中...';
 
   @override
+  String get webErrorInvalidUrl =>
+      'Invalid URL. Please enter a valid web address.';
+
+  @override
+  String webErrorHttpStatus(int statusCode) {
+    return 'Failed to load page (HTTP $statusCode).';
+  }
+
+  @override
+  String get webErrorEmptyContent => 'No text content found on this page.';
+
+  @override
+  String get webErrorNetwork => 'Network error. Please check your connection.';
+
+  @override
+  String get webErrorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get downloadOnCellularDataTitle => 'モバイルデータでダウンロードしますか？';
+
+  @override
+  String downloadOnCellularDataMessage(String sizeGb) {
+    return 'このダウンロードは約$sizeGbです。モバイルデータで続行しますか？';
+  }
+
+  @override
+  String get waitForWifi => 'Wi-Fiを待つ';
+
+  @override
+  String get downloadNow => '今すぐダウンロード';
+
+  @override
+  String get resumeDownloadTitle => 'ダウンロードを再開しますか？';
+
+  @override
+  String get modelRequiredOfflineMessage =>
+      'BittyBot はオフラインで翻訳とチャットを行うためにこの言語モデルが必要です。';
+
+  @override
+  String downloadProgressComplete(int progressPercent) {
+    return 'ダウンロードは $progressPercent% 完了しています';
+  }
+
+  @override
+  String get startOver => '最初からやり直す';
+
+  @override
+  String get resumeAction => '再開';
+
+  @override
+  String downloadingLanguageModelForOfflineUse(String sizeGb) {
+    return 'オフライン利用のため言語モデルをダウンロード中（$sizeGb）';
+  }
+
+  @override
+  String get checkingForLanguageModel => '言語モデルを確認中...';
+
+  @override
+  String get preparingDownload => 'ダウンロードを準備中...';
+
+  @override
+  String get awaitingYourChoice => '選択を待っています...';
+
+  @override
+  String get verifyingDownload => 'ダウンロードを検証中...';
+
+  @override
+  String get loadingLanguageModel => '言語モデルを読み込み中...';
+
+  @override
+  String get readyStatus => '準備完了！';
+
+  @override
+  String downloadSpeedAndRemaining(String speed, String eta) {
+    return '$speed - 残り $eta';
+  }
+
+  @override
+  String get notEnoughStorage => 'ストレージ容量が不足しています';
+
+  @override
+  String storageRequirementMessage(String neededGb, String availableGb) {
+    return 'BittyBot には $neededGb GB の空き容量が必要です。利用可能なのは $availableGb GB です。';
+  }
+
+  @override
+  String get freeUpSpaceAndTryAgain => '空き容量を増やして再試行';
+
+  @override
+  String get lowMemoryWarning => 'メモリ不足の警告';
+
+  @override
+  String lowMemoryWarningMessage(int availableMb) {
+    return 'この端末の RAM は $availableMb MB です。動作が遅くなるか、この端末ではアプリが動作しない可能性があります。';
+  }
+
+  @override
+  String get continueAnyway => 'このまま続行';
+
+  @override
+  String get downloadFailed => 'ダウンロードに失敗しました';
+
+  @override
+  String get calculating => '計算中...';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours時間 $minutes分';
+  }
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes分 $seconds秒';
+  }
+
+  @override
+  String durationSeconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
   String get stopTooltip => '停止';
 
   @override

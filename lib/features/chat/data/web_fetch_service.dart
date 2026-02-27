@@ -2,14 +2,29 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+enum WebFetchErrorKind {
+  invalidUrl,
+  httpError,
+  emptyContent,
+  networkError,
+  timeout,
+}
+
 /// Exception thrown by [WebFetchService] when URL fetching or parsing fails.
 class WebFetchException implements Exception {
-  const WebFetchException(this.message);
+  const WebFetchException(
+    this.kind, {
+    this.statusCode,
+    this.networkMessage,
+  });
 
-  final String message;
+  final WebFetchErrorKind kind;
+  final int? statusCode;
+  final String? networkMessage;
 
   @override
-  String toString() => message;
+  String toString() =>
+      'WebFetchException(kind: $kind, statusCode: $statusCode, networkMessage: $networkMessage)';
 }
 
 /// Fetches web pages and extracts plain text suitable for model prompts.
@@ -23,9 +38,7 @@ class WebFetchService {
     if (uri == null ||
         !uri.hasScheme ||
         (!uri.isScheme('http') && !uri.isScheme('https'))) {
-      throw const WebFetchException(
-        'Invalid URL. Please enter a valid web address.',
-      );
+      throw const WebFetchException(WebFetchErrorKind.invalidUrl);
     }
 
     try {
@@ -33,7 +46,8 @@ class WebFetchService {
 
       if (response.statusCode != 200) {
         throw WebFetchException(
-          'Failed to load page (HTTP ${response.statusCode}).',
+          WebFetchErrorKind.httpError,
+          statusCode: response.statusCode,
         );
       }
 
@@ -57,7 +71,7 @@ class WebFetchService {
           .trim();
 
       if (extracted.isEmpty) {
-        throw const WebFetchException('No text content found on this page.');
+        throw const WebFetchException(WebFetchErrorKind.emptyContent);
       }
 
       if (extracted.length <= maxChars) {
@@ -65,9 +79,12 @@ class WebFetchService {
       }
       return extracted.substring(0, maxChars);
     } on http.ClientException catch (error) {
-      throw WebFetchException('Network error: ${error.message}');
+      throw WebFetchException(
+        WebFetchErrorKind.networkError,
+        networkMessage: error.message,
+      );
     } on TimeoutException {
-      throw const WebFetchException('Request timed out. Please try again.');
+      throw const WebFetchException(WebFetchErrorKind.timeout);
     }
   }
 }

@@ -175,6 +175,126 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fetchingPage => '正在获取页面...';
 
   @override
+  String get webErrorInvalidUrl =>
+      'Invalid URL. Please enter a valid web address.';
+
+  @override
+  String webErrorHttpStatus(int statusCode) {
+    return 'Failed to load page (HTTP $statusCode).';
+  }
+
+  @override
+  String get webErrorEmptyContent => 'No text content found on this page.';
+
+  @override
+  String get webErrorNetwork => 'Network error. Please check your connection.';
+
+  @override
+  String get webErrorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get downloadOnCellularDataTitle => '使用移动数据下载？';
+
+  @override
+  String downloadOnCellularDataMessage(String sizeGb) {
+    return '此下载约为 $sizeGb。要继续使用移动数据吗？';
+  }
+
+  @override
+  String get waitForWifi => '等待 Wi-Fi';
+
+  @override
+  String get downloadNow => '立即下载';
+
+  @override
+  String get resumeDownloadTitle => '继续下载？';
+
+  @override
+  String get modelRequiredOfflineMessage => 'BittyBot 需要此语言模型来离线翻译和聊天。';
+
+  @override
+  String downloadProgressComplete(int progressPercent) {
+    return '下载已完成 $progressPercent%';
+  }
+
+  @override
+  String get startOver => '重新开始';
+
+  @override
+  String get resumeAction => '继续';
+
+  @override
+  String downloadingLanguageModelForOfflineUse(String sizeGb) {
+    return '正在下载离线语言模型（$sizeGb）';
+  }
+
+  @override
+  String get checkingForLanguageModel => '正在检查语言模型...';
+
+  @override
+  String get preparingDownload => '正在准备下载...';
+
+  @override
+  String get awaitingYourChoice => '等待你的选择...';
+
+  @override
+  String get verifyingDownload => '正在验证下载...';
+
+  @override
+  String get loadingLanguageModel => '正在加载语言模型...';
+
+  @override
+  String get readyStatus => '就绪！';
+
+  @override
+  String downloadSpeedAndRemaining(String speed, String eta) {
+    return '$speed - 剩余 $eta';
+  }
+
+  @override
+  String get notEnoughStorage => '存储空间不足';
+
+  @override
+  String storageRequirementMessage(String neededGb, String availableGb) {
+    return 'BittyBot 需要 $neededGb GB 可用空间。你当前有 $availableGb GB。';
+  }
+
+  @override
+  String get freeUpSpaceAndTryAgain => '释放空间后重试';
+
+  @override
+  String get lowMemoryWarning => '低内存警告';
+
+  @override
+  String lowMemoryWarningMessage(int availableMb) {
+    return '你的设备有 $availableMb MB 内存。性能可能较差，或该设备可能无法正常运行此应用。';
+  }
+
+  @override
+  String get continueAnyway => '仍然继续';
+
+  @override
+  String get downloadFailed => '下载失败';
+
+  @override
+  String get calculating => '计算中...';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours小时$minutes分钟';
+  }
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes分钟$seconds秒';
+  }
+
+  @override
+  String durationSeconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
   String get stopTooltip => '停止';
 
   @override

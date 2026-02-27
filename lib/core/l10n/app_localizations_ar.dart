@@ -182,6 +182,127 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fetchingPage => 'جارٍ جلب الصفحة...';
 
   @override
+  String get webErrorInvalidUrl =>
+      'Invalid URL. Please enter a valid web address.';
+
+  @override
+  String webErrorHttpStatus(int statusCode) {
+    return 'Failed to load page (HTTP $statusCode).';
+  }
+
+  @override
+  String get webErrorEmptyContent => 'No text content found on this page.';
+
+  @override
+  String get webErrorNetwork => 'Network error. Please check your connection.';
+
+  @override
+  String get webErrorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get downloadOnCellularDataTitle => 'التنزيل عبر بيانات الهاتف؟';
+
+  @override
+  String downloadOnCellularDataMessage(String sizeGb) {
+    return 'حجم هذا التنزيل حوالي $sizeGb. هل تريد المتابعة عبر بيانات الهاتف؟';
+  }
+
+  @override
+  String get waitForWifi => 'الانتظار حتى Wi-Fi';
+
+  @override
+  String get downloadNow => 'تنزيل الآن';
+
+  @override
+  String get resumeDownloadTitle => 'استئناف التنزيل؟';
+
+  @override
+  String get modelRequiredOfflineMessage =>
+      'يحتاج BittyBot إلى نموذج اللغة هذا للترجمة والدردشة دون اتصال.';
+
+  @override
+  String downloadProgressComplete(int progressPercent) {
+    return 'اكتمل التنزيل بنسبة $progressPercent%';
+  }
+
+  @override
+  String get startOver => 'البدء من جديد';
+
+  @override
+  String get resumeAction => 'استئناف';
+
+  @override
+  String downloadingLanguageModelForOfflineUse(String sizeGb) {
+    return 'جارٍ تنزيل نموذج اللغة للاستخدام دون اتصال ($sizeGb)';
+  }
+
+  @override
+  String get checkingForLanguageModel => 'جارٍ التحقق من نموذج اللغة...';
+
+  @override
+  String get preparingDownload => 'جارٍ تجهيز التنزيل...';
+
+  @override
+  String get awaitingYourChoice => 'بانتظار اختيارك...';
+
+  @override
+  String get verifyingDownload => 'جارٍ التحقق من التنزيل...';
+
+  @override
+  String get loadingLanguageModel => 'جارٍ تحميل نموذج اللغة...';
+
+  @override
+  String get readyStatus => 'جاهز!';
+
+  @override
+  String downloadSpeedAndRemaining(String speed, String eta) {
+    return '$speed - المتبقي $eta';
+  }
+
+  @override
+  String get notEnoughStorage => 'مساحة التخزين غير كافية';
+
+  @override
+  String storageRequirementMessage(String neededGb, String availableGb) {
+    return 'يحتاج BittyBot إلى $neededGb جيجابايت مساحة خالية. المتاح لديك $availableGb جيجابايت.';
+  }
+
+  @override
+  String get freeUpSpaceAndTryAgain => 'افرغ مساحة ثم حاول مرة أخرى';
+
+  @override
+  String get lowMemoryWarning => 'تحذير: ذاكرة منخفضة';
+
+  @override
+  String lowMemoryWarningMessage(int availableMb) {
+    return 'يحتوي جهازك على $availableMb ميجابايت من الذاكرة RAM. قد يكون الأداء ضعيفًا أو قد لا يعمل التطبيق على هذا الجهاز.';
+  }
+
+  @override
+  String get continueAnyway => 'متابعة على أي حال';
+
+  @override
+  String get downloadFailed => 'فشل التنزيل';
+
+  @override
+  String get calculating => 'جارٍ الحساب...';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours س $minutes د';
+  }
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutes د $seconds ث';
+  }
+
+  @override
+  String durationSeconds(int seconds) {
+    return '$seconds ث';
+  }
+
+  @override
   String get stopTooltip => 'إيقاف';
 
   @override

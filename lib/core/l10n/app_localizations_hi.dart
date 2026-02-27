@@ -185,6 +185,127 @@ class AppLocalizationsHi extends AppLocalizations {
   String get fetchingPage => 'पेज प्राप्त किया जा रहा है...';
 
   @override
+  String get webErrorInvalidUrl =>
+      'Invalid URL. Please enter a valid web address.';
+
+  @override
+  String webErrorHttpStatus(int statusCode) {
+    return 'Failed to load page (HTTP $statusCode).';
+  }
+
+  @override
+  String get webErrorEmptyContent => 'No text content found on this page.';
+
+  @override
+  String get webErrorNetwork => 'Network error. Please check your connection.';
+
+  @override
+  String get webErrorTimeout => 'Request timed out. Please try again.';
+
+  @override
+  String get downloadOnCellularDataTitle => 'मोबाइल डेटा पर डाउनलोड करें?';
+
+  @override
+  String downloadOnCellularDataMessage(String sizeGb) {
+    return 'यह डाउनलोड लगभग $sizeGb का है। क्या मोबाइल डेटा पर जारी रखें?';
+  }
+
+  @override
+  String get waitForWifi => 'Wi-Fi का इंतज़ार करें';
+
+  @override
+  String get downloadNow => 'अभी डाउनलोड करें';
+
+  @override
+  String get resumeDownloadTitle => 'डाउनलोड फिर से शुरू करें?';
+
+  @override
+  String get modelRequiredOfflineMessage =>
+      'BittyBot को ऑफलाइन अनुवाद और चैट के लिए यह भाषा मॉडल चाहिए।';
+
+  @override
+  String downloadProgressComplete(int progressPercent) {
+    return 'डाउनलोड $progressPercent% पूरा हो चुका है';
+  }
+
+  @override
+  String get startOver => 'फिर से शुरू करें';
+
+  @override
+  String get resumeAction => 'जारी रखें';
+
+  @override
+  String downloadingLanguageModelForOfflineUse(String sizeGb) {
+    return 'ऑफलाइन उपयोग के लिए भाषा मॉडल डाउनलोड हो रहा है ($sizeGb)';
+  }
+
+  @override
+  String get checkingForLanguageModel => 'भाषा मॉडल जांचा जा रहा है...';
+
+  @override
+  String get preparingDownload => 'डाउनलोड तैयार किया जा रहा है...';
+
+  @override
+  String get awaitingYourChoice => 'आपके चयन की प्रतीक्षा है...';
+
+  @override
+  String get verifyingDownload => 'डाउनलोड सत्यापित किया जा रहा है...';
+
+  @override
+  String get loadingLanguageModel => 'भाषा मॉडल लोड हो रहा है...';
+
+  @override
+  String get readyStatus => 'तैयार!';
+
+  @override
+  String downloadSpeedAndRemaining(String speed, String eta) {
+    return '$speed - $eta शेष';
+  }
+
+  @override
+  String get notEnoughStorage => 'स्टोरेज पर्याप्त नहीं है';
+
+  @override
+  String storageRequirementMessage(String neededGb, String availableGb) {
+    return 'BittyBot को $neededGb GB खाली जगह चाहिए। आपके पास $availableGb GB उपलब्ध है।';
+  }
+
+  @override
+  String get freeUpSpaceAndTryAgain => 'जगह खाली करें और फिर कोशिश करें';
+
+  @override
+  String get lowMemoryWarning => 'कम मेमोरी चेतावनी';
+
+  @override
+  String lowMemoryWarningMessage(int availableMb) {
+    return 'आपके डिवाइस में $availableMb MB RAM है। प्रदर्शन खराब हो सकता है या यह ऐप इस डिवाइस पर ठीक से काम न करे।';
+  }
+
+  @override
+  String get continueAnyway => 'फिर भी जारी रखें';
+
+  @override
+  String get downloadFailed => 'डाउनलोड विफल';
+
+  @override
+  String get calculating => 'गणना की जा रही है...';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hoursघं $minutesमि';
+  }
+
+  @override
+  String durationMinutesSeconds(int minutes, int seconds) {
+    return '$minutesमि $secondsसे';
+  }
+
+  @override
+  String durationSeconds(int seconds) {
+    return '$secondsसे';
+  }
+
+  @override
   String get stopTooltip => 'रोकें';
 
   @override

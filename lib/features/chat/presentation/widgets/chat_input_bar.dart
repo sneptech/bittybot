@@ -87,8 +87,18 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
       await notifier.sendMessage(prompt);
     } on WebFetchException catch (error) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      final message = switch (error.kind) {
+        WebFetchErrorKind.invalidUrl => l10n.webErrorInvalidUrl,
+        WebFetchErrorKind.httpError => l10n.webErrorHttpStatus(
+          error.statusCode ?? 0,
+        ),
+        WebFetchErrorKind.emptyContent => l10n.webErrorEmptyContent,
+        WebFetchErrorKind.networkError => l10n.webErrorNetwork,
+        WebFetchErrorKind.timeout => l10n.webErrorTimeout,
+      };
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message)),
+        SnackBar(content: Text(message)),
       );
     }
   }

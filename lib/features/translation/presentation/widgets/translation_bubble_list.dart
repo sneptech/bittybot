@@ -36,6 +36,12 @@ class TranslationBubbleList extends ConsumerStatefulWidget {
 
 class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
   final ScrollController _scrollController = ScrollController();
+  static final _cjkPattern = RegExp(r'[\u4E00-\u9FFF]');
+  static final _japanesePattern = RegExp(r'[\u3040-\u30FF]');
+  static final _thaiPattern = RegExp(r'[\u0E00-\u0E7F]');
+  static final _laoPattern = RegExp(r'[\u0E80-\u0EFF]');
+  static final _khmerPattern = RegExp(r'[\u1780-\u17FF]');
+  static final _myanmarPattern = RegExp(r'[\u1000-\u109F]');
 
   @override
   void dispose() {
@@ -62,17 +68,17 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
   /// Returns true if [text] contains characters from non-space-delimited scripts.
   bool _isSpaceDelimited(String text) {
     // CJK Unified Ideographs
-    if (text.contains(RegExp(r'[\u4E00-\u9FFF]'))) return false;
+    if (text.contains(_cjkPattern)) return false;
     // Japanese hiragana + katakana
-    if (text.contains(RegExp(r'[\u3040-\u30FF]'))) return false;
+    if (text.contains(_japanesePattern)) return false;
     // Thai
-    if (text.contains(RegExp(r'[\u0E00-\u0E7F]'))) return false;
+    if (text.contains(_thaiPattern)) return false;
     // Lao
-    if (text.contains(RegExp(r'[\u0E80-\u0EFF]'))) return false;
+    if (text.contains(_laoPattern)) return false;
     // Khmer
-    if (text.contains(RegExp(r'[\u1780-\u17FF]'))) return false;
+    if (text.contains(_khmerPattern)) return false;
     // Burmese/Myanmar
-    if (text.contains(RegExp(r'[\u1000-\u109F]'))) return false;
+    if (text.contains(_myanmarPattern)) return false;
     return true;
   }
 
@@ -142,11 +148,11 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
           padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 10),
           decoration: const BoxDecoration(
             color: AppColors.primaryContainer,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16),
-              topRight: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(4),
+            borderRadius: BorderRadiusDirectional.only(
+              topStart: Radius.circular(16),
+              topEnd: Radius.circular(16),
+              bottomStart: Radius.circular(16),
+              bottomEnd: Radius.circular(4),
             ),
           ),
           child: Text(
@@ -173,11 +179,11 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
         padding: const EdgeInsetsDirectional.fromSTEB(12, 10, 12, 10),
         decoration: const BoxDecoration(
           color: AppColors.surfaceContainer,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(4),
-            bottomRight: Radius.circular(16),
+          borderRadius: BorderRadiusDirectional.only(
+            topStart: Radius.circular(16),
+            topEnd: Radius.circular(16),
+            bottomStart: Radius.circular(4),
+            bottomEnd: Radius.circular(16),
           ),
         ),
         child: Column(
@@ -266,11 +272,17 @@ class _TranslationBubbleListState extends ConsumerState<TranslationBubbleList> {
         if (index < dbMessages.length) {
           final msg = dbMessages[index];
           if (msg.role == 'user') {
-            return _buildUserBubble(msg.content);
+            return KeyedSubtree(
+              key: ValueKey('msg-${msg.id}'),
+              child: _buildUserBubble(msg.content),
+            );
           } else {
-            return _buildAssistantBubble(
-              msg.content,
-              state.targetLanguage,
+            return KeyedSubtree(
+              key: ValueKey('msg-${msg.id}'),
+              child: _buildAssistantBubble(
+                msg.content,
+                state.targetLanguage,
+              ),
             );
           }
         }

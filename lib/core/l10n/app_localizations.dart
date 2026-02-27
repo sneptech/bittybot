@@ -438,6 +438,204 @@ abstract class AppLocalizations {
   /// **'Fetching page...'**
   String get fetchingPage;
 
+  /// No description provided for @webErrorInvalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL. Please enter a valid web address.'**
+  String get webErrorInvalidUrl;
+
+  /// No description provided for @webErrorHttpStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load page (HTTP {statusCode}).'**
+  String webErrorHttpStatus(int statusCode);
+
+  /// No description provided for @webErrorEmptyContent.
+  ///
+  /// In en, this message translates to:
+  /// **'No text content found on this page.'**
+  String get webErrorEmptyContent;
+
+  /// No description provided for @webErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection.'**
+  String get webErrorNetwork;
+
+  /// No description provided for @webErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out. Please try again.'**
+  String get webErrorTimeout;
+
+  /// Dialog title shown before starting a large model download on cellular data
+  ///
+  /// In en, this message translates to:
+  /// **'Download on cellular data?'**
+  String get downloadOnCellularDataTitle;
+
+  /// Dialog body warning about model size before downloading on cellular
+  ///
+  /// In en, this message translates to:
+  /// **'This download is ~{sizeGb}. Continue on cellular?'**
+  String downloadOnCellularDataMessage(String sizeGb);
+
+  /// Secondary action to postpone model download until Wi-Fi is available
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for Wi-Fi'**
+  String get waitForWifi;
+
+  /// Primary action to continue model download immediately
+  ///
+  /// In en, this message translates to:
+  /// **'Download now'**
+  String get downloadNow;
+
+  /// Dialog title asking whether to resume a partial model download
+  ///
+  /// In en, this message translates to:
+  /// **'Resume download?'**
+  String get resumeDownloadTitle;
+
+  /// Resume dialog body describing why the language model download is required
+  ///
+  /// In en, this message translates to:
+  /// **'BittyBot needs this language model to translate and chat offline.'**
+  String get modelRequiredOfflineMessage;
+
+  /// Resume dialog status showing previously downloaded percentage
+  ///
+  /// In en, this message translates to:
+  /// **'Download is {progressPercent}% complete'**
+  String downloadProgressComplete(int progressPercent);
+
+  /// Action to clear saved partial progress and restart model download from 0%
+  ///
+  /// In en, this message translates to:
+  /// **'Start over'**
+  String get startOver;
+
+  /// Action to continue a previously paused model download
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resumeAction;
+
+  /// Main download screen subtitle describing offline model download and its size
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading language model for offline use ({sizeGb})'**
+  String downloadingLanguageModelForOfflineUse(String sizeGb);
+
+  /// Status label while checking whether the local model file already exists
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for language model...'**
+  String get checkingForLanguageModel;
+
+  /// Status label shown while download preflight checks are running
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing download...'**
+  String get preparingDownload;
+
+  /// Status label while waiting for the user to respond to a confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting your choice...'**
+  String get awaitingYourChoice;
+
+  /// Status label shown while validating downloaded model integrity
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying download...'**
+  String get verifyingDownload;
+
+  /// Status label shown while loading the model into memory
+  ///
+  /// In en, this message translates to:
+  /// **'Loading language model...'**
+  String get loadingLanguageModel;
+
+  /// Status label shown when model setup is complete
+  ///
+  /// In en, this message translates to:
+  /// **'Ready!'**
+  String get readyStatus;
+
+  /// Download speed and remaining time line below the progress bar
+  ///
+  /// In en, this message translates to:
+  /// **'{speed} - {eta} remaining'**
+  String downloadSpeedAndRemaining(String speed, String eta);
+
+  /// Title shown when the device does not have enough free storage for the model file
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough storage'**
+  String get notEnoughStorage;
+
+  /// Storage warning body showing required and available gigabytes
+  ///
+  /// In en, this message translates to:
+  /// **'BittyBot needs {neededGb} GB free. You have {availableGb} GB available.'**
+  String storageRequirementMessage(String neededGb, String availableGb);
+
+  /// Action label prompting user to free storage and retry download
+  ///
+  /// In en, this message translates to:
+  /// **'Free up space and try again'**
+  String get freeUpSpaceAndTryAgain;
+
+  /// Title shown when device RAM is below recommended threshold
+  ///
+  /// In en, this message translates to:
+  /// **'Low memory warning'**
+  String get lowMemoryWarning;
+
+  /// Low-memory warning body with available RAM amount
+  ///
+  /// In en, this message translates to:
+  /// **'Your device has {availableMb} MB of RAM. Performance may be poor or the app may not function at all on this device.'**
+  String lowMemoryWarningMessage(int availableMb);
+
+  /// Action label to proceed despite low-memory warning
+  ///
+  /// In en, this message translates to:
+  /// **'Continue anyway'**
+  String get continueAnyway;
+
+  /// Title shown when model download encounters an unrecoverable error state
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed'**
+  String get downloadFailed;
+
+  /// Fallback remaining-time label when ETA cannot yet be computed
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating...'**
+  String get calculating;
+
+  /// Short duration format for one hour or more
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String durationHoursMinutes(int hours, int minutes);
+
+  /// Short duration format for less than one hour and at least one minute
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m {seconds}s'**
+  String durationMinutesSeconds(int minutes, int seconds);
+
+  /// Short duration format for less than one minute
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s'**
+  String durationSeconds(int seconds);
+
   /// Tooltip for the stop generation button in chat and translation input bars
   ///
   /// In en, this message translates to:
