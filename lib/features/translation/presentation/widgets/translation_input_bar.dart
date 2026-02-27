@@ -99,7 +99,7 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
                           ),
                         ),
                         color: AppColors.secondary,
-                        tooltip: 'Stop',
+                        tooltip: l10n.stopTooltip,
                       );
                     }
 
@@ -115,7 +115,7 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
                       color: canSend
                           ? AppColors.secondary
                           : AppColors.onSurfaceVariant,
-                      tooltip: 'Send',
+                      tooltip: l10n.sendTooltip,
                     );
                   },
                 ),
