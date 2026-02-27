@@ -14,8 +14,21 @@ import 'storage_preflight.dart';
 /// Shared preferences key for persisting download progress between launches.
 const _kProgressKey = 'model_download_progress';
 
+/// SharedPreferences key: whether the model has been verified after download.
+const _kModelVerifiedKey = 'model_verified';
+
+/// SharedPreferences key: file size at the time of successful verification.
+const _kModelVerifiedSizeKey = 'model_verified_size';
+
 /// Group name used for registering background_downloader callbacks.
 const _kDownloadGroup = 'model_distribution';
+
+typedef _AppSupportDirectoryProvider = Future<Directory> Function();
+typedef _VerifyModelFileFn = Future<bool> Function(String);
+typedef _SharedPreferencesProvider = Future<SharedPreferences> Function();
+typedef _StorageChecker = Future<StorageCheckResult> Function(String);
+typedef _ConnectionChecker = Future<ConnectionType> Function();
+typedef _LowMemoryChecker = Future<bool> Function();
 
 double _clampProgress(double progress) {
   return progress.clamp(0.0, 1.0).toDouble();
@@ -75,6 +88,29 @@ double resolveResumeProgress({
 /// _proceedToLoad() → LoadingModelState → ModelReadyState (normal RAM)
 /// ```
 class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
+  ModelDistributionNotifier({
+    Future<Directory> Function()? appSupportDirectoryProvider,
+    Future<bool> Function(String)? verifyModelFileFn,
+    Future<SharedPreferences> Function()? sharedPreferencesProvider,
+    Future<StorageCheckResult> Function(String)? storageChecker,
+    Future<ConnectionType> Function()? connectionChecker,
+    Future<bool> Function()? lowMemoryChecker,
+  }) : _appSupportDirectoryProvider =
+           appSupportDirectoryProvider ?? getApplicationSupportDirectory,
+       _verifyModelFileFn = verifyModelFileFn ?? verifyModelFile,
+       _sharedPreferencesProvider =
+           sharedPreferencesProvider ?? SharedPreferences.getInstance,
+       _storageChecker = storageChecker ?? checkStorageSpace,
+       _connectionChecker = connectionChecker ?? checkConnectionType,
+       _lowMemoryChecker = lowMemoryChecker ?? isLowMemoryDevice;
+
+  final _AppSupportDirectoryProvider _appSupportDirectoryProvider;
+  final _VerifyModelFileFn _verifyModelFileFn;
+  final _SharedPreferencesProvider _sharedPreferencesProvider;
+  final _StorageChecker _storageChecker;
+  final _ConnectionChecker _connectionChecker;
+  final _LowMemoryChecker _lowMemoryChecker;
+
   /// Absolute path to the GGUF model file resolved during [initialize].
   late String _modelFilePath;
 
@@ -111,7 +147,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     state = const CheckingModelState();
 
     // Resolve paths
-    final appSupportDir = await getApplicationSupportDirectory();
+    final appSupportDir = await _appSupportDirectoryProvider();
     _modelDirPath = ModelConstants.modelDirectory(appSupportDir.path);
     _modelFilePath = ModelConstants.modelFilePath(appSupportDir.path);
 
@@ -120,21 +156,36 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
 
     final modelFile = File(_modelFilePath);
     if (await modelFile.exists()) {
-      // Model file on disk — verify integrity before loading
-      state = const VerifyingState();
-      final valid = await verifyModelFile(_modelFilePath);
-      if (valid) {
+      // Check if model was already verified in a previous session
+      final prefs = await _sharedPreferencesProvider();
+      final alreadyVerified = prefs.getBool(_kModelVerifiedKey) ?? false;
+      final verifiedSize = prefs.getInt(_kModelVerifiedSizeKey) ?? -1;
+      final actualSize = await modelFile.length();
+
+      if (alreadyVerified && verifiedSize == actualSize) {
+        // Previously verified and file size unchanged — skip SHA-256
         await _proceedToLoad();
       } else {
-        // Corrupt or truncated file — delete and re-download
-        await modelFile.delete();
-        await _runPreflight();
+        // First launch with this file or size mismatch — full verification
+        state = const VerifyingState();
+        final valid = await _verifyModelFileFn(_modelFilePath);
+        if (valid) {
+          await prefs.setBool(_kModelVerifiedKey, true);
+          await prefs.setInt(_kModelVerifiedSizeKey, actualSize);
+          await _proceedToLoad();
+        } else {
+          // Corrupt or truncated file — clear flag, delete, re-download
+          await prefs.remove(_kModelVerifiedKey);
+          await prefs.remove(_kModelVerifiedSizeKey);
+          await modelFile.delete();
+          await _runPreflight();
+        }
       }
       return;
     }
 
     // No model on disk — check for a saved partial download progress
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _sharedPreferencesProvider();
     final savedProgress = _clampProgress(prefs.getDouble(_kProgressKey) ?? 0.0);
     if (savedProgress > 0.0) {
       _lastPersistedProgress = savedProgress;
@@ -191,7 +242,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     state = const PreflightState();
 
     // Check free disk space
-    final storageResult = await checkStorageSpace(_modelDirPath);
+    final storageResult = await _storageChecker(_modelDirPath);
     if (storageResult is StorageInsufficient) {
       state = InsufficientStorageState(
         neededBytes: storageResult.neededMB * 1024 * 1024,
@@ -201,7 +252,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     }
 
     // Check network connectivity
-    final connection = await checkConnectionType();
+    final connection = await _connectionChecker();
     switch (connection) {
       case ConnectionType.none:
         state = ErrorState(
@@ -209,10 +260,13 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
           message: '',
           failureCount: _failureCount,
         );
+        return;
       case ConnectionType.cellular:
         state = const CellularWarningState();
+        return;
       case ConnectionType.wifi:
         await _startDownload();
+        return;
     }
   }
 
@@ -223,7 +277,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// [TaskProgressCallback] provides the full [TaskProgressUpdate] with
   /// network speed and estimated time-remaining data.
   Future<void> _startDownload() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await _sharedPreferencesProvider();
     final persistedProgress = _clampProgress(
       prefs.getDouble(_kProgressKey) ?? 0.0,
     );
@@ -352,7 +406,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     // hammering shared_preferences on every callback
     if (fraction - _lastPersistedProgress >= 0.05) {
       _lastPersistedProgress = fraction;
-      SharedPreferences.getInstance().then((prefs) {
+      _sharedPreferencesProvider().then((prefs) {
         prefs.setDouble(_kProgressKey, fraction);
       });
     }
@@ -384,21 +438,26 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   Future<void> _onDownloadComplete() async {
     state = const VerifyingState();
 
-    final valid = await verifyModelFile(_modelFilePath);
+    final valid = await _verifyModelFileFn(_modelFilePath);
     if (valid) {
-      // Clear persisted partial-progress — download is complete
-      final prefs = await SharedPreferences.getInstance();
+      // Clear persisted partial-progress and mark model as verified
+      final prefs = await _sharedPreferencesProvider();
       await prefs.remove(_kProgressKey);
       _lastPersistedProgress = 0.0;
+      final fileSize = await File(_modelFilePath).length();
+      await prefs.setBool(_kModelVerifiedKey, true);
+      await prefs.setInt(_kModelVerifiedSizeKey, fileSize);
       await _proceedToLoad();
     } else {
-      // File is corrupt — delete and surface error
+      // File is corrupt — clear verification flag, delete, surface error
       final modelFile = File(_modelFilePath);
       if (await modelFile.exists()) {
         await modelFile.delete();
       }
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await _sharedPreferencesProvider();
       await prefs.remove(_kProgressKey);
+      await prefs.remove(_kModelVerifiedKey);
+      await prefs.remove(_kModelVerifiedSizeKey);
       _lastPersistedProgress = 0.0;
       _failureCount++;
       state = ErrorState(
@@ -438,7 +497,7 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
   /// Checks device RAM and transitions to [LoadingModelState] (or
   /// [LowMemoryWarningState] if the device is below the threshold).
   Future<void> _proceedToLoad() async {
-    final lowMemory = await isLowMemoryDevice();
+    final lowMemory = await _lowMemoryChecker();
     if (lowMemory) {
       // system_info_plus doesn't expose a separate "how much RAM" query —
       // isLowMemoryDevice() uses physicalMemory. Since we know it's low,
