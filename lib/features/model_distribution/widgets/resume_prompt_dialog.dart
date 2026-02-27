@@ -98,10 +98,7 @@ class ResumePromptDialog extends ConsumerWidget {
             await prefs.remove(_kProgressKey);
             if (context.mounted) {
               Navigator.of(context).pop();
-              // retryDownload() increments failureCount then calls _runPreflight()
-              // which will see no saved progress and start fresh.
-              // Use ref inside the callback directly — it is still valid.
-              ref.read(modelDistributionProvider.notifier).retryDownload();
+              ref.read(modelDistributionProvider.notifier).startOverDownload();
             }
           },
           child: const Text(

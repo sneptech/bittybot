@@ -125,6 +125,14 @@ class ModelDistributionNotifier extends Notifier<ModelDistributionState> {
     await _startDownload();
   }
 
+  /// Called when the user chooses "Start over" from the resume dialog.
+  ///
+  /// This is a user choice, not a failure, so it does not increment
+  /// [_failureCount].
+  Future<void> startOverDownload() async {
+    await _runPreflight();
+  }
+
   /// Called from the error state "Try again" button and from the
   /// insufficient-storage "Free up space and try again" button.
   ///
