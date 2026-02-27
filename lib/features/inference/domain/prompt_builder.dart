@@ -1,6 +1,6 @@
 /// Constructs prompts in the Aya chat template format for llama_cpp_dart.
 ///
-/// The Aya chat template (confirmed from Phase 1 spike):
+/// The Aya chat template:
 /// ```
 /// <|START_OF_TURN_TOKEN|><|USER_TOKEN|>{message}<|END_OF_TURN_TOKEN|><|START_OF_TURN_TOKEN|><|CHATBOT_TOKEN|>
 /// ```

@@ -32,21 +32,27 @@ Phase 4 (DONE)
   └── Phase 8: Chat Settings [requires Phase 7]
 ```
 
-### Known Bugs (Priority 1 — investigate first)
-1. **Wrong screen displayed**: App shows "Phase 1 Inference Spike" text instead of Translation UI. Suspected stale wiring from parallel phase merges. Investigate: `lib/main.dart` → `lib/app.dart` → `lib/widgets/app_startup_widget.dart` → routing
-2. **App icon reset**: Custom bittybot logo overwritten during merges. Check `android/app/src/main/res/mipmap-*/`
+### Known Bugs (code-verified in S5-T3 on 2026-02-27)
+1. **VERIFIED FIXED (S5-T3): Wrong screen displayed** — startup path routes `ModelGateWidget -> AppStartupWidget -> MainShell -> TranslationScreen`; no `Phase 1`/`Inference Spike` UI text in startup files.
+2. **VERIFIED FIXED (S5-T3): App icon reset** — custom `ic_launcher.png` assets confirmed in all Android mipmap densities (mdpi 1823 B, hdpi 3300 B, xhdpi 4233 B, xxhdpi 5926 B, xxxhdpi 7989 B).
 
-## Task Assignment (current sprint)
+## Task Assignment — Sprint 5: Page Residency + Cold Start Polish
 
-| Task ID | Task | Assigned To | Files |
-|---------|------|-------------|-------|
-| T-01 | Investigate + fix app startup wiring bug | Reviewer | `lib/main.dart`, `lib/app.dart`, `lib/widgets/*` |
-| T-02 | Investigate + fix app icon reset | Worker-1 | `android/app/src/main/res/`, `ios/Runner/Assets.xcassets/` |
-| T-03 | Phase 6: Chat UI — plan + implement | Worker-2 | `lib/features/chat/presentation/` (new) |
-| T-04 | Phase 5 Plan 04: fix any issues found in T-01, verify | Reviewer | `lib/features/translation/` |
-| T-05 | Phase 7: Chat History — plan + implement | Worker-3 | `lib/features/chat/presentation/`, `lib/widgets/` |
-| T-06 | Phase 8: Chat Settings | (after T-05) | `lib/features/settings/` |
-| T-07 | Phase 9: Web Search | (after T-03) | `lib/features/chat/` (new web mode) |
+**Full plan:** `.planning/sprint-5-page-residency.md`
+**Profiling data:** `.planning/PROFILING-RESULTS.md`
+
+| Task ID | Task | Priority | Assigned Manager | Worker Pane | Files |
+|---------|------|----------|-----------------|-------------|-------|
+| S5-T1 | `posix_fadvise(POSIX_FADV_WILLNEED)` via Dart FFI — keep model pages resident | CRITICAL | Manager pane 1 | Pane 3 | NEW: `lib/features/inference/data/native_memory_advisor.dart`, EDIT: `lib/features/inference/application/inference_isolate.dart` |
+| S5-T2 | Fix 2nd cold start frame skip regression (184→<50) | HIGH | Manager pane 1 | Pane 4 | `lib/features/model_distribution/model_distribution_notifier.dart`, `lib/features/inference/application/inference_isolate.dart` |
+| S5-T3 | Verify P1 bugs fixed (wrong screen, app icon), clean up dead code | MEDIUM | Manager pane 0 | Pane 5 | Read-only verification of startup path + AGENTS.md update |
+
+### Previous Sprints (complete)
+| Sprint | Tasks | Status |
+|--------|-------|--------|
+| Sprint 1-2 | Phases 1-9 features + performance monitoring | Complete |
+| Sprint 3 | OOM fix (mmap), cold start (SHA-256 skip), nCtx, loading indicator | Complete |
+| Sprint 4 | Q3_K_S quantization, nThreads 6, startup jank fix, page warmup | Complete |
 
 ## Coordination Protocol
 
