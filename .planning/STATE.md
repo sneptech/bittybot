@@ -215,7 +215,26 @@ Session approaching context limit (~2% remaining). Work committed. Run /clear an
 Session approaching context limit (~4% remaining). Work committed. Run /clear and resume.
 
 ### Context Window Handoff (2026-02-27)
-Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
+Session approaching context limit. Work committed. Run /clear and resume.
 
-### Context Window Handoff (2026-02-27)
-Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
+### Context Window Handoff (2026-02-28) — Sprint 5 Profiling Complete
+Sprint 5 on-device profiling complete. Results written to `.planning/PROFILING-RESULTS.md`.
+
+**Key findings:**
+- posix_fadvise WORKS — 30s idle TTFT dropped from 8-10s to 2.1s
+- Warm TTFT improved to 2.1-3.0s (from 3.1-3.3s), tok/s improved to 2.3-2.6 (from 2.0-2.1)
+- Frame skip yields had ZERO effect — still 175-192 frames on cold restarts
+- 2min+ idle still degrades to 5-10s TTFT — advisory not strong enough for long idle
+- Translation quality: 3/3 correct, token filtering: PASS, no OOM
+
+**New issues found during testing:**
+1. Chat bubbles show raw markdown (`**bold**` asterisks visible) — needs markdown rendering
+2. Model identifies as "Aya" not "Bittybot" — chat system prompt needs identity
+3. Multi-turn name recall failed (passed in Sprint 4) — context dilution from long conversation
+
+**Next steps (Sprint 6):**
+1. Fix frame skips — defer warmup until after first frame, or reduce warmup I/O rate
+2. Add markdown rendering to chat bubbles (flutter_markdown or similar)
+3. Add system prompt for chat mode: identity="Bittybot", personality, instructions
+4. Periodic re-fadvise or partial mlock for longer idle retention
+5. Consider system prompt instructions for better multi-turn recall

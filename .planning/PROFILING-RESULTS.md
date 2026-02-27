@@ -280,3 +280,210 @@ Other mmap: 1,610,856 KB (model file)
 Native Heap:  560,948 KB (size) / 482,066 KB (alloc)
 MemAvailable: 2,388,332 KB | SwapFree: 5,658,396 KB
 ```
+
+---
+
+## Sprint 5 Retest — 2026-02-28
+
+### Device
+Same Galaxy A25 (SM-A256E), Android 14, 5.5 GB RAM, eMMC storage.
+Branch: `mowismtest` @ 792555f
+
+### Fixes Verified
+
+| Commit | Fix | Status |
+|--------|-----|--------|
+| `90e90f6` S5-T1 | posix_fadvise(POSIX_FADV_WILLNEED) via Dart FFI | **VERIFIED** — 30s idle TTFT improved from 8-10s → 2.1s |
+| `1f6f6ed` S5-T2 | Multi-frame yields in initialize() | **NOT EFFECTIVE** — frame skips still 175-192 on cold restarts |
+| `2991fac` S5-T2 | Cooperative warmup with yields every 64 MB | **NOT EFFECTIVE** — no measurable improvement |
+| `8803e4e` S5-T3 | Dead code cleanup, P1 bugs verified | **VERIFIED** — no "Phase 1" text, correct screen shown |
+
+### Cold Start — First Launch After APK Install
+
+| Metric | Value |
+|--------|-------|
+| Frame skips | **175 + 32** (207 total — similar to Sprint 4) |
+| Model load + warmup | **8,843 ms** |
+| SHA-256 | Skipped (persisted flag from Sprint 4) |
+| Screen shown | Translation screen with enabled input |
+
+### Cold Start — Second Launch
+
+| Metric | Value |
+|--------|-------|
+| Frame skips | **192** (Sprint 4: 184 — no improvement) |
+| Model load + warmup | **6,895 ms** |
+| Post-restart TTFT | **8,681 ms** (49s after model load, pages already evicting) |
+
+### Cold Start — Third Launch
+
+| Metric | Value |
+|--------|-------|
+| Frame skips | **180** (consistent with 2nd launch) |
+| Model load + warmup | **4,024 ms** (pages partly cached) |
+| Post-restart TTFT | **9,222 ms** (24s after model load) |
+
+### Memory
+
+```
+TOTAL PSS:  2,036,821 KB | TOTAL RSS: 1,860,939 KB | TOTAL SWAP PSS: 206,429 KB
+Other mmap: 1,611,569 KB (model file, 1.54 GB)
+Native Heap: 552,780 KB size, 484,517 KB alloc
+```
+
+System memory:
+```
+MemTotal:     5,518,072 kB
+MemAvailable: 2,209,820 kB
+MemFree:        242,772 kB
+SwapTotal:    8,388,604 kB
+SwapFree:     5,775,852 kB
+```
+
+**Comparison to Sprint 4:**
+- Swap PSS: 206 MB (was 226 MB) — **20 MB less swapping** (posix_fadvise helping)
+- MemAvailable: 2.21 GB (was 2.39 GB) — more pages kept resident = less free RAM
+- Total PSS/RSS roughly unchanged
+
+### Chat Performance
+
+| Request | TTFT (ms) | tok/s | Tokens | Total (ms) | Condition |
+|---------|-----------|-------|--------|------------|-----------|
+| #0 | **11,206** | 1.39 | 27 | 19,492 | First inference, ~4min after model load (evicted) |
+| #1 | **2,353** | 2.24 | 15 | 6,700 | Back-to-back (warm) |
+| #2 | **2,299** | 2.34 | 20 | 8,551 | Back-to-back (warm) |
+| #3 | **3,714** | 2.61 | 159 | 61,015 | After short pause |
+| #4 | **7,387** | 1.57 | 31 | 19,692 | After ~3.5min idle (evicted) |
+| #5 | **3,791** | 2.37 | 32 | 13,513 | Back-to-back (warm) |
+| #6 | **3,010** | 2.53 | 57 | 22,563 | Back-to-back (warm) |
+| #7 (30s idle) | **2,057** | 2.45 | 18 | 7,361 | **KEY TEST: 30s idle** |
+| #8 (2min idle) | **5,633** | 1.61 | 23 | 14,304 | 2min idle stress test |
+
+**Warm steady-state: TTFT ~2.1-3.0s, ~2.3-2.6 tok/s** (improved from Sprint 4's 3.1-3.3s, 2.0-2.1 tok/s)
+**30s idle: TTFT 2.1s** (Sprint 4: 8-10s — **massive improvement, posix_fadvise works**)
+**2min idle: TTFT 5.6s** (Sprint 4: 8-10s — improved but still degrading)
+**Cold/evicted (3+ min): TTFT ~8-11s** (similar to Sprint 4 — fadvise insufficient for long idle)
+
+### Translation Performance
+
+| Request | TTFT (ms) | tok/s | Tokens | Input | Output |
+|---------|-----------|-------|--------|-------|--------|
+| #11 | 9,665 | 0.65 | 8 | "Where is the nearest hospital" | "¿Dónde está el hospital más cercano?" (GOOD) |
+| #12 | 10,479 | 0.48 | 7 | "I would like a table for two" | "Me gustaría una mesa para dos." (GOOD) |
+| #13 | 4,151 | 0.84 | 5 | "How much does this cost" | "¿Cuánto cuesta esto?" (GOOD) |
+
+**Translation quality: 3/3 correct direct translations — PASS**
+
+### Token Filtering
+- **PASS** — no raw tokens visible in any chat or translation response.
+
+### Multi-Turn Context
+- **FAIL** — "My name is Alex" → model responded "Hello! I'm Alex. What can I do for you today?" (acknowledged). But "What is my name?" → "My name is Aya, a language model trained to help with translations." (recalled its own name, not user's).
+- Sprint 4 passed this test; failure likely due to longer conversation context diluting the name recall. Also the model has no system prompt telling it to identify as Bittybot (it calls itself Aya).
+
+### New Issues Found
+
+1. **Chat bubbles show raw markdown** — `**bold**` asterisks visible instead of rendered formatting (e.g., `**Translation:**`, `**Spanish:**`). Need markdown rendering in chat bubble widget.
+2. **Model identifies as "Aya" not "Bittybot"** — system prompt for chat mode should set the model's identity as "Bittybot".
+3. **Frame skips on cold restart NOT fixed** — Sprint 5 yields had no measurable effect (175-192 frames, same as Sprint 4). Root cause is NOT the yield placement — likely eMMC I/O contention from warmup read saturating the bus.
+
+---
+
+## Sprint 5 vs Sprint 4 Comparison
+
+| Metric | Sprint 4 | Sprint 5 | Change |
+|--------|----------|----------|--------|
+| TTFT (warm) | 3.1-3.3s | 2.1-3.0s | **Improved ~20%** |
+| TTFT (30s idle) | 8-10s | **2.1s** | **~75% improvement** |
+| TTFT (2min idle) | 8-10s | 5.6s | **~40% improvement** |
+| TTFT (3+ min idle) | 8-10s | 8-11s | No change |
+| tok/s (warm) | 2.0-2.1 | 2.3-2.6 | **~15% faster** |
+| Frame skips (cold restart) | 184 | 180-192 | **No improvement** |
+| Swap PSS | 226 MB | 206 MB | **-9%** |
+| Model load | 3.7-6.4s | 4.0-8.8s | Variable |
+
+## Performance vs Targets (Sprint 5)
+
+| Metric | Target | Sprint 5 Best | Sprint 5 Typical | Status |
+|--------|--------|---------------|-----------------|--------|
+| Model load | < 15s | 4.0s | 6.9s | **PASS** |
+| TTFT (warm) | < 5s | 2.1s | 2.3-3.0s | **PASS** |
+| TTFT (30s idle) | < 5s | 2.1s | ~2s | **PASS** |
+| TTFT (2min idle) | < 5s | 5.6s | ~6s | **FAIL (borderline)** |
+| tok/s | ~2 (hw ceiling) | 2.61 | 2.3-2.5 | **PASS (at ceiling)** |
+| Frame skips | < 50 | 175 | 180-192 | **FAIL** |
+| Token filtering | Clean | Clean | Clean | **PASS** |
+| Translation quality | Direct | 3/3 direct | Consistent | **PASS** |
+| Multi-turn recall | Pass | Fail | Inconsistent | **FAIL** |
+
+---
+
+## Recommendations for Sprint 6 (Priority Order)
+
+### 1. HIGH: Fix Frame Skips on Cold Restart
+Sprint 5 yields had zero effect. The 175-192 frame skips persist regardless of yield placement. Root cause is likely **eMMC I/O contention** from the 1.55 GB warmup sequential read saturating the storage bus, starving the Flutter rendering thread of I/O bandwidth for asset loading. Approaches:
+- **Defer warmup until after first frame renders** — let Flutter paint the UI first, then start warmup in background
+- **Reduce warmup read rate** — add 1-2ms sleeps between 64 MB chunks to leave I/O bandwidth for the main thread
+- **Skip warmup entirely on warm restarts** — if pages are still partially cached (model load <5s), warmup adds I/O without benefit
+
+### 2. HIGH: Markdown Rendering in Chat Bubbles
+Chat responses contain markdown formatting (`**bold**`, `-` lists) that displays as raw text. Need a markdown renderer in the chat bubble widget (e.g., `flutter_markdown` package or simple regex-based bold/italic rendering).
+
+### 3. HIGH: System Prompt Identity
+Model calls itself "Aya" in chat mode. Add a system prompt that establishes identity as "Bittybot" and sets the conversational tone.
+
+### 4. MEDIUM: Longer Idle Page Retention
+posix_fadvise works for ~30s but pages still evict after 2+ minutes. Options:
+- **Periodic re-fadvise** — timer that re-calls posix_fadvise every 60s
+- **Partial mlock** — lock the most critical pages (first 256 MB = embedding tables) via mlock FFI
+- **Background keepalive read** — periodic 1-byte reads scattered across the file to touch pages
+
+### 5. LOW: Multi-turn Context Regression
+Sprint 4 passed multi-turn recall; Sprint 5 failed. Likely caused by longer conversation context (8+ messages) diluting the name recall signal. Consider:
+- Shorter context window for chat mode
+- Explicit "remember" instruction in system prompt
+
+---
+
+## Raw Logs — Sprint 5
+
+### Model Load Events
+```
+09:23:04 [PERF] {"perf":"model_load","duration_ms":8843}  (1st cold start)
+09:48:35 [PERF] {"perf":"model_load","duration_ms":6895}  (2nd cold start)
+09:50:18 [PERF] {"perf":"model_load","duration_ms":4024}  (3rd cold start)
+```
+
+### All Inference Events
+```
+09:27:26 [PERF] {"request_id":0,"total_ms":19492,"ttft_ms":11206,"token_count":27,"tokens_per_sec":"1.39"}
+09:28:23 [PERF] {"request_id":1,"total_ms":6700,"ttft_ms":2353,"token_count":15,"tokens_per_sec":"2.24"}
+09:29:11 [PERF] {"request_id":2,"total_ms":8551,"ttft_ms":2299,"token_count":20,"tokens_per_sec":"2.34"}
+09:30:34 [PERF] {"request_id":3,"total_ms":61015,"ttft_ms":3714,"token_count":159,"tokens_per_sec":"2.61"}
+09:34:24 [PERF] {"request_id":4,"total_ms":19692,"ttft_ms":7387,"token_count":31,"tokens_per_sec":"1.57"}
+09:35:13 [PERF] {"request_id":5,"total_ms":13513,"ttft_ms":3791,"token_count":32,"tokens_per_sec":"2.37"}
+09:36:57 [PERF] {"request_id":6,"total_ms":22563,"ttft_ms":3010,"token_count":57,"tokens_per_sec":"2.53"}
+09:37:52 [PERF] {"request_id":7,"total_ms":7361,"ttft_ms":2057,"token_count":18,"tokens_per_sec":"2.45"}  (30s idle)
+09:40:40 [PERF] {"request_id":8,"total_ms":14304,"ttft_ms":5633,"token_count":23,"tokens_per_sec":"1.61"}  (2min idle)
+09:44:27 [PERF] {"request_id":11,"total_ms":12307,"ttft_ms":9665,"token_count":8,"tokens_per_sec":"0.65"} (translation)
+09:47:18 [PERF] {"request_id":12,"total_ms":14501,"ttft_ms":10479,"token_count":7,"tokens_per_sec":"0.48"} (translation)
+09:47:42 [PERF] {"request_id":13,"total_ms":5952,"ttft_ms":4151,"token_count":5,"tokens_per_sec":"0.84"}  (translation)
+09:49:39 [PERF] {"request_id":0,"total_ms":14418,"ttft_ms":8681,"token_count":18,"tokens_per_sec":"1.25"}  (post-2nd-restart)
+09:51:03 [PERF] {"request_id":0,"total_ms":19242,"ttft_ms":9222,"token_count":34,"tokens_per_sec":"1.77"}  (post-3rd-restart)
+```
+
+### Frame Skips
+```
+09:22:55 Choreographer(11057): Skipped 175 frames (1st cold start)
+09:22:55 Choreographer(11057): Skipped 32 frames (1st cold start, 2nd burst)
+09:48:27 Choreographer(17381): Skipped 192 frames (2nd cold start)
+09:50:14 Choreographer(17858): Skipped 180 frames (3rd cold start)
+```
+
+### Memory Snapshot
+```
+TOTAL PSS:  2,036,821 KB | TOTAL RSS: 1,860,939 KB | TOTAL SWAP PSS: 206,429 KB
+Other mmap: 1,611,569 KB (model file)
+Native Heap: 552,780 KB (size) / 484,517 KB (alloc)
+MemAvailable: 2,209,820 KB | SwapFree: 5,775,852 KB
+```
