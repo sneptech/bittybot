@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/l10n/app_localizations.dart';
+import '../features/chat/presentation/chat_screen.dart';
 import '../features/translation/presentation/translation_screen.dart';
 
 /// Main navigation shell — NavigationBar with Translate (index 0) and Chat
-/// (index 1, Phase 6 placeholder) tabs.
+/// (index 1) tabs.
 ///
 /// Uses [IndexedStack] so both screens stay alive when switching tabs —
 /// translation state is NOT lost when the user visits the Chat tab.
@@ -22,7 +23,7 @@ class MainShell extends ConsumerStatefulWidget {
 }
 
 class _MainShellState extends ConsumerState<MainShell> {
-  int _selectedIndex = 0; // 0 = Translate, 1 = Chat (placeholder)
+  int _selectedIndex = 0; // 0 = Translate, 1 = Chat
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +34,7 @@ class _MainShellState extends ConsumerState<MainShell> {
         index: _selectedIndex,
         children: [
           const TranslationScreen(),
-          // Phase 6 Chat screen — placeholder for now.
-          Center(
-            child: Text(
-              l10n.chat,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ),
+          const ChatScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
