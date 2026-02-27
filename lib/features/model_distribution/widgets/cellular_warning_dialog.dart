@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/theme/app_colors.dart';
+import '../model_constants.dart';
 import '../providers.dart';
 
 /// Dialog shown when the device is on a cellular connection and the user
@@ -28,20 +31,22 @@ class CellularWarningDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
     return AlertDialog(
-      backgroundColor: const Color(0xFF1E1E1E), // TODO(phase-3): design system
-      title: const Text(
-        'Download on cellular data?',
-        style: TextStyle(
-          color: Colors.white,
+      backgroundColor: AppColors.surface,
+      title: Text(
+        l10n.downloadOnCellularDataTitle,
+        style: const TextStyle(
+          color: AppColors.onSurface,
           fontSize: 18, // 18sp per spec
           fontWeight: FontWeight.bold,
         ),
       ),
-      content: const Text(
-        'This download is ~2.14 GB. Continue on cellular?',
-        style: TextStyle(
-          color: Colors.white70, // TODO(phase-3): Replace with design system color
+      content: Text(
+        l10n.downloadOnCellularDataMessage(ModelConstants.fileSizeDisplayGB),
+        style: const TextStyle(
+          color: AppColors.onSurfaceVariant,
           fontSize: 14,
         ),
       ),
@@ -52,18 +57,17 @@ class CellularWarningDialog extends ConsumerWidget {
             // User can re-open on Wi-Fi to re-run preflight automatically.
             Navigator.of(context).pop();
           },
-          child: const Text(
-            'Wait for Wi-Fi',
-            style: TextStyle(
-              color: Colors.white54, // TODO(phase-3): Replace with design system color
+          child: Text(
+            l10n.waitForWifi,
+            style: const TextStyle(
+              color: AppColors.onSurfaceVariant,
             ),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                const Color(0xFF2D6A4F), // TODO(phase-3): design system forest green
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.onSurface,
           ),
           onPressed: () {
             Navigator.of(context).pop();
@@ -71,7 +75,7 @@ class CellularWarningDialog extends ConsumerWidget {
                 .read(modelDistributionProvider.notifier)
                 .confirmCellularDownload();
           },
-          child: const Text('Download now'),
+          child: Text(l10n.downloadNow),
         ),
       ],
     );

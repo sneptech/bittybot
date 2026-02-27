@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/l10n/app_localizations.dart';
+import '../../../core/theme/app_colors.dart';
 import '../providers.dart';
 
 /// Shared preferences key for clearing saved progress on "Start over".
@@ -43,14 +45,15 @@ class ResumePromptDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final progressPercent = (progressFraction * 100).round();
 
     return AlertDialog(
-      backgroundColor: const Color(0xFF1E1E1E), // TODO(phase-3): design system
-      title: const Text(
-        'Resume download?',
-        style: TextStyle(
-          color: Colors.white,
+      backgroundColor: AppColors.surface,
+      title: Text(
+        l10n.resumeDownloadTitle,
+        style: const TextStyle(
+          color: AppColors.onSurface,
           fontSize: 18, // 18sp per spec
           fontWeight: FontWeight.bold,
         ),
@@ -59,18 +62,18 @@ class ResumePromptDialog extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'BittyBot needs this language model to translate and chat offline.',
-            style: TextStyle(
-              color: Colors.white70, // TODO(phase-3): Replace with design system color
+          Text(
+            l10n.modelRequiredOfflineMessage,
+            style: const TextStyle(
+              color: AppColors.onSurfaceVariant,
               fontSize: 14,
             ),
           ),
           const SizedBox(height: 12),
           Text(
-            'Download is $progressPercent% complete',
-            style: TextStyle(
-              color: Colors.grey[300], // TODO(phase-3): Replace with design system color
+            l10n.downloadProgressComplete(progressPercent),
+            style: const TextStyle(
+              color: AppColors.onSurfaceVariant,
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -82,10 +85,9 @@ class ResumePromptDialog extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: progressFraction,
               minHeight: 6,
-              backgroundColor: const Color(0xFF3A3A3A),
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF2D6A4F), // TODO(phase-3): Replace with design system forest green
-              ),
+              backgroundColor: AppColors.surfaceContainer,
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
           ),
         ],
@@ -101,24 +103,23 @@ class ResumePromptDialog extends ConsumerWidget {
               ref.read(modelDistributionProvider.notifier).startOverDownload();
             }
           },
-          child: const Text(
-            'Start over',
-            style: TextStyle(
-              color: Colors.white54, // TODO(phase-3): Replace with design system color
+          child: Text(
+            l10n.startOver,
+            style: const TextStyle(
+              color: AppColors.onSurfaceVariant,
             ),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                const Color(0xFF2D6A4F), // TODO(phase-3): design system forest green
-            foregroundColor: Colors.white,
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.onSurface,
           ),
           onPressed: () {
             Navigator.of(context).pop();
             ref.read(modelDistributionProvider.notifier).confirmResume();
           },
-          child: const Text('Resume'),
+          child: Text(l10n.resumeAction),
         ),
       ],
     );

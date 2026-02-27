@@ -86,4 +86,7 @@ abstract final class AppColors {
 
   /// White text on error surfaces.
   static const Color onError = Color(0xFFFFFFFF);
+
+  /// Warning state — amber used for cautionary indicators and banners.
+  static const Color warning = Color(0xFFFFC107);
 }
