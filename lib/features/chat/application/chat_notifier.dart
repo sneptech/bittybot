@@ -18,7 +18,7 @@ import 'chat_repository_provider.dart';
 part 'chat_notifier.g.dart';
 
 /// nCtx used for context-full detection threshold.
-const int _kNCtx = 2048;
+const int _kNCtx = 512;
 
 /// Percentage of nCtx at which context is considered full (90%).
 const double _kContextFullThreshold = 0.9;
@@ -385,9 +385,9 @@ class ChatNotifier extends _$ChatNotifier {
         _tokenBuffer.write(token);
         _scheduleBatchFlush();
 
-      case DoneResponse(:final requestId, :final stopped):
+      case DoneResponse(:final requestId, :final stopped, :final tokenCount):
         if (requestId != state.activeRequestId) return;
-        await _finishGeneration(stopped: stopped);
+        await _finishGeneration(stopped: stopped, tokenCount: tokenCount);
 
       case ErrorResponse(:final requestId, :final message):
         // requestId == -1 for model load errors; otherwise matches the request.
@@ -401,43 +401,66 @@ class ChatNotifier extends _$ChatNotifier {
   }
 
   /// Persists the completed assistant message and resets generation state.
-  Future<void> _finishGeneration({required bool stopped}) async {
+  Future<void> _finishGeneration({
+    required bool stopped,
+    required int tokenCount,
+  }) async {
     _batchTimer?.cancel();
     _flushTokenBuffer();
 
     final session = state.activeSession;
     if (session == null) return;
 
-    final content = state.currentResponse;
-    final chatRepo = ref.read(chatRepositoryProvider);
+    // Strip any [Context limit reached] text injected by llama.cpp.
+    final content = state.currentResponse
+        .replaceAll('[Context limit reached]', '')
+        .trimRight();
 
-    // Persist the assistant message.
-    final assistantMessage = await chatRepo.insertMessage(
-      sessionId: session.id,
-      role: 'assistant',
-      content: content,
-      isTruncated: stopped,
-    );
-
-    // Auto-derive session title from first user message if not yet set.
-    if (session.title == null && state.messages.isNotEmpty) {
-      final firstUserMsg = state.messages.firstWhere(
-        (m) => m.role == 'user',
-        orElse: () => state.messages.first,
-      );
-      final title = firstUserMsg.content.substring(
-        0,
-        min(50, firstUserMsg.content.length),
-      );
-      await chatRepo.updateSessionTitle(session.id, title);
+    // If stripping left empty content AND zero tokens were generated,
+    // the context is fully exhausted — auto-reset to a new session.
+    if (content.isEmpty && tokenCount == 0) {
+      await startNewSession();
+      state = state.copyWith(isContextFull: true);
+      return;
     }
 
-    state = state.copyWith(
-      messages: [...state.messages, assistantMessage],
-      currentResponse: '',
-      isGenerating: false,
-      clearActiveRequestId: true,
-    );
+    // Do not persist an empty assistant message.
+    if (content.isNotEmpty) {
+      final chatRepo = ref.read(chatRepositoryProvider);
+
+      final assistantMessage = await chatRepo.insertMessage(
+        sessionId: session.id,
+        role: 'assistant',
+        content: content,
+        isTruncated: stopped,
+      );
+
+      // Auto-derive session title from first user message if not yet set.
+      if (session.title == null && state.messages.isNotEmpty) {
+        final firstUserMsg = state.messages.firstWhere(
+          (m) => m.role == 'user',
+          orElse: () => state.messages.first,
+        );
+        final title = firstUserMsg.content.substring(
+          0,
+          min(50, firstUserMsg.content.length),
+        );
+        await chatRepo.updateSessionTitle(session.id, title);
+      }
+
+      state = state.copyWith(
+        messages: [...state.messages, assistantMessage],
+        currentResponse: '',
+        isGenerating: false,
+        clearActiveRequestId: true,
+      );
+    } else {
+      state = state.copyWith(
+        currentResponse: '',
+        isGenerating: false,
+        clearActiveRequestId: true,
+      );
+    }
 
     _dequeueNextIfAny();
   }
