@@ -144,20 +144,10 @@
   "yesterday": "Yesterday",
   "@yesterday": { "description": "Relative time label for events that occurred yesterday" },
 
-  "webSearchMode": "Web mode",
-  "@webSearchMode": { "description": "Indicator label shown when web search mode is active" },
 
-  "switchToWebSearch": "Switch to web search",
-  "@switchToWebSearch": { "description": "Tooltip for the toggle button to enable web search mode" },
 
-  "switchToChat": "Switch to chat",
-  "@switchToChat": { "description": "Tooltip for the toggle button to return to normal chat mode" },
 
-  "webSearchInputHint": "Paste a URL to translate or summarize",
-  "@webSearchInputHint": { "description": "Placeholder text in the input field when web search mode is active" },
 
-  "webSearchPrompt": "Translate and summarize the following web page content:",
-  "@webSearchPrompt": { "description": "Prompt prefix sent to the model before fetched web page content" },
 
   "noInternetConnection": "No internet connection",
   "@noInternetConnection": { "description": "Error shown when attempting web search without network connectivity" },

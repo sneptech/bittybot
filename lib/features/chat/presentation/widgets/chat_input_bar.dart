@@ -7,7 +7,6 @@ import '../../../../core/theme/app_colors.dart';
 import '../../application/web_fetch_provider.dart';
 import '../../application/chat_notifier.dart';
 import '../../data/web_fetch_service.dart';
-import 'web_mode_indicator.dart';
 
 /// Multi-line expandable input bar for the Chat screen.
 ///
@@ -30,7 +29,6 @@ class ChatInputBar extends ConsumerStatefulWidget {
 
 class _ChatInputBarState extends ConsumerState<ChatInputBar> {
   final TextEditingController _textController = TextEditingController();
-  bool _isWebMode = false;
 
   @override
   void dispose() {
@@ -42,7 +40,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     final text = _textController.text.trim();
     if (text.isEmpty || !state.isModelReady) return;
     _textController.clear();
-    if (_isWebMode) {
+    if (text.startsWith('http://') || text.startsWith('https://')) {
       await _handleWebFetch(text);
       return;
     }
@@ -80,10 +78,11 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
     try {
       final webFetchService = ref.read(webFetchServiceProvider);
       final content = await webFetchService.fetchAndExtract(url);
-      final notifier = ref.read(chatProvider.notifier);
-      await notifier.sendMessage(
-        '[Web: $url]\n\n${l10n.webSearchPrompt}\n\n$content',
-      );
+      final hiddenContext =
+          'The user shared a web page. Here is the page content:\n\n$content\n\nExplain to the user what this page is about. Be concise.';
+      await ref
+          .read(chatProvider.notifier)
+          .sendMessage(url, hiddenContext: hiddenContext);
     } on WebFetchException catch (error) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
@@ -116,29 +115,9 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_isWebMode) ...[
-              const WebModeIndicator(),
-              const SizedBox(height: 8),
-            ],
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                IconButton(
-                  onPressed: state.isGenerating
-                      ? null
-                      : () => setState(() => _isWebMode = !_isWebMode),
-                  icon: Icon(
-                    _isWebMode
-                        ? Icons.language
-                        : Icons.chat_bubble_outline,
-                  ),
-                  color: _isWebMode
-                      ? AppColors.secondary
-                      : AppColors.onSurfaceVariant,
-                  tooltip: _isWebMode
-                      ? l10n.switchToChat
-                      : l10n.switchToWebSearch,
-                ),
                 Expanded(
                   child: ValueListenableBuilder<TextEditingValue>(
                     valueListenable: _textController,
@@ -151,9 +130,7 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
                         textInputAction: TextInputAction.newline,
                         enabled: state.isModelReady,
                         decoration: InputDecoration(
-                          hintText: _isWebMode
-                              ? l10n.webSearchInputHint
-                              : l10n.chatInputHint,
+                          hintText: l10n.chatInputHint,
                         ),
                       );
                     },
