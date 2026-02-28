@@ -1,10 +1,33 @@
 # BittyBot On-Device Profiling Guide
 
 **For:** Local Claude Code monitoring during on-device testing
-**Date:** 2026-02-27
 **Branch:** `mowismtest`
+**Device:** Samsung Galaxy A25 (SM-A256E), Android 14, 5.5 GB RAM, Exynos 1280
 
-## Quick Start
+---
+
+## CURRENT TEST: Sprint 8 Retest
+
+**Skip to: [Sprint 8 Retest](#sprint-8-retest-2026-02-28)** section below for the full test protocol.
+
+**What to test:** Two polish items on top of the ErrorResponse bug fix:
+1. **S8-T1:** Post-clear TTFT — after context exhaustion auto-reset, TTFT should be ~3-5s (was 17.2s)
+2. **S8-T2:** Snackbar — after context exhaustion auto-reset, user sees "Conversation was getting long. Started a new chat."
+
+**Quick steps:**
+```bash
+cd /home/agent/git/bittybot && git pull origin mowismtest
+export PATH="/home/agent/flutter/bin:$PATH"
+flutter build apk --debug
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
+```
+Then follow the Sprint 8 Retest checklist. Model is already on device (Q3_K_S, no re-download needed).
+
+**Write results to:** `.planning/SPRINT-8-RETEST-REPORT.md` — include post-clear TTFT comparison, snackbar verification (yes/no/screenshot), and full regression check. Use the same format as `.planning/SPRINT-8-REPORT.md`.
+
+---
+
+## Quick Start (General)
 
 ```bash
 # 1. Build and install debug APK
