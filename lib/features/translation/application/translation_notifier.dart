@@ -412,6 +412,17 @@ class TranslationNotifier extends _$TranslationNotifier {
 
   /// Handles an error from the inference stream.
   Future<void> _handleError(String message) async {
+    // Context-full errors arrive as ErrorResponse (setPrompt throws
+    // LlamaException("Context full ...") when _nPos >= nCtx-10).
+    // Auto-reset so translation can continue.
+    final isContextFullError = message.contains('Context full') ||
+        message.contains('Context limit');
+    if (isContextFullError) {
+      await startNewSession();
+      state = state.copyWith(isContextFull: true);
+      return;
+    }
+
     // Persist partial output if any.
     final session = state.activeSession;
     if (session != null && state.translatedText.isNotEmpty) {

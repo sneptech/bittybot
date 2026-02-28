@@ -470,6 +470,37 @@ class ChatNotifier extends _$ChatNotifier {
     _batchTimer?.cancel();
     _flushTokenBuffer();
 
+    // Context-full errors arrive as ErrorResponse (setPrompt throws
+    // LlamaException("Context full ...") when _nPos >= nCtx-10).
+    // Auto-reset to a new session so the user can keep chatting.
+    final isContextFullError = message.contains('Context full') ||
+        message.contains('Context limit');
+    if (isContextFullError) {
+      // Strip any [Context limit reached] text from partial output.
+      final cleanedResponse = state.currentResponse
+          .replaceAll('[Context limit reached]', '')
+          .trimRight();
+
+      // Persist partial output if any remains after stripping.
+      final session = state.activeSession;
+      if (session != null && cleanedResponse.isNotEmpty) {
+        final chatRepo = ref.read(chatRepositoryProvider);
+        final assistantMessage = await chatRepo.insertMessage(
+          sessionId: session.id,
+          role: 'assistant',
+          content: cleanedResponse,
+          isTruncated: true,
+        );
+        state = state.copyWith(
+          messages: [...state.messages, assistantMessage],
+        );
+      }
+
+      await startNewSession();
+      state = state.copyWith(isContextFull: true);
+      return;
+    }
+
     // If there is accumulated partial output, persist it as truncated.
     final session = state.activeSession;
     if (session != null && state.currentResponse.isNotEmpty) {
