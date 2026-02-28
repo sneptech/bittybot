@@ -6,13 +6,11 @@
 
 ---
 
-## CURRENT TEST: Sprint 8 Retest
+## CURRENT TEST: Sprint 9 Retest — BUG-9 Fix Verification
 
-**Skip to: [Sprint 8 Retest](#sprint-8-retest-2026-02-28)** section below for the full test protocol.
+**Skip to: [Sprint 9 Retest](#sprint-9-retest-2026-02-28)** section below for the full test protocol.
 
-**What to test:** Two polish items on top of the ErrorResponse bug fix:
-1. **S8-T1:** Post-clear TTFT — after context exhaustion auto-reset, TTFT should be ~3-5s (was 17.2s)
-2. **S8-T2:** Snackbar — after context exhaustion auto-reset, user sees "Conversation was getting long. Started a new chat."
+**What to test:** BUG-9 fix (translation stuck after context exhaustion) + full regression suite.
 
 **Quick steps:**
 ```bash
@@ -21,9 +19,9 @@ export PATH="/home/agent/flutter/bin:$PATH"
 flutter build apk --debug
 adb install -r build/app/outputs/flutter-apk/app-debug.apk
 ```
-Then follow the Sprint 8 Retest checklist. Model is already on device (Q3_K_S, no re-download needed).
+Then follow the Sprint 9 Retest checklist. Model is already on device (Q3_K_S, no re-download needed).
 
-**Write results to:** `.planning/SPRINT-8-RETEST-REPORT.md` — include post-clear TTFT comparison, snackbar verification (yes/no/screenshot), and full regression check. Use the same format as `.planning/SPRINT-8-REPORT.md`.
+**Write results to:** `.planning/SPRINT-9-RETEST-REPORT.md` — use the same format as `.planning/SPRINT-8-RETEST-REPORT.md`.
 
 ---
 
@@ -558,6 +556,229 @@ Sprint 8 Report already verified the ErrorResponse fix works — app recovers fr
 Sprint 8 S8-T2 adds the user-facing feedback that was missing — a snackbar so the user understands why their conversation disappeared.
 
 **Report findings to `.planning/SPRINT-9-REPORT.md`** (or append to SPRINT-8-REPORT.md) — include post-clear TTFT comparison and snackbar verification.
+
+## Sprint 9 Retest (2026-02-28)
+
+One bug fix: BUG-9 (translation typing indicator stuck after context exhaustion). Plus closure of S8-T1 as won't-fix.
+
+### Background — What Is This App?
+
+BittyBot is an offline multilingual chat & translation app (Flutter/Dart) running a local LLM (Aya Q3_K_S, ~1.55 GB) via llama.cpp on Android. It has two modes: **Chat** (multi-turn conversation) and **Translation** (language pair translation). Both share a single inference isolate with nCtx=512. When context fills up, an `ErrorResponse` triggers auto-reset (clear KV cache, start new session).
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| `b260e76` BUG-9 | **Reset `isTranslating: false` in `startNewSession()`** — `TranslationNotifier.startNewSession()` was missing this reset, causing UI typing indicator to lock permanently after context exhaustion auto-reset | After ~17 translations exhaust context, typing indicator clears and new translations work |
+
+**S8-T1 (post-clear TTFT) closed as won't-fix:** `posix_fadvise(WILLNEED)` is advisory-only; on this 5.5 GB device the kernel ignores it under memory pressure. Post-clear TTFT of 14-20s is accepted as a hardware limitation (rare event — only after ~7+ chat messages or ~17+ translations). No code change.
+
+### What Caused BUG-9
+
+In `lib/features/translation/application/translation_notifier.dart`, `startNewSession()` (line 198) resets most state fields but was missing `isTranslating: false`. When `_handleError()` detected a context-full error, it called `startNewSession()` and returned early — skipping the general error path that would have set `isTranslating: false`. The UI's typing indicator (three dots) checked `isTranslating` and stayed visible forever.
+
+Chat's equivalent (`chat_notifier.dart` `startNewSession()`) correctly sets `isGenerating: false`, so chat never had this bug.
+
+### Retest Checklist
+
+**No model re-download needed.** Q3_K_S model from Sprint 4+ should still be on device.
+
+**IMPORTANT:** Start `adb logcat` capture BEFORE launching the app so you capture all `[PERF]` events.
+
+```bash
+# Terminal 1: Start log capture
+adb logcat -c && adb logcat -s flutter | tee sprint9-logcat.txt &
+
+# Terminal 2: Build and install
+cd /home/agent/git/bittybot && git pull origin mowismtest
+export PATH="/home/agent/flutter/bin:$PATH"
+flutter build apk --debug
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
+
+# Launch app
+adb shell am start -n com.bittybot.bittybot/.MainActivity
+```
+
+#### Test 1: BUG-9 Fix — Translation Context Exhaustion Recovery (THE KEY TEST)
+
+This is the primary test for Sprint 9. Reproduce the exact BUG-9 scenario and verify the fix.
+
+1. Wait for model to load (watch logcat for `[PERF] {"perf":"model_load",...}`)
+2. Switch to **Translation** tab (bottom nav)
+3. Select a language pair (e.g., English → Spanish)
+4. Send **17-20 short translations** one after another. Examples:
+   - "Hello, how are you?"
+   - "Where is the train station?"
+   - "I would like a coffee please"
+   - "What time does the museum open?"
+   - "Can you recommend a good restaurant?"
+   - "How much does this cost?"
+   - "I need directions to the hotel"
+   - "The weather is beautiful today"
+   - "Do you speak English?"
+   - "I am looking for a pharmacy"
+   - "Thank you very much for your help"
+   - "Where can I buy a bus ticket?"
+   - "I would like to make a reservation"
+   - "What is the best way to get downtown?"
+   - "This food is delicious"
+   - "Could you take a photo of us?"
+   - "I need to find an ATM"
+5. **Watch for context exhaustion** — around translation 17-20, you should see in logcat:
+   ```
+   [PERF] {"perf":"inference_request",...,"token_count":0,...}
+   ```
+   (0 tokens = context full, instant response)
+6. **Verify the `ContextFullBanner` appears** at the top of the screen:
+   - Text: "Session is getting long. Start a new session for best results."
+   - Has a "New session" button
+7. **THE CRITICAL CHECK — typing indicator must clear:**
+   - **PASS:** The typing indicator (three dots) disappears within 1-2 seconds of the error
+   - **FAIL (BUG-9 still present):** Typing indicator stays visible indefinitely (>10s)
+8. **Verify recovery works:**
+   - After the indicator clears, type and send a new translation (e.g., "Good morning")
+   - **PASS:** New translation appears normally
+   - **FAIL:** No response, or typing indicator reappears and gets stuck
+9. **Verify "New session" button works:**
+   - Tap the "New session" button on the `ContextFullBanner`
+   - **PASS:** Banner dismisses, UI resets to clean state
+   - **FAIL:** UI stays stuck or banner doesn't dismiss
+
+**Record:** Note the exact request_id where context exhaustion occurred, the time for typing indicator to clear, and whether recovery translation worked.
+
+#### Test 2: Chat Context Exhaustion (Regression Check)
+
+Verify chat's context exhaustion handling still works (it was fine before, just confirming no regression).
+
+1. Switch to **Chat** tab
+2. Send a message that generates a long response: "Tell me everything about Tokyo Japan in great detail"
+3. Wait for the response (~400-500 tokens should fill nCtx=512)
+4. Send a short follow-up: "Thanks"
+5. **Expected:**
+   a. Context exhaustion triggers
+   b. Snackbar appears: "Conversation was getting long. Started a new chat." (4s auto-dismiss)
+   c. Old conversation clears, new session starts
+   d. Next message gets a response normally
+6. **Record:** Post-clear TTFT (expected 14-20s — this is the accepted S8-T1 hardware limitation, NOT a bug)
+
+#### Test 3: Full Regression Suite
+
+Run through all functional areas. Each should PASS:
+
+| # | Test | Steps | Pass Criteria |
+|---|------|-------|---------------|
+| 3a | Warm TTFT | Send 5+ chat messages back-to-back | TTFT < 5s avg (expect ~3s) |
+| 3b | tok/s | Same messages as 3a | tok/s > 1.5 (expect ~2.4) |
+| 3c | Identity | Ask "What is your name?" | Responds "Bittybot" (not "Aya") |
+| 3d | Multi-turn recall | Say "My name is Alex", then "What is my name?" | Responds "Alex" |
+| 3e | Markdown rendering | Ask "Give me a numbered list of 3 fruits" | Rendered as formatted list, not raw `1.` or `**` |
+| 3f | Token filtering | Read all chat responses | No raw `<\|...\|>` tokens visible in any bubble |
+| 3g | Translation quality | 3 translations (pre-exhaustion) | Direct translations, no quotes wrapping, no explanations |
+| 3h | Native splash | Force-stop, cold start | Dark branded splash (not white/blank) during Flutter init |
+| 3i | No OOM | Entire test session | App never killed, no ANR dialog |
+| 3j | Frame skips | `adb logcat \| grep -E 'Skipped.*frames'` on cold start | Note count (expected ~200 — known Flutter/Impeller Vulkan issue, not model-related) |
+
+#### Test 4: Memory Snapshot
+
+After all tests, capture memory state:
+```bash
+adb shell dumpsys meminfo com.bittybot.bittybot | head -40
+```
+Record Total PSS, Total RSS, Total SWAP. Expected: PSS ~2.0 GB, RSS ~1.9 GB, SWAP ~175 MB.
+
+### Performance Targets (Sprint 9)
+
+| Metric | Target | Sprint 8 Retest Baseline | Notes |
+|--------|--------|-------------------------|-------|
+| **BUG-9: Typing indicator clears** | **< 2s** | **FAIL (stuck forever)** | **THE FIX** |
+| **BUG-9: Recovery translation works** | **Yes** | **FAIL (no inference)** | **THE FIX** |
+| Warm TTFT (chat) | < 5s | 2.65–3.62s avg 2.99s | Same |
+| tok/s (chat) | > 1.5 | 2.19–2.52 avg 2.38 | Same |
+| Post-clear TTFT (chat) | 14-20s (accepted) | 14.0–19.9s | Won't-fix (S8-T1 closure) |
+| Warm TTFT (translation) | < 6s | 2.8–5.8s avg 3.68s | Same |
+| tok/s (translation) | > 1.0 | 1.01–1.84 avg 1.43 | Same |
+| Context reset snackbar (chat) | Shows 4s | PASS | Same |
+| Context reset banner (both tabs) | Shows on exhaustion | PASS | Same |
+| Identity | "Bittybot" | PASS | Same |
+| Markdown | Formatted | PASS | Same |
+| Token filtering | No raw tokens | PASS | Same |
+| Translation quote stripping | No wrapping quotes | PASS | Same |
+| Native splash | Dark branded | PASS | Same |
+| No OOM | Stable | PASS | Same |
+
+### Pass/Fail Criteria
+
+**Sprint 9 PASSES if:**
+1. BUG-9 fix verified: translation typing indicator clears after context exhaustion (Test 1, step 7)
+2. Translation recovery works: new translation succeeds after auto-reset (Test 1, step 8)
+3. No regressions in any Test 3 item
+
+**Sprint 9 FAILS if:**
+1. Typing indicator still stuck after context exhaustion → BUG-9 not fixed
+2. Translation doesn't recover after reset → deeper issue than `isTranslating`
+3. Any regression in chat, identity, markdown, token filtering, or stability
+
+### Writing Results
+
+Write results to `.planning/SPRINT-9-RETEST-REPORT.md` using this structure:
+
+```markdown
+# Sprint 9 Retest Report — 2026-02-28
+
+**Branch:** `mowismtest`
+**Device:** Samsung Galaxy A25 (SM-A256E), Android 14, 5.5 GB RAM, Exynos 1280
+**Build:** debug APK, commits through `d1628d1`
+
+## Summary
+
+| Item | Result | Details |
+|------|--------|---------|
+| BUG-9: Translation typing indicator clears | **PASS/FAIL** | [time to clear, or "stuck"] |
+| BUG-9: Recovery translation works | **PASS/FAIL** | [new translation succeeds y/n] |
+| BUG-9: "New session" button works | **PASS/FAIL** | [banner dismisses y/n] |
+| Chat context exhaustion (regression) | **PASS/FAIL** | [snackbar, recovery, post-clear TTFT] |
+| All regressions | **PASS/FAIL** | [any failures listed] |
+
+## Test 1: BUG-9 Fix — Translation Context Exhaustion Recovery
+
+[Detailed results: how many translations before exhaustion, exact behavior observed,
+typing indicator timing, recovery translation results, logcat PERF events]
+
+## Test 2: Chat Context Exhaustion (Regression)
+
+[Post-clear TTFT, snackbar shown, recovery works]
+
+## Test 3: Regression Suite
+
+| Check | Result | Details |
+|-------|--------|---------|
+| Warm TTFT | PASS/FAIL | [avg ms] |
+| tok/s | PASS/FAIL | [avg] |
+| Identity | PASS/FAIL | [response] |
+| Multi-turn recall | PASS/FAIL | [response] |
+| Markdown | PASS/FAIL | [rendered correctly y/n] |
+| Token filtering | PASS/FAIL | [any raw tokens seen] |
+| Translation quality | PASS/FAIL | [direct, no quotes] |
+| Native splash | PASS/FAIL | [dark branded y/n] |
+| No OOM | PASS/FAIL | [stable y/n] |
+| Frame skips | [count] | [known Flutter/Impeller issue] |
+
+## Test 4: Memory Snapshot
+
+[dumpsys meminfo output]
+
+## All PERF Events
+
+[Raw [PERF] log lines from logcat]
+```
+
+### What to Do After Testing
+
+- If **all PASS:** Report back. App is feature-complete with all 9 bugs fixed.
+- If **BUG-9 still FAIL:** Report exact symptoms. The fix may need to also reset state in `_handleError()` directly, not just in `startNewSession()`.
+- If **new bugs found:** Document with reproduction steps, suspected root cause, and affected files.
+
+---
 
 ## Architecture Reference
 
