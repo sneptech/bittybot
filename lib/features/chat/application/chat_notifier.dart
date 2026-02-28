@@ -117,7 +117,7 @@ class ChatState {
 @riverpod
 class ChatNotifier extends _$ChatNotifier {
   /// FIFO queue of messages waiting for the current generation to finish.
-  final Queue<String> _pendingQueue = Queue<String>();
+  final Queue<({String text, String? hiddenContext})> _pendingQueue = Queue<({String text, String? hiddenContext})>();
 
   /// Active subscription to the inference response stream.
   /// Cancelled on notifier disposal.
@@ -215,12 +215,12 @@ class ChatNotifier extends _$ChatNotifier {
   ///
   /// If a generation is currently in progress, the message is queued and will
   /// be processed automatically when the current generation completes.
-  Future<void> sendMessage(String text) async {
+  Future<void> sendMessage(String text, {String? hiddenContext}) async {
     if (state.isGenerating) {
-      _pendingQueue.add(text);
+      _pendingQueue.add((text: text, hiddenContext: hiddenContext));
       return;
     }
-    await _processMessage(text);
+    await _processMessage(text, hiddenContext: hiddenContext);
   }
 
   /// Cooperatively stops the active generation.
@@ -297,7 +297,7 @@ class ChatNotifier extends _$ChatNotifier {
   /// 4. Checks context-full threshold before sending.
   /// 5. Registers the response stream listener (once per notifier lifetime).
   /// 6. Issues the [GenerateCommand] via [InferenceRepository.generate].
-  Future<void> _processMessage(String text) async {
+  Future<void> _processMessage(String text, {String? hiddenContext}) async {
     // Ensure we have an active session.
     ChatSession session = state.activeSession ??
         await ref.read(chatRepositoryProvider).createSession(mode: 'chat');
@@ -312,14 +312,15 @@ class ChatNotifier extends _$ChatNotifier {
     );
 
     // Build prompt (initial for first turn, follow-up thereafter).
+    final String promptContent = hiddenContext ?? text;
     final String prompt;
     if (_turnCount == 0) {
       prompt = PromptBuilder.buildInitialPrompt(
         systemPrompt: PromptBuilder.chatSystemPrompt,
-        userMessage: text,
+        userMessage: promptContent,
       );
     } else {
-      prompt = PromptBuilder.buildFollowUpPrompt(text);
+      prompt = PromptBuilder.buildFollowUpPrompt(promptContent);
     }
 
     // Context-full detection: estimate tokens for the prompt being sent.
@@ -528,8 +529,8 @@ class ChatNotifier extends _$ChatNotifier {
   /// Dequeues and processes the next pending message, if any.
   Future<void> _dequeueNextIfAny() async {
     if (_pendingQueue.isNotEmpty) {
-      final next = _pendingQueue.removeFirst();
-      await _processMessage(next);
+      final (:text, :hiddenContext) = _pendingQueue.removeFirst();
+      await _processMessage(text, hiddenContext: hiddenContext);
     }
   }
 
