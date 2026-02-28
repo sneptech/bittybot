@@ -168,22 +168,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get yesterday => 'कल';
 
   @override
-  String get webSearchMode => 'वेब मोड';
-
-  @override
-  String get switchToWebSearch => 'वेब खोज पर स्विच करें';
-
-  @override
-  String get switchToChat => 'चैट पर स्विच करें';
-
-  @override
-  String get webSearchInputHint => 'अनुवाद या सारांश के लिए URL पेस्ट करें';
-
-  @override
-  String get webSearchPrompt =>
-      'निम्न वेब पेज सामग्री का अनुवाद और सारांश करें:';
-
-  @override
   String get noInternetConnection => 'इंटरनेट कनेक्शन नहीं है';
 
   @override

@@ -160,21 +160,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get yesterday => '어제';
 
   @override
-  String get webSearchMode => '웹 모드';
-
-  @override
-  String get switchToWebSearch => '웹 검색으로 전환';
-
-  @override
-  String get switchToChat => '채팅으로 전환';
-
-  @override
-  String get webSearchInputHint => '번역 또는 요약할 URL을 붙여넣으세요';
-
-  @override
-  String get webSearchPrompt => '다음 웹페이지 내용을 번역하고 요약하세요:';
-
-  @override
   String get noInternetConnection => '인터넷 연결이 없습니다';
 
   @override

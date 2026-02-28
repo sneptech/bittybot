@@ -159,21 +159,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get yesterday => '昨天';
 
   @override
-  String get webSearchMode => '网页模式';
-
-  @override
-  String get switchToWebSearch => '切换到网页搜索';
-
-  @override
-  String get switchToChat => '切换到聊天';
-
-  @override
-  String get webSearchInputHint => '粘贴一个 URL 进行翻译或总结';
-
-  @override
-  String get webSearchPrompt => '请翻译并总结以下网页内容：';
-
-  @override
   String get noInternetConnection => '无互联网连接';
 
   @override

@@ -170,22 +170,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get yesterday => 'Ontem';
 
   @override
-  String get webSearchMode => 'Modo web';
-
-  @override
-  String get switchToWebSearch => 'Alternar para pesquisa na web';
-
-  @override
-  String get switchToChat => 'Alternar para chat';
-
-  @override
-  String get webSearchInputHint => 'Cole uma URL para traduzir ou resumir';
-
-  @override
-  String get webSearchPrompt =>
-      'Traduza e resuma o seguinte conteúdo da página da web:';
-
-  @override
   String get noInternetConnection => 'Sem conexão com a internet';
 
   @override

@@ -166,21 +166,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get yesterday => 'أمس';
 
   @override
-  String get webSearchMode => 'وضع الويب';
-
-  @override
-  String get switchToWebSearch => 'التبديل إلى البحث على الويب';
-
-  @override
-  String get switchToChat => 'التبديل إلى الدردشة';
-
-  @override
-  String get webSearchInputHint => 'ألصق رابطًا للترجمة أو التلخيص';
-
-  @override
-  String get webSearchPrompt => 'ترجم ولخّص محتوى صفحة الويب التالية:';
-
-  @override
   String get noInternetConnection => 'لا يوجد اتصال بالإنترنت';
 
   @override

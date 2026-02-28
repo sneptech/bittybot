@@ -402,36 +402,6 @@ abstract class AppLocalizations {
   /// **'Yesterday'**
   String get yesterday;
 
-  /// Indicator label shown when web search mode is active
-  ///
-  /// In en, this message translates to:
-  /// **'Web mode'**
-  String get webSearchMode;
-
-  /// Tooltip for the toggle button to enable web search mode
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to web search'**
-  String get switchToWebSearch;
-
-  /// Tooltip for the toggle button to return to normal chat mode
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to chat'**
-  String get switchToChat;
-
-  /// Placeholder text in the input field when web search mode is active
-  ///
-  /// In en, this message translates to:
-  /// **'Paste a URL to translate or summarize'**
-  String get webSearchInputHint;
-
-  /// Prompt prefix sent to the model before fetched web page content
-  ///
-  /// In en, this message translates to:
-  /// **'Translate and summarize the following web page content:'**
-  String get webSearchPrompt;
-
   /// Error shown when attempting web search without network connectivity
   ///
   /// In en, this message translates to:

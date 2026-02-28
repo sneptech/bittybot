@@ -170,23 +170,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get yesterday => 'Gestern';
 
   @override
-  String get webSearchMode => 'Webmodus';
-
-  @override
-  String get switchToWebSearch => 'Zur Websuche wechseln';
-
-  @override
-  String get switchToChat => 'Zum Chat wechseln';
-
-  @override
-  String get webSearchInputHint =>
-      'Fügen Sie eine URL zum Übersetzen oder Zusammenfassen ein';
-
-  @override
-  String get webSearchPrompt =>
-      'Übersetze und fasse den folgenden Webseiteninhalt zusammen:';
-
-  @override
   String get noInternetConnection => 'Keine Internetverbindung';
 
   @override

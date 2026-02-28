@@ -159,21 +159,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get yesterday => '昨日';
 
   @override
-  String get webSearchMode => 'ウェブモード';
-
-  @override
-  String get switchToWebSearch => 'ウェブ検索に切り替え';
-
-  @override
-  String get switchToChat => 'チャットに切り替え';
-
-  @override
-  String get webSearchInputHint => '翻訳または要約するURLを貼り付け';
-
-  @override
-  String get webSearchPrompt => '次のウェブページ内容を翻訳して要約してください:';
-
-  @override
   String get noInternetConnection => 'インターネット接続がありません';
 
   @override

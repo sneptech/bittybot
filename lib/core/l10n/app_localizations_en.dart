@@ -168,22 +168,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
-  String get webSearchMode => 'Web mode';
-
-  @override
-  String get switchToWebSearch => 'Switch to web search';
-
-  @override
-  String get switchToChat => 'Switch to chat';
-
-  @override
-  String get webSearchInputHint => 'Paste a URL to translate or summarize';
-
-  @override
-  String get webSearchPrompt =>
-      'Translate and summarize the following web page content:';
-
-  @override
   String get noInternetConnection => 'No internet connection';
 
   @override
