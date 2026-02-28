@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../application/translation_notifier.dart';
+import '../../../ocr/application/ocr_notifier.dart';
+import '../../../ocr/presentation/ocr_capture_screen.dart';
+import '../../../ocr/presentation/widgets/camera_button.dart';
 
 /// Multi-line expandable input bar for the Translation screen.
 ///
@@ -45,6 +49,37 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
     ref.read(translationProvider.notifier).stopTranslation();
   }
 
+  Future<void> _onCamera() async {
+    final translationState = ref.read(translationProvider);
+    final targetLang = translationState.targetLanguage;
+
+    await ref.read(ocrProvider.notifier).captureAndRecognize(
+      source: ImageSource.camera,
+      targetLanguage: targetLang,
+    );
+
+    final ocrState = ref.read(ocrProvider);
+    if (ocrState is! OcrComplete) return;
+
+    if (!mounted) return;
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OcrCaptureScreen(
+          imagePath: ocrState.result.imagePath,
+          extractedText: ocrState.result.extractedText,
+          blocks: ocrState.result.blocks,
+        ),
+      ),
+    );
+
+    ref.read(ocrProvider.notifier).reset();
+
+    if (result != null && result.trim().isNotEmpty) {
+      _textController.text = result.trim();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -62,6 +97,11 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                CameraButton(
+                  onPressed: _onCamera,
+                  enabled: state.isModelReady && !state.isTranslating,
+                ),
+                const SizedBox(width: 4),
                 Expanded(
                   child: ValueListenableBuilder<TextEditingValue>(
                     valueListenable: _textController,
