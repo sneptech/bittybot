@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -184,11 +185,22 @@ class _ChatBubbleListState extends ConsumerState<ChatBubbleList> {
             bottomEnd: Radius.circular(16),
           ),
         ),
-        child: Text(
-          content,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.onSurface,
-              ),
+        child: MarkdownBody(
+          data: content,
+          styleSheet: MarkdownStyleSheet(
+            p: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurface,
+                ),
+            strong: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+            listBullet: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurface,
+                ),
+          ),
+          onTapLink: (_, _, _) {},
+          selectable: false,
         ),
       ),
     );
