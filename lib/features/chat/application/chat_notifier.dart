@@ -49,7 +49,7 @@ class ChatState {
   /// disabled in the UI until this becomes true.
   final bool isModelReady;
 
-  /// True when the accumulated prompt text approaches ~90% of nCtx=2048.
+  /// True when the accumulated prompt text approaches ~90% of nCtx=512.
   /// The UI (Phase 6) shows a "Start new session" prompt banner when this
   /// is true. Does NOT auto-start a session — that requires user action via
   /// [ChatNotifier.startNewSessionWithCarryForward].
@@ -162,7 +162,7 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// Loads an existing session and its messages from the DB.
   ///
-  /// Does NOT replay messages into the KV cache — that would overflow nCtx=2048
+  /// Does NOT replay messages into the KV cache — that would overflow nCtx=512
   /// for long conversations. Messages are shown in the UI from DB, but the model
   /// starts with a fresh context. The next [sendMessage] will use
   /// [PromptBuilder.buildInitialPrompt].

@@ -49,7 +49,7 @@ class TranslationState {
   /// disabled in the UI until this becomes true.
   final bool isModelReady;
 
-  /// True when the accumulated prompt text approaches ~90% of nCtx=2048.
+  /// True when the accumulated prompt text approaches ~90% of nCtx=512.
   /// The UI (Phase 5) shows a "Start new session" banner when true.
   final bool isContextFull;
 
