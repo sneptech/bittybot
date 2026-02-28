@@ -365,6 +365,96 @@ The frame skip fix adds proper multi-frame yields (16ms each = one Flutter frame
 
 **Report findings to `.planning/PROFILING-RESULTS.md`** — append a Sprint 5 section.
 
+## Sprint 6 Retest (2026-02-28)
+
+Six bug fixes shipped. The key changes to verify on device are: deferred warmup (frame skips), Bittybot identity, and markdown rendering. The other fixes (crash FD cleanup, print guard, dead code) are code-only with no observable on-device behavior change.
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| `3e9373b` S6-T1 | **System prompt identity** — chatSystemPrompt now says "You are Bittybot" | Ask "What is your name?" — model should say "Bittybot" not "Aya" |
+| `708e24f` S6-T2 | **Markdown rendering in chat bubbles** — `MarkdownBody` replaces `Text` | Chat responses with `**bold**` or `-` lists should render formatted, not raw asterisks |
+| `6266757` S6-T3 | **Defer warmup after ModelReadyResponse** — UI unblocked before warmup | Frame skips on cold start should drop dramatically (was 175-192) |
+| `78e5c5a` S6-T4 | **Crash recovery FD cleanup** — ShutdownCommand sent before isolate kill | No direct test — prevents FD leak on crash-recovery cycles |
+| `3960a3b` S6-T5 | **Print guard** — `if (kDebugMode) print(line)` | No `[PERF]` lines in logcat on release builds (debug still shows them) |
+| `3960a3b` S6-T6 | **Dead code cleanup** — removed `..take(3)` no-op + stale TODO | No behavioral change |
+
+### Retest Checklist
+
+**No model re-download needed.** Q3_K_S model from Sprint 4/5 should still be on device.
+
+1. **Build + install:** `flutter build apk --debug && adb install -r build/app/outputs/flutter-apk/app-debug.apk`
+
+2. **Cold start #1 — FRAME SKIPS (THE KEY TEST for S6-T3):**
+   - Force-stop app, launch fresh
+   - `adb logcat | grep -E 'Skipped.*frames'`
+   - **Target: < 50 frame skips** (was 175-192 in Sprint 5)
+   - ModelReadyResponse is now sent before warmup, so UI should render almost immediately after model construction (~200ms), not after the full 8-10s warmup
+   - Note: first inference may be slower if warmup hasn't finished yet
+
+3. **Cold start #2 (consistency check):**
+   - Force-stop, relaunch, measure frame skips again
+   - Should be consistently < 50
+
+4. **Cold start → immediate message (warmup race test):**
+   - Force-stop, relaunch
+   - Send a message AS SOON AS the input is enabled (before warmup finishes)
+   - **Expected:** Higher TTFT than normal (page faults during inference) but no crash
+   - This tests the trade-off of S6-T3
+
+5. **Identity test (S6-T1):**
+   - Open Chat tab
+   - Ask: "What is your name?"
+   - **Expected:** Model says "Bittybot" (not "Aya")
+   - Ask: "My name is Alex"
+   - Then: "What is my name?"
+   - **Expected:** "Alex" (multi-turn recall with new system prompt nudge)
+
+6. **Markdown rendering test (S6-T2):**
+   - Send messages that elicit markdown responses (e.g., "Give me a list of 3 fruits" or "What are the benefits of exercise?")
+   - **Expected:** Bold text rendered bold, bullet lists rendered as lists, no raw `**asterisks**` or `- dashes` visible
+   - Translation bubbles should be UNCHANGED (plain text, no markdown widget)
+
+7. **Warm TTFT baseline:**
+   - Send 5+ messages back-to-back
+   - `adb logcat -s flutter | grep inference_request`
+   - **Expected: TTFT ~2.1-3.0s, tok/s ~2.3-2.6** (same as Sprint 5 warm)
+
+8. **30s idle test (fadvise still working after S6-T3 reorder):**
+   - Send messages, wait 30s, send another
+   - **Expected: TTFT ~2-3s** (fadvise still runs after warmup, just deferred)
+   - If TTFT regresses to 8-10s, the reordering may have broken fadvise timing
+
+9. **All prior tests still pass:**
+   - Token filtering: no `<|...|>` tokens visible
+   - Translation: 3 translations, all direct (no explanations, no markdown issues)
+   - No OOM kill on tab switching
+   - Model load < 15s
+
+### Performance Targets (Updated for Sprint 6)
+
+| Metric | Target | Sprint 5 Best | Sprint 5 Typical | Sprint 6 Expected |
+|--------|--------|---------------|-----------------|-------------------|
+| Frame skips (cold start) | < 50 | 175 | 175-192 | **< 50** (key fix) |
+| TTFT (warm) | < 5s | 2.1s | 2.1-3.0s | ~2.1-3.0s (same) |
+| TTFT (30s idle) | < 5s | 2.1s | ~2s | ~2-3s (same) |
+| TTFT (immediate after cold start) | < 10s | N/A | N/A | **< 10s** (new test) |
+| tok/s | ~2 (hw ceiling) | 2.61 | 2.3-2.6 | ~2.3-2.6 (same) |
+| Identity | "Bittybot" | "Aya" | "Aya" | **"Bittybot"** |
+| Markdown rendering | Formatted | Raw asterisks | Raw asterisks | **Formatted** |
+| Model load | < 15s | 4.0s | 4.0-8.8s | Similar or faster |
+
+### Key Difference from Sprint 5 Test
+
+Sprint 5's frame skips (175-192) persisted because `ModelReadyResponse` was sent AFTER the 8-10s warmup, keeping the UI in "loading" state during the entire sequential read. Sprint 6 sends `ModelReadyResponse` immediately after `Llama()` construction (~200ms), then runs warmup in the background. The UI should render in under 1s instead of 8-10s.
+
+The trade-off: if the user sends a message before warmup completes, TTFT will be higher (page faults during inference). But users typically take 2-5s to start typing, which is enough for warmup to make significant progress.
+
+**If frame skips are still > 100:** The bottleneck may not be ModelReadyResponse timing — could be Flutter asset loading, Drift DB init, or other startup work. Check which lifecycle events happen before and after the frame skips in logcat.
+
+**Report findings to `.planning/PROFILING-RESULTS.md`** — append a Sprint 6 section.
+
 ## Architecture Reference
 
 - **PerformanceMonitor**: Singleton at `lib/core/diagnostics/performance_monitor.dart` — tracks all metrics

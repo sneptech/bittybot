@@ -16,11 +16,11 @@
 | **Reviewer** | Claude Code Opus 4.6 | 1 | Code review of Codex output, integration testing, bug investigation |
 | **Worker** | Codex GPT 5.2 xhigh | 3 | Feature implementation, one phase/task per worker |
 
-## Current State (2026-02-27)
+## Current State (2026-02-28)
 
-**Completed:** Phases 1-4 (inference spike, model distribution, app foundation, core inference arch)
-**In Progress:** Phase 5 (Translation UI) — 3/4 plans done, Plan 04 paused at device verification
-**Not Started:** Phases 6, 7, 8, 9
+**Completed:** Phases 1-9 (all features code-complete), Sprints 1-6 (performance + bug fixes)
+**Status:** Sprint 6 COMPLETE — awaiting on-device retest
+**Next:** On-device retest of Sprint 6, then Sprint 7 planning based on results
 
 ### Phase Dependency Graph
 ```
@@ -70,15 +70,15 @@ All agents MUST use MCP Agent Mail. Project key: `/home/agent/git/bittybot`
 ntm send bittybot --pane=<RECIPIENT_PANE> "You have Agent Mail from <your_name> re: <short subject>. Check inbox."
 ```
 
-**Pane directory (Sprint 6):**
-| Pane | Agent | Role |
-|------|-------|------|
-| 0 | BlueMountain | Orchestrator |
-| 1 | RoseFinch | Manager A (manages panes 3+4) |
-| 2 | WindyRobin | Manager B (manages pane 5) |
-| 3 | (Codex worker) | S6-T1 + S6-T2: system prompt + markdown |
-| 4 | (Codex worker) | S6-T3 + S6-T4: defer warmup + crash cleanup |
-| 5 | (Codex worker) | S6-T5 + S6-T6: print guard + dead code |
+**Pane directory (PERSISTENT — resume these names on next sprint):**
+| Pane | Agent Mail Name | Role | Program | Resume Instructions |
+|------|----------------|------|---------|---------------------|
+| 0 | BlueMountain | Orchestrator | Claude Code Opus 4.6 | `register_agent(name="BlueMountain")`, pull mowismtest, read AGENTS.md + SPRINT report, check inbox |
+| 1 | RoseFinch | Manager A (manages panes 3+4) | Claude Code Opus 4.6 | `register_agent(name="RoseFinch")`, pull mowismtest, read AGENTS.md, check inbox, dispatch to panes 3+4 |
+| 2 | WindyRobin | Manager B (manages pane 5) | Claude Code Opus 4.6 | `register_agent(name="WindyRobin")`, pull mowismtest, read AGENTS.md, check inbox, dispatch to pane 5 |
+| 3 | (Codex worker) | Worker-1 | Codex GPT 5.2 xhigh | Boot via ntm from RoseFinch with explicit task instructions |
+| 4 | (Codex worker) | Worker-2 | Codex GPT 5.2 xhigh | Boot via ntm from RoseFinch with explicit task instructions |
+| 5 | (Codex worker) | Worker-3 | Codex GPT 5.2 xhigh | Boot via ntm from WindyRobin with explicit task instructions |
 
 **On session start:**
 1. `register_agent(project_key="/home/agent/git/bittybot", program="<your_program>", model="<your_model>")`
