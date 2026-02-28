@@ -18,7 +18,7 @@ import 'chat_repository_provider.dart';
 part 'chat_notifier.g.dart';
 
 /// nCtx used for context-full detection threshold.
-const int _kNCtx = 512;
+const int _kNCtx = 2048;
 
 /// Percentage of nCtx at which context is considered full (90%).
 const double _kContextFullThreshold = 0.9;
@@ -49,7 +49,7 @@ class ChatState {
   /// disabled in the UI until this becomes true.
   final bool isModelReady;
 
-  /// True when the accumulated prompt text approaches ~90% of nCtx=512.
+  /// True when the accumulated prompt text approaches ~90% of nCtx=2048.
   /// The UI (Phase 6) shows a "Start new session" prompt banner when this
   /// is true. Does NOT auto-start a session — that requires user action via
   /// [ChatNotifier.startNewSessionWithCarryForward].
@@ -162,7 +162,7 @@ class ChatNotifier extends _$ChatNotifier {
 
   /// Loads an existing session and its messages from the DB.
   ///
-  /// Does NOT replay messages into the KV cache — that would overflow nCtx=512
+  /// Does NOT replay messages into the KV cache — that would overflow nCtx=2048
   /// for long conversations. Messages are shown in the UI from DB, but the model
   /// starts with a fresh context. The next [sendMessage] will use
   /// [PromptBuilder.buildInitialPrompt].

@@ -28,7 +28,7 @@ final class LoadModelCommand extends InferenceCommand {
 
   const LoadModelCommand({
     required this.modelPath,
-    this.nCtx = 512,
+    this.nCtx = 2048,
     this.nBatch = 256,
     this.nThreads = 6,
   });

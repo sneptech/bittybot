@@ -17,7 +17,7 @@ import '../../inference/domain/prompt_builder.dart';
 part 'translation_notifier.g.dart';
 
 /// nCtx used for context-full detection threshold.
-const int _kNCtx = 512;
+const int _kNCtx = 2048;
 
 /// Percentage of nCtx at which context is considered full (90%).
 const double _kContextFullThreshold = 0.9;
@@ -49,7 +49,7 @@ class TranslationState {
   /// disabled in the UI until this becomes true.
   final bool isModelReady;
 
-  /// True when the accumulated prompt text approaches ~90% of nCtx=512.
+  /// True when the accumulated prompt text approaches ~90% of nCtx=2048.
   /// The UI (Phase 5) shows a "Start new session" banner when true.
   final bool isContextFull;
 
