@@ -72,3 +72,6 @@ See `.planning/MVP-HANDOFF.md` for full context, architecture summary, and recom
 - **2026-02-19:** Merged `phase/02-model-distribution` into master
 - **2026-02-19:** Merged `phase/03-app-foundation` into master
 - **2026-02-28:** Fast-forward merged `mowismtest` into master (all Sprints 6-9 + Phases 4-9 code)
+
+### Context Window Handoff (2026-02-28)
+Session approaching context limit (~0% remaining). Work committed. Run /clear and resume.
