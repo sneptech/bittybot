@@ -77,14 +77,13 @@ class _ChatInputBarState extends ConsumerState<ChatInputBar> {
       );
     }
 
-    final notifier = ref.read(chatProvider.notifier);
-    await notifier.sendMessage('[Web] $url');
-
     try {
       final webFetchService = ref.read(webFetchServiceProvider);
       final content = await webFetchService.fetchAndExtract(url);
-      final prompt = '${l10n.webSearchPrompt}\n\n$content';
-      await notifier.sendMessage(prompt);
+      final notifier = ref.read(chatProvider.notifier);
+      await notifier.sendMessage(
+        '[Web: $url]\n\n${l10n.webSearchPrompt}\n\n$content',
+      );
     } on WebFetchException catch (error) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);

@@ -30,7 +30,7 @@ class WebFetchException implements Exception {
 /// Fetches web pages and extracts plain text suitable for model prompts.
 class WebFetchService {
   /// Maximum characters returned to keep prompts within context limits.
-  static const int maxChars = 3000;
+  static const int maxChars = 2000;
 
   /// Fetches [url], strips HTML, normalizes whitespace, and truncates output.
   Future<String> fetchAndExtract(String url) async {
