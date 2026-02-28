@@ -198,6 +198,7 @@ class TranslationNotifier extends _$TranslationNotifier {
     state = state.copyWith(
       sourceText: '',
       translatedText: '',
+      isTranslating: false,
       isContextFull: false,
       turnCount: 0,
       clearActiveSession: true,
