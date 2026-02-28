@@ -30,6 +30,22 @@ class ChatScreen extends ConsumerWidget {
     final state = ref.watch(chatProvider);
     final textTheme = Theme.of(context).textTheme;
 
+    // Show snackbar when context exhaustion triggers an auto-reset.
+    ref.listen(chatProvider, (prev, next) {
+      if (next.isContextFull &&
+          next.messages.isEmpty &&
+          !(prev?.isContextFull ?? false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Conversation was getting long. Started a new chat.',
+            ),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    });
+
     return Scaffold(
       drawer: const ChatHistoryDrawer(),
       appBar: AppBar(

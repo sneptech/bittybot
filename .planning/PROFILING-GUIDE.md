@@ -1,10 +1,33 @@
 # BittyBot On-Device Profiling Guide
 
 **For:** Local Claude Code monitoring during on-device testing
-**Date:** 2026-02-27
 **Branch:** `mowismtest`
+**Device:** Samsung Galaxy A25 (SM-A256E), Android 14, 5.5 GB RAM, Exynos 1280
 
-## Quick Start
+---
+
+## CURRENT TEST: Sprint 8 Retest
+
+**Skip to: [Sprint 8 Retest](#sprint-8-retest-2026-02-28)** section below for the full test protocol.
+
+**What to test:** Two polish items on top of the ErrorResponse bug fix:
+1. **S8-T1:** Post-clear TTFT — after context exhaustion auto-reset, TTFT should be ~3-5s (was 17.2s)
+2. **S8-T2:** Snackbar — after context exhaustion auto-reset, user sees "Conversation was getting long. Started a new chat."
+
+**Quick steps:**
+```bash
+cd /home/agent/git/bittybot && git pull origin mowismtest
+export PATH="/home/agent/flutter/bin:$PATH"
+flutter build apk --debug
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
+```
+Then follow the Sprint 8 Retest checklist. Model is already on device (Q3_K_S, no re-download needed).
+
+**Write results to:** `.planning/SPRINT-8-RETEST-REPORT.md` — include post-clear TTFT comparison, snackbar verification (yes/no/screenshot), and full regression check. Use the same format as `.planning/SPRINT-8-REPORT.md`.
+
+---
+
+## Quick Start (General)
 
 ```bash
 # 1. Build and install debug APK
@@ -454,6 +477,87 @@ The trade-off: if the user sends a message before warmup completes, TTFT will be
 **If frame skips are still > 100:** The bottleneck may not be ModelReadyResponse timing — could be Flutter asset loading, Drift DB init, or other startup work. Check which lifecycle events happen before and after the frame skips in logcat.
 
 **Report findings to `.planning/PROFILING-RESULTS.md`** — append a Sprint 6 section.
+
+## Sprint 8 Retest (2026-02-28)
+
+Two polish fixes on top of the Sprint 8 ErrorResponse bug fix (commit `a479001`). The ErrorResponse fix was already verified in the Sprint 8 Report — this retest validates the two new polish items.
+
+### What Changed
+
+| Commit | Fix | What to Verify |
+|--------|-----|----------------|
+| `a479001` (already verified) | **ErrorResponse context-full handling** — `_handleError()` in both notifiers detects "Context full" errors and auto-resets | Already verified PASS in Sprint 8 Report. Re-verify: after context exhaustion, next message works (not permanently stuck). |
+| `1e50aec` S8-T1 | **Re-fadvise after context clear** — after `llama.clear()`, closes old advisory fd and re-runs `posix_fadvise(WILLNEED)` on model file | Post-clear TTFT should drop from 17.2s to ~3-5s |
+| `c299809` S8-T2 | **Context reset snackbar** — `ref.listen()` in ChatScreen detects `isContextFull` transition and shows 4s floating snackbar | After context exhaustion auto-reset, user sees "Conversation was getting long. Started a new chat." |
+
+### Retest Checklist
+
+**No model re-download needed.** Q3_K_S model from Sprint 4+ should still be on device.
+
+1. **Build + install:** `flutter build apk --debug && adb install -r build/app/outputs/flutter-apk/app-debug.apk`
+
+2. **Context exhaustion test (THE KEY TEST — validates all 3 commits):**
+   - Open Chat tab
+   - Send a message that generates a LONG response to fill context quickly (e.g., "Tell me everything about Tokyo Japan in great detail")
+   - Wait for the response to complete (~400-500 tokens should fill nCtx=512)
+   - Send another short message (e.g., "Thanks")
+   - **Expected behavior:**
+     a. Context exhaustion triggers → `ErrorResponse` with "Context full" message
+     b. `_handleError()` detects it → calls `startNewSession()` → clears KV cache
+     c. **S8-T2 VERIFY:** Floating snackbar appears: "Conversation was getting long. Started a new chat." — visible for 4 seconds
+     d. Old conversation disappears, new empty session starts
+     e. `isContextFull` set → snackbar shown → new session ready
+   - Send another message (e.g., "Hello again")
+   - **S8-T1 VERIFY:** TTFT on this post-clear message should be ~3-5s (NOT 17.2s)
+     - Sprint 8 Report without re-fadvise: 17.2s TTFT
+     - Sprint 8 with re-fadvise: expected ~3-5s (matching warm TTFT of 3.7s)
+   - **S8 ErrorResponse fix VERIFY:** The message actually gets a response (not permanently stuck)
+   - `adb logcat -s flutter | grep inference_request` — capture TTFT for the post-clear message
+
+3. **Repeat context exhaustion test (consistency):**
+   - Do the same test again — fill context, trigger reset, verify snackbar + fast recovery
+   - Both iterations should behave identically
+
+4. **Snackbar appearance check:**
+   - The snackbar should be a floating SnackBar using the app's theme (`surfaceContainer` background)
+   - It should dismiss automatically after 4 seconds
+   - It should NOT appear on every new session — only when context exhaustion triggers auto-reset
+   - Starting a new chat manually (via drawer) should NOT show the snackbar
+
+5. **Translation context exhaustion:**
+   - Switch to Translation tab
+   - Send many translations to fill context
+   - **Note:** TranslationNotifier also has `_handleError()` context-full detection (same ErrorResponse fix)
+   - It calls `startNewSession()` but NO snackbar is wired for translation_screen.dart (intentional — only chat has it this sprint)
+   - **Verify:** Translation recovers from context exhaustion without crashing (same as chat, minus snackbar)
+
+6. **All prior tests still pass (regression check):**
+   - Warm TTFT: ~3.7s (5+ messages back-to-back)
+   - tok/s: ~2.5
+   - Identity: "Bittybot" (not "Aya")
+   - Markdown: formatted lists, bold text
+   - Token filtering: no `<|...|>` tokens
+   - Translation: direct, no quotes (quote stripping works)
+   - Native splash: dark branded screen on cold start (not blank white)
+   - No OOM kill
+
+### Performance Targets (Updated for Sprint 8)
+
+| Metric | Target | Sprint 8 Report (before S8-T1) | Sprint 8 Expected |
+|--------|--------|-------------------------------|-------------------|
+| Post-clear TTFT | < 5s | 17.2s | **~3-5s** (re-fadvise) |
+| Context reset UX | Snackbar shown | Silent (no feedback) | **Snackbar: 4s** |
+| Context recovery | Auto-reset works | PASS (ErrorResponse fix) | PASS (same) |
+| Warm TTFT | < 5s | 3.7s | 3.7s (same) |
+| tok/s | ~2 (hw ceiling) | 2.57 | ~2.5 (same) |
+
+### Key Difference from Sprint 8 Report Test
+
+Sprint 8 Report already verified the ErrorResponse fix works — app recovers from context exhaustion. But post-clear TTFT was 17.2s because mmap pages were partially evicted after `llama.clear()`. Sprint 8 S8-T1 adds `posix_fadvise(WILLNEED)` in the `ClearContextCommand` handler to re-advise the kernel immediately after clear, which should bring recovery TTFT back to warm levels (~3-5s).
+
+Sprint 8 S8-T2 adds the user-facing feedback that was missing — a snackbar so the user understands why their conversation disappeared.
+
+**Report findings to `.planning/SPRINT-9-REPORT.md`** (or append to SPRINT-8-REPORT.md) — include post-clear TTFT comparison and snackbar verification.
 
 ## Architecture Reference
 

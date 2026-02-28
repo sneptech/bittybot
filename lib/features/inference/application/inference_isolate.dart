@@ -84,6 +84,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
   // commands arrive and flip this flag cooperatively.
   bool stopped = false;
   int advisoryFd = -1;
+  String? modelPath;
 
   receivePort.listen((message) async {
     if (message is LoadModelCommand) {
@@ -107,6 +108,7 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           contextParams: contextParams,
           verbose: false,
         );
+        modelPath = message.modelPath;
 
         // Unblock the UI immediately — warmup runs in the background.
         mainSendPort.send(const ModelReadyResponse());
@@ -179,6 +181,18 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         llama?.clear();
       } catch (_) {
         // Ignore clear errors — if llama is null, there's nothing to clear.
+      }
+      // Re-advise OS to keep model pages resident after KV cache clear.
+      // Without this, mmap pages may be partially evicted, causing ~17s TTFT
+      // on the next inference instead of ~3-5s.
+      if (modelPath != null) {
+        try {
+          closeNativeFd(advisoryFd);
+          final fileLength = File(modelPath!).lengthSync();
+          advisoryFd = adviseWillNeed(modelPath!, fileLength);
+        } catch (_) {
+          advisoryFd = -1;
+        }
       }
     } else if (message is ShutdownCommand) {
       closeNativeFd(advisoryFd);
