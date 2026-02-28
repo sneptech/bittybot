@@ -36,16 +36,19 @@ Phase 4 (DONE)
 1. **VERIFIED FIXED (S5-T3): Wrong screen displayed** — startup path routes `ModelGateWidget -> AppStartupWidget -> MainShell -> TranslationScreen`; no `Phase 1`/`Inference Spike` UI text in startup files.
 2. **VERIFIED FIXED (S5-T3): App icon reset** — custom `ic_launcher.png` assets confirmed in all Android mipmap densities (mdpi 1823 B, hdpi 3300 B, xhdpi 4233 B, xxhdpi 5926 B, xxxhdpi 7989 B).
 
-## Task Assignment — Sprint 5: Page Residency + Cold Start Polish
+## Task Assignment — Sprint 6: Bug Fixes from On-Device Testing
 
-**Full plan:** `.planning/sprint-5-page-residency.md`
+**Full report:** `.planning/SPRINT-6-REPORT.md`
 **Profiling data:** `.planning/PROFILING-RESULTS.md`
 
-| Task ID | Task | Priority | Assigned Manager | Worker Pane | Files |
-|---------|------|----------|-----------------|-------------|-------|
-| S5-T1 | `posix_fadvise(POSIX_FADV_WILLNEED)` via Dart FFI — keep model pages resident | CRITICAL | Manager pane 1 | Pane 3 | NEW: `lib/features/inference/data/native_memory_advisor.dart`, EDIT: `lib/features/inference/application/inference_isolate.dart` |
-| S5-T2 | Fix 2nd cold start frame skip regression (184→<50) | HIGH | Manager pane 1 | Pane 4 | `lib/features/model_distribution/model_distribution_notifier.dart`, `lib/features/inference/application/inference_isolate.dart` |
-| S5-T3 | Verify P1 bugs fixed (wrong screen, app icon), clean up dead code | MEDIUM | Manager pane 0 | Pane 5 | Read-only verification of startup path + AGENTS.md update |
+| Task ID | Task | Priority | Bug | Assigned Manager | Worker Pane | Files |
+|---------|------|----------|-----|-----------------|-------------|-------|
+| S6-T1 | System prompt identity ("Bittybot" not "Aya") | P1 | BUG-2 | RoseFinch (pane 1) | Pane 3 | `lib/features/inference/domain/prompt_builder.dart` |
+| S6-T2 | Markdown rendering in chat bubbles | P1 | BUG-1 | RoseFinch (pane 1) | Pane 3 | `pubspec.yaml`, `lib/features/chat/presentation/widgets/chat_bubble_list.dart` |
+| S6-T3 | Defer warmup after ModelReadyResponse (frame skips) | P1 | BUG-3 | RoseFinch (pane 1) | Pane 4 | `lib/features/inference/application/inference_isolate.dart` |
+| S6-T4 | Crash recovery FD cleanup | P2 | BUG-5 | RoseFinch (pane 1) | Pane 4 | `lib/features/inference/application/llm_service.dart` |
+| S6-T5 | Guard print for release builds | P2 | BUG-7 | WindyRobin (pane 2) | Pane 5 | `lib/core/diagnostics/performance_monitor.dart` |
+| S6-T6 | Dead code cleanup (..take(3) + stale TODO) | P3 | BUG-4+6 | WindyRobin (pane 2) | Pane 5 | `lib/features/settings/application/settings_provider.dart`, `lib/features/model_distribution/model_distribution_notifier.dart` |
 
 ### Previous Sprints (complete)
 | Sprint | Tasks | Status |
@@ -53,6 +56,7 @@ Phase 4 (DONE)
 | Sprint 1-2 | Phases 1-9 features + performance monitoring | Complete |
 | Sprint 3 | OOM fix (mmap), cold start (SHA-256 skip), nCtx, loading indicator | Complete |
 | Sprint 4 | Q3_K_S quantization, nThreads 6, startup jank fix, page warmup | Complete |
+| Sprint 5 | posix_fadvise FFI, frame skip yields, P1 bug verification | Complete |
 
 ## Coordination Protocol
 
@@ -66,15 +70,15 @@ All agents MUST use MCP Agent Mail. Project key: `/home/agent/git/bittybot`
 ntm send bittybot --pane=<RECIPIENT_PANE> "You have Agent Mail from <your_name> re: <short subject>. Check inbox."
 ```
 
-**Pane directory (Sprint 5):**
+**Pane directory (Sprint 6):**
 | Pane | Agent | Role |
 |------|-------|------|
 | 0 | BlueMountain | Orchestrator |
 | 1 | RoseFinch | Manager A (manages panes 3+4) |
 | 2 | WindyRobin | Manager B (manages pane 5) |
-| 3 | (Codex worker) | S5-T1: posix_fadvise FFI |
-| 4 | (Codex worker) | S5-T2: frame skip fix |
-| 5 | SageHill | S5-T3: bug verification |
+| 3 | (Codex worker) | S6-T1 + S6-T2: system prompt + markdown |
+| 4 | (Codex worker) | S6-T3 + S6-T4: defer warmup + crash cleanup |
+| 5 | (Codex worker) | S6-T5 + S6-T6: print guard + dead code |
 
 **On session start:**
 1. `register_agent(project_key="/home/agent/git/bittybot", program="<your_program>", model="<your_model>")`
