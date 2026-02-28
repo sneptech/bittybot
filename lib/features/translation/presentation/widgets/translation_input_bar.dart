@@ -8,6 +8,9 @@ import '../../application/translation_notifier.dart';
 import '../../../ocr/application/ocr_notifier.dart';
 import '../../../ocr/presentation/ocr_capture_screen.dart';
 import '../../../ocr/presentation/widgets/camera_button.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../../chat/data/web_fetch_service.dart';
+import '../../../chat/application/web_fetch_provider.dart';
 
 /// Multi-line expandable input bar for the Translation screen.
 ///
@@ -38,10 +41,14 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
     super.dispose();
   }
 
-  void _onSend(TranslationState state) {
+  Future<void> _onSend(TranslationState state) async {
     final text = _textController.text.trim();
     if (text.isEmpty || !state.isModelReady) return;
     _textController.clear();
+    if (text.startsWith('http://') || text.startsWith('https://')) {
+      await _handleWebFetch(text);
+      return;
+    }
     ref.read(translationProvider.notifier).translate(text);
   }
 
@@ -77,6 +84,57 @@ class _TranslationInputBarState extends ConsumerState<TranslationInputBar> {
 
     if (result != null && result.trim().isNotEmpty) {
       _textController.text = result.trim();
+    }
+  }
+
+  Future<void> _handleWebFetch(String url) async {
+    final l10n = AppLocalizations.of(context);
+    final connectivityResults = await Connectivity().checkConnectivity();
+    final hasConnectivity = connectivityResults.any(
+      (result) => result != ConnectivityResult.none,
+    );
+
+    if (!hasConnectivity) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.noInternetConnection)),
+      );
+      return;
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.fetchingPage),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+
+    try {
+      final webFetchService = ref.read(webFetchServiceProvider);
+      final content = await webFetchService.fetchAndExtract(url);
+      final targetLang = ref.read(translationProvider).targetLanguage;
+      final hiddenContext =
+          'The user shared a web page. Here is the page content:\n\n$content\n\nTranslate the main content of this page to $targetLang. Output ONLY the translation.';
+      ref
+          .read(translationProvider.notifier)
+          .translate(url, hiddenContext: hiddenContext);
+    } on WebFetchException catch (error) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      final message = switch (error.kind) {
+        WebFetchErrorKind.invalidUrl => l10n.webErrorInvalidUrl,
+        WebFetchErrorKind.httpError => l10n.webErrorHttpStatus(
+          error.statusCode ?? 0,
+        ),
+        WebFetchErrorKind.emptyContent => l10n.webErrorEmptyContent,
+        WebFetchErrorKind.networkError => l10n.webErrorNetwork,
+        WebFetchErrorKind.timeout => l10n.webErrorTimeout,
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     }
   }
 

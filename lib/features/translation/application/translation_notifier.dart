@@ -134,7 +134,7 @@ class TranslationState {
 @Riverpod(keepAlive: true)
 class TranslationNotifier extends _$TranslationNotifier {
   /// FIFO queue of translation texts waiting for the current generation.
-  final Queue<String> _pendingQueue = Queue<String>();
+  final Queue<({String text, String? hiddenContext})> _pendingQueue = Queue<({String text, String? hiddenContext})>();
 
   /// Active subscription to the inference response stream.
   StreamSubscription<InferenceResponse>? _responseSubscription;
@@ -224,15 +224,15 @@ class TranslationNotifier extends _$TranslationNotifier {
   ///
   /// If a translation is currently in progress, the request is queued and
   /// processed automatically when the active generation completes.
-  Future<void> translate(String text) async {
+  Future<void> translate(String text, {String? hiddenContext}) async {
     if (!state.isModelReady) return;
 
     if (state.isTranslating) {
-      _pendingQueue.add(text);
+      _pendingQueue.add((text: text, hiddenContext: hiddenContext));
       return;
     }
 
-    await _processTranslation(text);
+    await _processTranslation(text, hiddenContext: hiddenContext);
   }
 
   /// Cooperatively stops the active translation.
@@ -280,7 +280,7 @@ class TranslationNotifier extends _$TranslationNotifier {
   /// 4. Checks context-full threshold.
   /// 5. Registers the response stream listener (once per notifier lifetime).
   /// 6. Issues the [GenerateCommand] with nPredict=128 (translation limit).
-  Future<void> _processTranslation(String text) async {
+  Future<void> _processTranslation(String text, {String? hiddenContext}) async {
     final chatRepo = ref.read(chatRepositoryProvider);
 
     // Ensure we have an active translation session.
@@ -294,16 +294,20 @@ class TranslationNotifier extends _$TranslationNotifier {
       content: text,
     );
 
+    // Use hidden context (e.g. scraped web page) for prompt if provided,
+    // otherwise use the user's text directly.
+    final promptText = hiddenContext ?? text;
+
     // Build prompt — initial for first translation in pair, follow-up thereafter.
     final String prompt;
     if (state.turnCount == 0) {
       prompt = PromptBuilder.buildTranslationPrompt(
-        text: text,
+        text: promptText,
         targetLanguage: state.targetLanguage,
       );
     } else {
       prompt = PromptBuilder.buildFollowUpTranslationPrompt(
-        text: text,
+        text: promptText,
         targetLanguage: state.targetLanguage,
       );
     }
@@ -448,7 +452,7 @@ class TranslationNotifier extends _$TranslationNotifier {
   Future<void> _dequeueNextIfAny() async {
     if (_pendingQueue.isNotEmpty) {
       final next = _pendingQueue.removeFirst();
-      await _processTranslation(next);
+      await _processTranslation(next.text, hiddenContext: next.hiddenContext);
     }
   }
 }
