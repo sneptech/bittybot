@@ -74,34 +74,47 @@ Add camera-to-translate functionality to BittyBot: users snap a photo of foreign
 |-----------|-------|
 | **Flutter packages** | `paddle_ocr` v0.0.5 (abandoned April 2021) |
 | **Languages** | 80-106 (PP-OCRv4/v5) |
-| **Model sizes** | 5.9-16.2 MB (mobile variants) |
-| **Offline** | Fully offline via Paddle-Lite |
-| **RAM at inference** | ~100-300 MB estimated (no official data) |
-| **Speed** | 1-4 seconds estimated on mid-range Android |
+| **Model sizes** | Detection ~4.4 MB + Classification ~2.5 MB + Recognition ~10-15 MB/lang = **16-22 MB total** (mobile INT8 quantized) |
+| **Offline** | Fully offline via Paddle-Lite or ONNX Runtime |
+| **RAM at inference** | ~16-22 MB base + 10-15 MB per language pack (mobile models) |
+| **Speed (mobile)** | ~200 ms on mid-range Android (PP-OCRv4 mobile) |
 | **License** | Apache 2.0 |
 
 **Strengths:**
 - Best CJK accuracy of the three options
-- Small mobile models
-- Apache 2.0
+- Covers 80+ languages including Arabic, Cyrillic, Thai (scripts ML Kit lacks)
+- Small mobile models (16-22 MB total, comparable to ML Kit)
+- Fast on mobile (~200 ms, comparable to ML Kit)
+- Apache 2.0 with no ToS restrictions
 
 **Weaknesses:**
-- No usable Flutter package (only option is 5 years abandoned)
-- Requires custom C++/JNI wrapper from scratch
-- Mobile deployment path marked "legacy" in PaddleOCR 3.x
-- No official mobile RAM/speed benchmarks
-- Significant engineering effort for integration
+- No maintained Flutter package (only option is 5 years abandoned)
+- Requires custom integration via ONNX Runtime Flutter package or native FFI
+- Mobile deployment path marked "legacy" in PaddleOCR 3.x (but models themselves are production quality)
+- Integration cost significantly higher than ML Kit
 
-### 2.4 Decision: Google ML Kit Text Recognition v2
+### 2.4 Decision: Phased Approach — ML Kit (Phase 1) + PaddleOCR (Phase 2)
 
-**Rationale:**
-1. **RAM is the critical constraint.** ML Kit uses ~11-20 MB vs 100-300 MB for Tesseract/PaddleOCR. With the LLM at 1.85 GB on a 5.5 GB device, only ML Kit can run without unloading the LLM.
-2. **Speed.** 50-300 ms vs 3-8 seconds. Users expect near-instant OCR from camera apps.
-3. **Integration cost.** Well-maintained Flutter package with documented API vs custom JNI wrappers.
-4. **5 scripts covers ~80% of traveler use cases.** Latin (Europe, Americas, Africa), Chinese (China, Singapore), Japanese, Korean, Devanagari (India, Nepal). The missing scripts (Arabic, Thai, Cyrillic) are a known gap but acceptable for MVP.
-5. **Bundled models.** ~20 MB added to APK size (all 5 scripts) — no separate download flow needed.
+**Phase 1 (v1.1): Google ML Kit Text Recognition v2**
 
-**Future extensibility:** If Arabic/Thai/Cyrillic OCR demand emerges, Tesseract can be added as a secondary engine for those scripts only, with the LLM temporarily unloaded to free RAM.
+Ship fast with 5 scripts (Latin, Chinese, Japanese, Korean, Devanagari), zero custom native code. Covers ~80% of BittyBot's 66 translation languages.
+
+Rationale:
+1. **Fastest path to shipping.** Well-maintained Flutter package, simple API, no custom native code.
+2. **RAM friendly.** 11-20 MB — runs alongside the LLM with no model swapping.
+3. **Bundled delivery.** ~20 MB in APK, works immediately offline.
+
+**Phase 2 (v1.2): PaddleOCR via ONNX Runtime**
+
+Add Arabic, Cyrillic, Thai, and other scripts as downloadable language packs. Requires converting PP-OCRv4 mobile models to ONNX format and writing a Dart service layer using the `onnxruntime` Flutter package.
+
+Rationale:
+1. **Fills the ML Kit gap.** Arabic, Cyrillic, Thai are important traveler scripts.
+2. **Comparable performance.** PP-OCRv4 mobile: ~200ms, 16-22 MB — similar to ML Kit.
+3. **Downloadable packs.** Users choose which language packs to install (10-15 MB each).
+4. **ONNX Runtime** avoids the abandoned Paddle-Lite Flutter path — uses a maintained runtime.
+
+**Tesseract is not recommended** due to slow speed (3-8s), high RAM (100-300 MB), and poor CJK accuracy. PaddleOCR mobile models outperform it on every dimension.
 
 ---
 
@@ -386,28 +399,36 @@ enum OcrScript {
 
 ## 9. Implementation Phases
 
-### Phase A: Core OCR (1 sprint)
+### Phase A: Core OCR with ML Kit (1 sprint, v1.1)
 1. Add `google_mlkit_text_recognition` + `image_picker` to pubspec.yaml
 2. Add native dependencies to build.gradle + AndroidManifest.xml
 3. Create `lib/features/ocr/` directory structure
 4. Implement `OcrNotifier` + `OcrState` + `OcrScript`
 5. Add camera button to `TranslationInputBar`
 6. Create `OcrCaptureScreen` (image preview + extracted text + edit + translate)
-7. Wire: camera → image_picker → OCR → extracted text → translation input
+7. Wire: camera -> image_picker -> OCR -> extracted text -> translation input
 
-### Phase B: Polish (1 sprint)
-1. Bounding box overlay on preview image (TextBlock corners → CustomPainter)
+### Phase B: Polish + Chat Integration (1 sprint)
+1. Bounding box overlay on preview image (TextBlock corners -> CustomPainter)
 2. Add camera button to `ChatInputBar`
 3. Script auto-detection fallback (try Latin, then CJK if empty)
 4. Add localization keys for OCR UI strings (10 ARB files)
-5. On-device testing on Galaxy A25 — verify RAM, speed, accuracy
+5. On-device testing on Galaxy A25 -- verify RAM, speed, accuracy
 
-### Phase C: Future Enhancements (backlog)
+### Phase C: PaddleOCR Integration (1-2 sprints, v1.2)
+1. Add `onnxruntime` Flutter package to pubspec.yaml
+2. Convert PP-OCRv4 mobile models (det + cls + rec) to ONNX format
+3. Create `lib/features/ocr/data/paddle_ocr_service.dart` -- ONNX inference wrapper
+4. Add OCR Language Packs section to Settings screen (download, toggle, delete per language)
+5. Create download flow for PaddleOCR language packs (follow model_distribution pattern)
+6. Wire PaddleOCR as fallback for scripts not covered by ML Kit
+7. Arabic, Cyrillic, Thai, Hebrew, Armenian, Georgian language packs
+
+### Phase D: Future Enhancements (backlog)
 1. Image cropping before OCR (image_cropper package)
-2. Batch mode (multiple photos → combined text)
-3. Settings: "OCR Language Packs" section (if moving to unbundled delivery)
-4. Tesseract fallback for Arabic/Thai/Cyrillic scripts
-5. Live camera OCR (real-time viewfinder text detection)
+2. Batch mode (multiple photos -> combined text)
+3. Live camera OCR (real-time viewfinder text detection)
+4. Handwriting recognition improvements
 
 ---
 
@@ -418,7 +439,7 @@ enum OcrScript {
 | ML Kit not available on Galaxy A25 (no Play Services) | Low | High | Galaxy A25 ships with Play Services. Fallback: bundled models don't require Play Services. |
 | OCR accuracy poor on real-world photos | Medium | Medium | Cap image resolution, require good lighting in UI hints, allow manual text editing |
 | APK size too large with bundled models | Low | Low | ~20 MB total. If needed, switch to unbundled (Play Services manages storage) |
-| Missing Arabic/Thai OCR for travelers | Medium | Medium | Accept for MVP. Add Tesseract secondary engine in future sprint |
+| Missing Arabic/Thai OCR for travelers | Medium | Medium | Accepted for Phase A (ML Kit). PaddleOCR via ONNX Runtime planned for Phase C to fill the gap. |
 | Camera permission denied | Medium | Low | Standard Flutter permission flow, explain why camera is needed |
 | Image picker crashes on some devices | Low | Low | Try-catch with fallback error state, use proven image_picker package |
 
@@ -444,4 +465,4 @@ No conflicts with existing dependencies (flutter_riverpod 3.1.0, drift 2.31, lla
 2. **Is crop-before-OCR needed for MVP or can it wait for Phase B?** Recommendation: defer to Phase B.
 3. **Should the camera button also appear on the Chat screen for MVP?** Recommendation: translation only for Phase A, chat in Phase B.
 4. **What UI language should OCR result editing use?** The extracted text is in the source language. The preview screen should show the raw text and let the user edit before sending to translate.
-5. **Priority vs nCtx expansion?** MVP-HANDOFF recommends increasing nCtx from 512 to 2048. Should OCR come before or after that change?
+5. **Priority vs nCtx expansion?** nCtx already increased to 2048 in commit d98dcc9. OCR can proceed independently.
