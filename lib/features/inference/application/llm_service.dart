@@ -240,6 +240,9 @@ class LlmService {
 
     if (_consecutiveCrashCount <= _maxAutoRetries) {
       // Clean up remnants of the crashed isolate before respawning.
+      try {
+        _commandPort?.send(const ShutdownCommand());
+      } catch (_) {}
       _isolate?.kill(priority: Isolate.immediate);
       _isolate = null;
       _commandPort = null;
