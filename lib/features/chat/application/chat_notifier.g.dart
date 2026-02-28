@@ -83,7 +83,7 @@ final class ChatNotifierProvider
   }
 }
 
-String _$chatNotifierHash() => r'2b1b15f43ed01a8d0a1be86ce4e33cb2d0f62117';
+String _$chatNotifierHash() => r'4e30d298999b5bd115184176a86db8a1ce8bbd5e';
 
 /// Manages multi-turn conversation state for the chat feature.
 ///

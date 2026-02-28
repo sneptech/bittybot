@@ -45,6 +45,11 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- ML Kit OCR: pre-download models at install -->
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="ocr,ocr_chinese,ocr_japanese,ocr_korean,ocr_devanagari" />
+
         <!-- Foreground service declaration for background_downloader (Android 10-13) -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
