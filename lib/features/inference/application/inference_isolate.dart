@@ -108,6 +108,9 @@ void inferenceIsolateMain(SendPort mainSendPort) {
           verbose: false,
         );
 
+        // Unblock the UI immediately — warmup runs in the background.
+        mainSendPort.send(const ModelReadyResponse());
+
         // Pre-fault mmap'd pages so first inference doesn't page-fault
         await _warmupModelPages(message.modelPath);
         // Advise OS to keep model pages resident for lower TTFT variance.
@@ -117,8 +120,6 @@ void inferenceIsolateMain(SendPort mainSendPort) {
         } catch (_) {
           advisoryFd = -1;
         }
-
-        mainSendPort.send(const ModelReadyResponse());
       } catch (e) {
         mainSendPort.send(ErrorResponse(requestId: -1, message: e.toString()));
       }
