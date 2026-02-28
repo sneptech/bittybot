@@ -17,7 +17,7 @@ import '../../inference/domain/prompt_builder.dart';
 part 'translation_notifier.g.dart';
 
 /// nCtx used for context-full detection threshold.
-const int _kNCtx = 2048;
+const int _kNCtx = 512;
 
 /// Percentage of nCtx at which context is considered full (90%).
 const double _kContextFullThreshold = 0.9;
@@ -384,7 +384,13 @@ class TranslationNotifier extends _$TranslationNotifier {
     final session = state.activeSession;
     if (session == null) return;
 
-    final content = state.translatedText;
+    // Strip leading/trailing quote characters the model sometimes wraps around translations.
+    final content = state.translatedText
+        .replaceAll(
+            RegExp(r'^["\x27\u00AB\u00BB\u201C\u201D\u2018\u2019]+|["\x27\u00AB\u00BB\u201C\u201D\u2018\u2019]+$'),
+            '')
+        .trim();
+
     final chatRepo = ref.read(chatRepositoryProvider);
 
     // Persist the assistant (translation) message.
@@ -396,9 +402,9 @@ class TranslationNotifier extends _$TranslationNotifier {
     );
 
     state = state.copyWith(
+      translatedText: content,
       isTranslating: false,
       clearActiveRequestId: true,
-      // translatedText remains set so UI can display the result.
     );
 
     _dequeueNextIfAny();
